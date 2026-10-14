@@ -121,14 +121,27 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.brand_name} - {self.rating} Stars"
-    
 
 
+class SupportTicket(models.Model):
+    ticket_id = models.CharField(max_length=50, unique=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    order_id = models.CharField(max_length=100, blank=True, null=True)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    category = models.CharField(max_length=100, blank=True, null=True)
+    urgency = models.CharField(max_length=50, blank=True, null=True)
+    sentiment = models.CharField(max_length=50, blank=True, null=True)
+    action = models.CharField(max_length=100, blank=True, null=True)
+    ai_response = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=50, default='resolved')
+    email_sent = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-created_at']
 
-
-
-
-
-
-
+    def __str__(self):
+        return f"Ticket #{self.ticket_id} - {self.subject} ({self.status})"

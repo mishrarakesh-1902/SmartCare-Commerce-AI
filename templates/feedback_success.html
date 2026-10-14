@@ -1,73 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback Submitted</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        body {
-            background: #f8f9fa;
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
+{% extends 'master.html' %}
 
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            animation: fadeIn 0.5s ease-in-out;
-        }
+{% block body %}
+<section style="padding: 60px 0 90px; min-height: 70vh; display: flex; align-items: center;">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+                <div style="background: #ffffff; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 50px 36px; text-align: center; box-shadow: var(--shadow-md);">
+                    <!-- Success Icon Badge -->
+                    <div style="width: 72px; height: 72px; border-radius: 50%; background: #ecfdf5; border: 2px solid #a7f3d0; color: #10b981; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <i class="fa fa-check"></i>
+                    </div>
 
-        h2 {
-            color: #28a745;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
+                    <span class="hero-pill-badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #059669; margin-bottom: 12px;">
+                        Feedback Recorded Successfully
+                    </span>
 
-        p {
-            color: #555;
-            font-size: 16px;
-        }
+                    <h2 style="font-weight: 800; font-size: 24px; color: var(--slate-900); margin: 0 0 10px 0;">
+                        Thank You For Your Review!
+                    </h2>
 
-        .btn-home {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 20px;
-            background: #28a745;
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
-            border-radius: 8px;
-            transition: 0.3s;
-            font-weight: bold;
-        }
+                    <p style="color: var(--slate-500); font-size: 14px; line-height: 1.6; max-width: 440px; margin: 0 auto 28px;">
+                        We appreciate you taking the time to share your experience with us. Your verified feedback directly shapes our future collections and customer service.
+                    </p>
 
-        .btn-home:hover {
-            background: #218838;
-            box-shadow: 0px 0px 10px rgba(40, 167, 69, 0.6);
-        }
+                    <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+                        <a href="/" class="btn-hero-primary" style="padding: 12px 24px; font-size: 14px;">
+                            <i class="fa fa-home"></i> Back to Home
+                        </a>
+                        <a href="/product/" class="btn-hero-secondary" style="background: var(--slate-900); color: #fff; padding: 12px 24px; font-size: 14px;">
+                            <i class="fa fa-shopping-bag"></i> Browse Drops
+                        </a>
+                    </div>
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>🎉 Thank You for Your Feedback! 🎉</h2>
-    <p>Your feedback helps us improve our services. We appreciate your time and effort in sharing your thoughts with us.</p>
-    <a href="/" class="btn-home">🏠 Go Back to Home</a>
-</div>
-
-</body>
-</html>
+                    <!-- AI Support Desk Note -->
+                    <div style="margin-top: 32px; padding-top: 20px; border-top: 1px dashed var(--slate-200); font-size: 12px; color: var(--slate-500);">
+                        Have an ongoing order query or return request? 
+                        <a href="{% url 'ai_support' %}" style="color: var(--brand-secondary); font-weight: 700; margin-left: 4px;">
+                            Talk to our 24/7 AI Desk &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

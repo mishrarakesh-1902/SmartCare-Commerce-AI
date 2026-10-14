@@ -1,498 +1,277 @@
 {% extends 'master.html' %}
-{% block body %}
 
-<section>
+{% block body %}
+<section style="padding: 24px 0 60px;">
     <div class="container">
-        <div class="row">
-            <div class="col-sm-3">
-                <div class="left-sidebar">
-                    <h2>Category</h2>
-                    <div class="panel-group category-products" id="accordian"><!--category-productsr-->
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordian" href="#sportswear">
-                                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
-                                        Sportswear 
-                                    </a>
-                                </h4>
+        <!-- Breadcrumb Navigation -->
+        <div style="margin-bottom: 24px;">
+            <ol class="breadcrumb" style="background: none; padding: 0; margin: 0; font-size: 13px;">
+                <li><a href="/" style="color: var(--slate-500);"><i class="fa fa-home"></i> Home</a></li>
+                <li><a href="/product/" style="color: var(--slate-500);">Products</a></li>
+                {% if product.category %}
+                <li><a href="/product/?sub_category={{ product.sub_category.id }}" style="color: var(--slate-500);">{{ product.category.name }}</a></li>
+                {% endif %}
+                <li class="active" style="color: var(--slate-800); font-weight: 600;">{{ product.name }}</li>
+            </ol>
+        </div>
+
+        <!-- Main Product Card & Details Box -->
+        <div class="pdp-wrapper">
+            <div class="row">
+                <!-- Left: Media & Gallery -->
+                <div class="col-sm-6">
+                    <div class="pdp-gallery-main">
+                        <img src="/{{ product.image }}" alt="{{ product.name }}" id="mainProductImg" />
+                    </div>
+
+                    <!-- Trust Strip Under Image -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px;">
+                        <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 10px; text-align: center;">
+                            <i class="fa fa-truck" style="color: var(--brand-primary); font-size: 16px; margin-bottom: 4px;"></i>
+                            <div style="font-size: 11px; font-weight: 700; color: var(--slate-800);">Express Delivery</div>
+                            <div style="font-size: 10px; color: var(--slate-500);">2-4 Business Days</div>
+                        </div>
+
+                        <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 10px; text-align: center;">
+                            <i class="fa fa-refresh" style="color: #10b981; font-size: 16px; margin-bottom: 4px;"></i>
+                            <div style="font-size: 11px; font-weight: 700; color: var(--slate-800);">7-Day Returns</div>
+                            <div style="font-size: 10px; color: var(--slate-500);">Instant Doorstep Pickup</div>
+                        </div>
+
+                        <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 10px; text-align: center;">
+                            <i class="fa fa-shield" style="color: var(--brand-secondary); font-size: 16px; margin-bottom: 4px;"></i>
+                            <div style="font-size: 11px; font-weight: 700; color: var(--slate-800);">100% Genuine</div>
+                            <div style="font-size: 10px; color: var(--slate-500);">Quality Verified Fit</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Product Purchasing & Specs -->
+                <div class="col-sm-6 pdp-info-col">
+                    <div class="pdp-category-pill">
+                        {% if product.brand %}{{ product.brand.name }}{% else %}Curated Fit{% endif %}
+                    </div>
+
+                    <h1 class="pdp-title">{{ product.name }}</h1>
+
+                    <!-- Rating & Reviews Counter -->
+                    <div class="pdp-rating-strip">
+                        <span class="rating-stars-badge">
+                            <i class="fa fa-star"></i> 4.8 / 5.0
+                        </span>
+                        <span style="font-size: 13px; color: var(--slate-500);">
+                            Verified by 142 Customer Reviews
+                        </span>
+                    </div>
+
+                    <!-- Price Block -->
+                    <div class="pdp-price-block">
+                        <span class="pdp-price-main">₹{{ product.price }}</span>
+                        <span style="font-size: 16px; color: var(--slate-400); text-decoration: line-through;">₹{{ product.price|add:400 }}</span>
+                        <span class="price-discount-pill" style="font-size: 13px; padding: 4px 10px;">SAVE ₹400</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--slate-500); margin-top: -12px; margin-bottom: 16px;">
+                        Inclusive of all GST &amp; standard taxes. Free shipping applied.
+                    </div>
+
+                    <!-- Stock Status Badge -->
+                    <div style="margin-bottom: 20px;">
+                        {% if product.Availability == 'In Stock' or not product.Availability %}
+                        <span class="pdp-stock-status">
+                            <span class="ai-pulse-dot"></span> In Stock &bull; Ready to Dispatch
+                        </span>
+                        {% else %}
+                        <span class="pdp-stock-status" style="color: #ea580c; background: #fff7ed;">
+                            <i class="fa fa-clock-o"></i> Backorder &bull; Ships in 3-5 days
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Size Selector -->
+                    <div class="pdp-option-group">
+                        <div class="pdp-option-title">Select Size:</div>
+                        <div class="size-pill-row">
+                            <div class="size-pill" onclick="selectSize(this)">S</div>
+                            <div class="size-pill active" onclick="selectSize(this)">M</div>
+                            <div class="size-pill" onclick="selectSize(this)">L</div>
+                            <div class="size-pill" onclick="selectSize(this)">XL</div>
+                            <div class="size-pill" onclick="selectSize(this)">XXL</div>
+                        </div>
+                    </div>
+
+                    <!-- Dual CTAs (Add to Cart & Direct Checkout) -->
+                    <div class="pdp-actions-row">
+                        <a href="{% url 'cart_add' product.id %}" class="btn-pdp-cart">
+                            <i class="fa fa-shopping-bag"></i> Add to Cart
+                        </a>
+                        <a href="/cart/cart-detail/" class="btn-pdp-buy">
+                            <i class="fa fa-bolt"></i> View Cart &amp; Buy
+                        </a>
+                    </div>
+
+                    <!-- AI Support Desk Callout Box -->
+                    <div class="pdp-ai-support-card">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--brand-secondary) 0%, #6366f1 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px;">
+                                <i class="fa fa-headphones"></i>
                             </div>
-                            <div id="sportswear" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <ul>
-                                        <li><a href="">Nike </a></li>
-                                        <li><a href="">Under Armour </a></li>
-                                        <li><a href="">Adidas </a></li>
-                                        <li><a href="">Puma</a></li>
-                                        <li><a href="">ASICS </a></li>
-                                    </ul>
-                                </div>
+                            <div class="pdp-ai-text">
+                                <h4>Have questions about {{ product.name }}?</h4>
+                                <p>Ask Lumen AI for sizing advice, material specs, or delivery estimates.</p>
                             </div>
                         </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordian" href="#mens">
-                                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
-                                        Mens
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="mens" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <ul>
-                                        <li><a href="">Fendi</a></li>
-                                        <li><a href="">Guess</a></li>
-                                        <li><a href="">Valentino</a></li>
-                                        <li><a href="">Dior</a></li>
-                                        <li><a href="">Versace</a></li>
-                                        <li><a href="">Armani</a></li>
-                                        <li><a href="">Prada</a></li>
-                                        <li><a href="">Dolce and Gabbana</a></li>
-                                        <li><a href="">Chanel</a></li>
-                                        <li><a href="">Gucci</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordian" href="#womens">
-                                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
-                                        Womens
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="womens" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <ul>
-                                        <li><a href="">Fendi</a></li>
-                                        <li><a href="">Guess</a></li>
-                                        <li><a href="">Valentino</a></li>
-                                        <li><a href="">Dior</a></li>
-                                        <li><a href="">Versace</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title"><a href="#">Kids</a></h4>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title"><a href="#">Fashion</a></h4>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title"><a href="#">Households</a></h4>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title"><a href="#">Interiors</a></h4>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title"><a href="#">Clothing</a></h4>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title"><a href="#">Bags</a></h4>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title"><a href="#">Shoes</a></h4>
-                            </div>
-                        </div>
-                    </div><!--/category-products-->
-                
-                    <div class="brands_products"><!--brands_products-->
-                        <h2>Brands</h2>
-                        <div class="brands-name">
-                            <ul class="nav nav-pills nav-stacked">
-                                <li><a href=""> <span class="pull-right">(50)</span>Acne</a></li>
-                                <li><a href=""> <span class="pull-right">(56)</span>Grüne Erde</a></li>
-                                <li><a href=""> <span class="pull-right">(27)</span>Albiro</a></li>
-                                <li><a href=""> <span class="pull-right">(32)</span>Ronhill</a></li>
-                                <li><a href=""> <span class="pull-right">(5)</span>Oddmolly</a></li>
-                                <li><a href=""> <span class="pull-right">(9)</span>Boudestijn</a></li>
-                                <li><a href=""> <span class="pull-right">(4)</span>Rösch creative culture</a></li>
-                            </ul>
-                        </div>
-                    </div><!--/brands_products-->
-                    
-                    <div class="price-range"><!--price-range-->
-                        <h2>Price Range</h2>
-                        <div class="well">
-                             <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="600" data-slider-step="5" data-slider-value="[250,450]" id="sl2" ><br />
-                             <b>₹ 0</b> <b class="pull-right">₹ 600</b>
-                        </div>
-                    </div><!--/price-range-->
-                    
-                    <div class="shipping text-center"><!--shipping-->
-                        <img src="/static/images/home/shipping.jpg" alt="" />
-                    </div><!--/shipping-->
-                    
+                        <a href="{% url 'ai_support' %}?query=Tell%20me%20about%20{{ product.name|urlencode }}%20sizing%20and%20fabric" class="btn-ask-ai">
+                            <span class="ai-pulse-dot"></span> Ask AI Desk
+                        </a>
+                    </div>
+
                 </div>
             </div>
-            
-            <div class="col-sm-9 padding-right">
-                <div class="product-details"><!--product-details-->
-                    <div class="col-sm-5">
-                        <div class="view-product">
-                            <img src="/{{product.image}}" alt="" />
-                            <h3>ZOOM</h3>
-                        </div>
-                        <div id="similar-product" class="carousel slide" data-ride="carousel">
-                            
-                              <!-- Wrapper for slides -->
-                                <div class="carousel-inner">
-                                    <div class="item active">
-                                      <a href=""><img src="/static/images/product-details/similar1.jpg" alt=""></a>
-                                      <a href=""><img src="/static/images/product-details/similar2.jpg" alt=""></a>
-                                      <a href=""><img src="/static/images/product-details/similar3.jpg" alt=""></a>
-                                    </div>
-                                    <div class="item">
-                                      <a href=""><img src="/static/images/product-details/similar1.jpg" alt=""></a>
-                                      <a href=""><img src="/static/images/product-details/similar2.jpg" alt=""></a>
-                                      <a href=""><img src="/static/images/product-details/similar3.jpg" alt=""></a>
-                                    </div>
-                                    <div class="item">
-                                      <a href=""><img src="/static/images/product-details/similar1.jpg" alt=""></a>
-                                      <a href=""><img src="/static/images/product-details/similar2.jpg" alt=""></a>
-                                      <a href=""><img src="/static/images/product-details/similar3.jpg" alt=""></a>
-                                    </div>
-                                    
-                                </div>
+        </div>
 
-                              <!-- Controls -->
-                              <a class="left item-control" href="#similar-product" data-slide="prev">
-                                <i class="fa fa-angle-left"></i>
-                              </a>
-                              <a class="right item-control" href="#similar-product" data-slide="next">
-                                <i class="fa fa-angle-right"></i>
-                              </a>
-                        </div>
+        <!-- Modern Tabs: Specs, Shipping, Reviews, AI FAQ -->
+        <div style="margin-top: 40px; background: #ffffff; border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-xs);">
+            <ul class="nav nav-tabs" style="border-bottom: 2px solid var(--slate-100); margin-bottom: 24px;">
+                <li class="active"><a href="#tab-specs" data-toggle="tab" style="font-weight: 700; font-size: 14px;"><i class="fa fa-file-text-o"></i> Specifications &amp; Details</a></li>
+                <li><a href="#tab-shipping" data-toggle="tab" style="font-weight: 700; font-size: 14px;"><i class="fa fa-truck"></i> Shipping &amp; Returns</a></li>
+                <li><a href="#tab-reviews" data-toggle="tab" style="font-weight: 700; font-size: 14px;"><i class="fa fa-star-o"></i> Customer Reviews (142)</a></li>
+                <li><a href="#tab-ai-faq" data-toggle="tab" style="font-weight: 700; font-size: 14px; color: var(--brand-secondary);"><i class="fa fa-bolt"></i> AI Assistant Q&amp;A</a></li>
+            </ul>
 
+            <div class="tab-content" style="color: var(--slate-700); line-height: 1.7;">
+                <!-- Tab 1: Specs -->
+                <div class="tab-pane fade active in" id="tab-specs">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4 style="font-weight: 700; margin-bottom: 12px;">Product Highlights</h4>
+                            <p>{{ product.name }} is precision tailored from premium breathable fabric designed for high durability and comfort across all seasons.</p>
+                            <ul style="padding-left: 20px; margin-bottom: 20px;">
+                                <li>Material: 100% Breathable High-GSM Combed Cotton Blend</li>
+                                <li>Fit: Modern Relaxed Streetwear Silhouette</li>
+                                <li>Stitching: Reinforced double-needle seams for shape retention</li>
+                                <li>Pre-shrunk fabric to prevent post-wash shrinkage</li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4 style="font-weight: 700; margin-bottom: 12px;">Care Instructions</h4>
+                            <ul style="padding-left: 20px;">
+                                <li>Machine wash cold with like colors inside out</li>
+                                <li>Do not bleach or dry clean</li>
+                                <li>Tumble dry low or air dry in shade</li>
+                                <li>Iron on reverse at moderate temperature</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="col-sm-7">
-                        <div class="product-information"><!--/product-information-->
-                            <img src="/static/images/product-details/new.jpg" class="newarrival" alt="" />
-                            <h2>{{product.name}}</h2>
-                            
-                            <img src="/static/images/product-details/rating.png" alt="" />
-                            <span>
-                                <span> ₹{{product.price}}</span>
-                               
-                                <a href="{% url 'cart_add' product.id %}" type="button" class="btn btn-fefault cart">
-                                    <i class="fa fa-shopping-cart"></i>
-                                    Add to cart
+                </div>
+
+                <!-- Tab 2: Shipping -->
+                <div class="tab-pane fade" id="tab-shipping">
+                    <h4 style="font-weight: 700; margin-bottom: 12px;">Shipping &amp; Delivery Policy</h4>
+                    <p>All orders placed before 3:00 PM are dispatched on the same business day. Delivery usually takes 2 to 4 working days depending on your postal PIN code.</p>
+                    <h4 style="font-weight: 700; margin-top: 18px; margin-bottom: 12px;">Doorstep Return Guarantee</h4>
+                    <p>Not satisfied with your fit or size? You can request a hassle-free exchange or full refund within 7 days of delivery. Our courier partners will pick up the package directly from your address.</p>
+                </div>
+
+                <!-- Tab 3: Reviews -->
+                <div class="tab-pane fade" id="tab-reviews">
+                    <div class="row">
+                        <div class="col-sm-4" style="border-right: 1px solid var(--slate-100); padding-right: 24px;">
+                            <div style="font-size: 42px; font-weight: 800; color: var(--slate-900);">4.8 <span style="font-size: 18px; color: var(--slate-400);">/ 5.0</span></div>
+                            <div style="color: #f59e0b; font-size: 18px; margin-bottom: 8px;">★★★★★</div>
+                            <div style="font-size: 13px; color: var(--slate-500);">Based on 142 verified buyer ratings</div>
+                            <div style="margin-top: 20px;">
+                                <a href="{% url 'feedback' %}" class="btn-hero-primary" style="font-size: 13px; padding: 10px 18px;">
+                                    <i class="fa fa-pencil"></i> Write a Review
                                 </a>
-                            </span>
-                            <p><b>Availability:</b>{{product.Availability}}</p>
-                            <p><b>Condition:</b> New</p>
-                            <p><b>Brand:</b>{{product.brand}}</p>
-                            <a href=""><img src="/static/images/product-details/share.png" class="share img-responsive"  alt="" /></a>
-                        </div><!--/product-information-->
+                            </div>
+                        </div>
+
+                        <div class="col-sm-8" style="padding-left: 24px;">
+                            <!-- Review 1 -->
+                            <div style="padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--slate-100);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <div style="font-weight: 700; color: var(--slate-900);">Aryan K. &bull; <span style="color: #10b981; font-size: 12px; font-weight: 600;"><i class="fa fa-check-circle"></i> Verified Buyer</span></div>
+                                    <div style="color: #f59e0b; font-size: 12px;">★★★★★</div>
+                                </div>
+                                <p style="font-size: 13px; color: var(--slate-600); margin: 0;">"The fit is spot on. High quality fabric that feels soft and breathable. Arrived in just 2 days!"</p>
+                            </div>
+
+                            <!-- Review 2 -->
+                            <div style="padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--slate-100);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <div style="font-weight: 700; color: var(--slate-900);">Rhea S. &bull; <span style="color: #10b981; font-size: 12px; font-weight: 600;"><i class="fa fa-check-circle"></i> Verified Buyer</span></div>
+                                    <div style="color: #f59e0b; font-size: 12px;">★★★★★</div>
+                                </div>
+                                <p style="font-size: 13px; color: var(--slate-600); margin: 0;">"The AI customer desk helped me pick the right size before ordering. Absolutely love the drop."</p>
+                            </div>
+                        </div>
                     </div>
-                </div><!--/product-details-->
-                
-                <div class="category-tab shop-details-tab"><!--category-tab-->
-                    <div class="col-sm-12">
-                        <ul class="nav nav-tabs">
-                            <li><a href="#details" data-toggle="tab">Details</a></li>
-                            <li><a href="#companyprofile" data-toggle="tab">Company Profile</a></li>
-                            <li><a href="#tag" data-toggle="tab">Tag</a></li>
-                            <li class="active"><a href="#reviews" data-toggle="tab">Reviews (5)</a></li>
-                        </ul>
+                </div>
+
+                <!-- Tab 4: AI FAQ -->
+                <div class="tab-pane fade" id="tab-ai-faq">
+                    <h4 style="font-weight: 700; margin-bottom: 12px; color: var(--brand-secondary);"><i class="fa fa-bolt"></i> Instant AI Answers for {{ product.name }}</h4>
+                    <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 12px;">
+                        <div style="font-weight: 700; color: var(--slate-900); margin-bottom: 4px;">Q: How do I choose my size for this product?</div>
+                        <div style="font-size: 13px; color: var(--slate-600);">A: This product has a standard regular fit. If you prefer a loose streetwear oversized look, we recommend going one size up.</div>
                     </div>
-                    <div class="tab-content">
-                        <div class="tab-pane fade" id="details" >
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery1.jpg" alt="" />
-                                            <h2>₹856</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery2.jpg" alt="" />
-                                            <h2>₹3656</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <a href="{% url 'cart_add' product.id %}" type="button" class="btn btn-fefault cart">
-                                                <i class="fa fa-shopping-cart"></i>
-                                                Add to cart
-                                            </a> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery3.jpg" alt="" />
-                                            <h2>₹856</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery4.jpg" alt="" />
-                                            <h2>₹956</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="tab-pane fade" id="companyprofile" >
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery1.jpg" alt="" />
-                                            <h2>₹956</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery3.jpg" alt="" />
-                                            <h2>₹2356</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery2.jpg" alt="" />
-                                            <h2>₹756</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery4.jpg" alt="" />
-                                            <h2>₹1956</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="tab-pane fade" id="tag" >
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery1.jpg" alt="" />
-                                            <h2>₹1356</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery2.jpg" alt="" />
-                                            <h2>₹756</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery3.jpg" alt="" />
-                                            <h2>₹956</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="product-image-wrapper">
-                                    <div class="single-products">
-                                        <div class="productinfo text-center">
-                                            <img src="/static/images/home/gallery4.jpg" alt="" />
-                                            <h2>₹8956</h2>
-                                            <p>Easy Polo Black Edition</p>
-                                            <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="tab-pane fade active in" id="reviews" >
-                            <div class="col-sm-12">
-                                <ul>
-                                    <li><a href=""><i class="fa fa-user"></i>EUGEN</a></li>
-                                    <li><a href=""><i class="fa fa-clock-o"></i>12:41 PM</a></li>
-                                    <li><a href=""><i class="fa fa-calendar-o"></i>31 DEC 2014</a></li>
-                                </ul>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-                                <p><b>Write Your Review</b></p>
-                                
-                                <form action="#">
-                                    <span>
-                                        <input type="text" placeholder="Your Name"/>
-                                        <input type="email" placeholder="Email Address"/>
-                                    </span>
-                                    <textarea name="" ></textarea>
-                                    <b>Rating: </b> <img src="/static/images/product-details/rating.png" alt="" />
-                                    <button type="button" class="btn btn-default pull-right">
-                                        Submit
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        
+                    <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 16px;">
+                        <div style="font-weight: 700; color: var(--slate-900); margin-bottom: 4px;">Q: Can I return or exchange this if it doesn't fit?</div>
+                        <div style="font-size: 13px; color: var(--slate-600);">A: Yes! You have a 7-day hassle-free doorstep return window. Our AI Support Desk can even register your return ticket automatically.</div>
                     </div>
-                </div><!--/category-tab-->
-                
-                <div class="recommended_items"><!--recommended_items-->
-                    <h2 class="title text-center">recommended items</h2>
-                    
-                    <div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="item active">	
-                                <div class="col-sm-4">
-                                    <div class="product-image-wrapper">
-                                        <div class="single-products">
-                                            <div class="productinfo text-center">
-                                                <img src="/static/images/home/recommend1.jpg" alt="" />
-                                                <h2>₹956</h2>
-                                                <p>Easy Polo Black Edition</p>
-                                                <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="product-image-wrapper">
-                                        <div class="single-products">
-                                            <div class="productinfo text-center">
-                                                <img src="/static/images/home/recommend2.jpg" alt="" />
-                                                <h2>₹756</h2>
-                                                <p>Easy Polo Black Edition</p>
-                                                <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="product-image-wrapper">
-                                        <div class="single-products">
-                                            <div class="productinfo text-center">
-                                                <img src="/static/images/home/recommend3.jpg" alt="" />
-                                                <h2>₹856</h2>
-                                                <p>Easy Polo Black Edition</p>
-                                                <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">	
-                                <div class="col-sm-4">
-                                    <div class="product-image-wrapper">
-                                        <div class="single-products">
-                                            <div class="productinfo text-center">
-                                                <img src="/static/images/home/recommend1.jpg" alt="" />
-                                                <h2>₹856</h2>
-                                                <p>Easy Polo Black Edition</p>
-                                                <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="product-image-wrapper">
-                                        <div class="single-products">
-                                            <div class="productinfo text-center">
-                                                <img src="/static/images/home/recommend2.jpg" alt="" />
-                                                <h2>₹656</h2>
-                                                <p>Easy Polo Black Edition</p>
-                                                <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="product-image-wrapper">
-                                        <div class="single-products">
-                                            <div class="productinfo text-center">
-                                                <img src="/static/images/home/recommend3.jpg" alt="" />
-                                                <h2>₹656</h2>
-                                                <p>Easy Polo Black Edition</p>
-                                                <!-- <button type="button" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</button> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                         <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
-                            <i class="fa fa-angle-left"></i>
-                          </a>
-                          <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
-                            <i class="fa fa-angle-right"></i>
-                          </a>			
-                    </div>
-                </div><!--/recommended_items-->
-                
+                    <a href="{% url 'ai_support' %}?query=Can%20you%20help%20me%20with%20{{ product.name|urlencode }}?" class="btn-hero-primary" style="font-size: 13px; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa fa-headphones"></i> Open 24/7 AI Support Desk
+                    </a>
+                </div>
             </div>
         </div>
+
+        <!-- Related Products Section -->
+        {% if related_products %}
+        <div style="margin-top: 50px;">
+            <div class="section-headline">
+                <div>
+                    <h2>You May Also Like</h2>
+                    <p>Curated recommendations based on your selection</p>
+                </div>
+            </div>
+
+            <div class="row">
+                {% for rel in related_products %}
+                <div class="col-sm-3 col-xs-6" style="margin-bottom: 24px;">
+                    <div class="modern-product-card">
+                        <div class="card-media-box">
+                            <a href="/product/{{ rel.id }}">
+                                <img src="/{{ rel.image }}" alt="{{ rel.name }}" loading="lazy" />
+                            </a>
+                        </div>
+                        <div class="card-body-content">
+                            <div class="card-category-meta">Recommended</div>
+                            <h3 class="card-product-title">
+                                <a href="/product/{{ rel.id }}">{{ rel.name }}</a>
+                            </h3>
+                            <div class="card-price-row">
+                                <span class="price-current">₹{{ rel.price }}</span>
+                                <span class="price-mrp">₹{{ rel.price|add:350 }}</span>
+                            </div>
+                            <a href="{% url 'cart_add' rel.id %}" class="btn-card-cart">
+                                <i class="fa fa-shopping-bag"></i> Add to Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 </section>
 
-
+<script>
+function selectSize(element) {
+    const pills = document.querySelectorAll('.size-pill');
+    pills.forEach(p => p.classList.remove('active'));
+    element.classList.add('active');
+}
+</script>
 {% endblock %}

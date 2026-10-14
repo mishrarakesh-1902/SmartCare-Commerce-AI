@@ -1,104 +1,139 @@
 {% extends 'master.html' %}
+
 {% block body %}
-<section>
-    <div class="container-fluid">
+<section style="padding: 24px 0 60px;">
+    <div class="container">
+        <!-- Breadcrumb Bar -->
+        <div style="margin-bottom: 20px;">
+            <ol class="breadcrumb" style="background: none; padding: 0; margin: 0; font-size: 13px;">
+                <li><a href="/" style="color: var(--slate-500);"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active" style="color: var(--slate-800); font-weight: 600;">All Products</li>
+            </ol>
+        </div>
+
+        <!-- Modern Category & Brand Filter Bar -->
+        <div class="modern-filter-container">
+            <div class="row">
+                <div class="col-sm-12" style="margin-bottom: 14px;">
+                    <div class="filter-header-title">
+                        <i class="fa fa-filter" style="color: var(--brand-primary);"></i> Filter by Category
+                    </div>
+                    <div class="chips-row">
+                        <a href="/product/" class="filter-chip {% if not request.GET.sub_category and not request.GET.brand %}active{% endif %}">
+                            <i class="fa fa-th"></i> All Items
+                        </a>
+                        {% for cat in category %}
+                            {% for sub in cat.sub_category_set.all %}
+                            <a href="/product/?sub_category={{ sub.id }}" class="filter-chip {% if request.GET.sub_category == sub.id|stringformat:'s' %}active{% endif %}">
+                                {{ sub.name }}
+                            </a>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if brand %}
+                <div class="col-sm-12" style="margin-top: 10px; padding-top: 12px; border-top: 1px dashed var(--slate-200);">
+                    <div class="filter-header-title" style="margin-bottom: 8px;">
+                        <i class="fa fa-bookmark-o" style="color: var(--brand-secondary);"></i> Filter by Brand
+                    </div>
+                    <div class="chips-row">
+                        {% for b in brand %}
+                        <a href="/product/?brand={{ b.id }}" class="filter-chip {% if request.GET.brand == b.id|stringformat:'s' %}active{% endif %}">
+                            {{ b.name }}
+                        </a>
+                        {% endfor %}
+                        {% if request.GET.sub_category or request.GET.brand %}
+                        <a href="/product/" class="filter-chip" style="background: #fee2e2; border-color: #fca5a5; color: #dc2626;">
+                            <i class="fa fa-times"></i> Reset Filters
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Section Headline -->
+        <div class="section-headline">
+            <div>
+                <h2>Store Catalog</h2>
+                <p>Browsing {{ product|length }} products with 24/7 AI-assisted support</p>
+            </div>
+            <div style="font-size: 13px; color: var(--slate-500);">
+                <span>Sort: <strong>Newest First</strong></span>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
         <div class="row">
-            <div class="col-sm-12">
-                <div class="filter-bar">
-                    <div class="row">
-                        <div class="col-sm-4 filter-section">
-                            <h2>Category</h2>
-                            <div class="category-products" id="accordian" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 5px;">
-                                {% for cat in category %}
-                                <div class="panel panel-default" style="border: none; background: none; margin: 0; position: relative;">
-                                    <div class="panel-heading" style="padding: 0; background: none;">
-                                        <h4 class="panel-title" style="font-size: 13px; font-weight: 500;">
-                                            <a data-toggle="collapse" data-parent="#accordian" href="#{{cat.id}}" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; border-radius: 4px; border: 1px solid #eee; background: #fff;">
-                                                <span>{{cat.name}}</span> <i class="fa fa-angle-down" style="font-size: 12px; margin-left: 5px;"></i>
-                                            </a>
-                                        </h4>
-                                    </div>
-                                    <div id="{{cat.id}}" class="panel-collapse collapse">
-                                        <div class="panel-body" style="position: absolute; background: #fff; z-index: 1000; border: 1px solid #f0f0e9; min-width: 160px; box-shadow: 0 8px 16px rgba(0,0,0,0.12); border-radius: 6px; margin-top: 5px; left: 0;">
-                                            <ul style="padding: 0; list-style: none;">
-                                                {% for i in cat.sub_category_set.all %}
-                                                <li><a href="/product/?sub_category={{i.id}}&brand={{i.id}}" style="display: block; padding: 10px 15px; color: #696763; font-size: 13px; border-bottom: 1px solid #f8f8f8;">{{i.name}}</a></li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
+            {% for prod in product %}
+            <div class="col-sm-4 col-md-3 col-xs-6" style="margin-bottom: 24px;">
+                <div class="modern-product-card">
+                    <!-- Badges -->
+                    <div class="card-badge-top">
+                        {% if forloop.counter <= 2 %}
+                            <span class="badge-tag-new">New</span>
+                        {% else %}
+                            <span class="badge-tag-sale">Hot</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quick Hover Actions -->
+                    <div class="card-quick-actions">
+                        <a href="/product/{{ prod.id }}" class="quick-action-btn" title="View Details">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <a href="{% url 'ai_support' %}" class="quick-action-btn" title="Ask AI about this product">
+                            <i class="fa fa-headphones"></i>
+                        </a>
+                    </div>
+
+                    <!-- Media Container -->
+                    <div class="card-media-box">
+                        <a href="/product/{{ prod.id }}">
+                            <img src="{{ prod.image.url }}" alt="{{ prod.name }}" loading="lazy" />
+                        </a>
+                    </div>
+
+                    <!-- Body Content -->
+                    <div class="card-body-content">
+                        <div class="card-category-meta">
+                            {% if prod.brand %}{{ prod.brand.name }}{% else %}Essential{% endif %}
                         </div>
-                        <div class="col-sm-4 filter-section">
-                            <h2>Brands</h2>
-                            <div id="brand-balls-product" class="brand-physics-container">
-                                {% for i in brand %}
-                                <div class="brand-ball" onclick="location.href='/product/?brand={{i.id}}'">
-                                    {{ i.name }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            <script>window.addEventListener('load', () => initBrandPhysics('brand-balls-product'));</script>
+
+                        <h3 class="card-product-title">
+                            <a href="/product/{{ prod.id }}" title="{{ prod.name }}">{{ prod.name }}</a>
+                        </h3>
+
+                        <div class="card-rating-row">
+                            <span class="card-stars">★★★★★</span>
+                            <span class="card-rating-num">4.8</span>
                         </div>
-                        <div class="col-sm-4 filter-section">
-                            <h2>Price Range</h2>
-                            <div class="well text-center" style="padding: 10px; margin-bottom: 0; background: none; border: none; box-shadow: none;">
-                                 <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="600" data-slider-step="5" data-slider-value="[250,450]" id="sl2" ><br />
-                                 <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-                                    <b style="font-size: 12px;">₹ 0</b> <b style="font-size: 12px;">₹ 600</b>
-                                 </div>
-                            </div>
+
+                        <div class="card-price-row">
+                            <span class="price-current">₹{{ prod.price }}</span>
+                            <span class="price-mrp">₹{{ prod.price|add:350 }}</span>
+                            <span class="price-discount-pill">Sale</span>
                         </div>
+
+                        <a href="{% url 'cart_add' prod.id %}" class="btn-card-cart">
+                            <i class="fa fa-shopping-bag"></i> Add to Cart
+                        </a>
                     </div>
                 </div>
             </div>
-
-            <div class="col-sm-12 padding-right">
-                <div class="features_items"><!--features_items-->
-                    <h2 class="title text-center">Features Items</h2>
-                    {% for prod in product %}
-                    <div class="col-sm-4">
-                        <div class="product-image-wrapper">
-                            <div class="single-products">
-                                <div class="productinfo text-center">
-                                    <div class="product-img-container">
-                                        <img src="{{ prod.image.url }}" alt="{{ prod.name }}" />
-                                    </div>
-                                    <h2>₹{{prod.price}}</h2>
-                                    <p>{{prod.name}}</p>
-                                    <a href="{% url 'cart_add' prod.id %}" class="btn btn-default add-to-cart"><i
-                                            class="fa fa-shopping-cart"></i>Add to cart</a>
-                                </div>
-                                <div class="product-overlay">
-                                    <div class="overlay-content">
-                                        <h2>₹{{prod.price}}</h2>
-                                        <p>{{prod.name}}</p>
-                                        <a href="{% url 'cart_add' prod.id %}" class="btn btn-default add-to-cart"><i
-                                                class="fa fa-shopping-cart"></i>Add to cart</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="choose">
-                                <ul class="nav nav-pills nav-justified">
-                                    <li><a href="{{prod.id}}"><i class="fa fa-plus-square"></i>View Product</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div><!--features_items-->
-                
-                <ul class="pagination">
-                    <li class="active"><a href="">1</a></li>
-                    <li><a href="">2</a></li>
-                    <li><a href="">3</a></li>
-                    <li><a href="">&raquo;</a></li>
-                </ul>
+            {% empty %}
+            <div class="col-sm-12 text-center" style="padding: 60px 20px;">
+                <div style="font-size: 48px; color: var(--slate-300); margin-bottom: 16px;">
+                    <i class="fa fa-shopping-basket"></i>
+                </div>
+                <h3>No Products Found</h3>
+                <p style="color: var(--slate-500); margin-bottom: 20px;">Try switching your filter or browse all catalog products.</p>
+                <a href="/product/" class="btn-hero-primary" style="display: inline-flex;">Reset Filter</a>
             </div>
+            {% endfor %}
         </div>
     </div>
 </section>
 {% endblock %}
-block %}

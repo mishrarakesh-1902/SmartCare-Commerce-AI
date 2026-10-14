@@ -1,0 +1,19 @@
+Ajara Shopper - Refund Policy & Payment Timelines
+
+1. Refund Initiation:
+Refunds are initiated within 24 hours after the returned product arrives at our fulfillment center and passes the quality check.
+
+2. Refund Timelines by Payment Method:
+- Paytm Wallet / UPI: Instant to 24 hours.
+- Credit Card / Debit Card: 3 to 5 business days depending on the issuing bank.
+- Net Banking: 3 to 7 business days.
+- Cash on Delivery (COD): Refunded directly via UPI ID or NEFT bank transfer provided by the customer in their support ticket.
+
+3. Duplicate Charges:
+If your account was debited twice for a single order due to a network glitch or payment gateway timeout, the secondary charge is automatically detected by our reconciliation system and reversed within 24 hours.
+
+4. Non-Refundable Charges:
+Expedited shipping fees (if selected during checkout) are non-refundable unless the return is due to an error on our part.
+
+5. Instant Store Credit Alternative:
+Customers can opt for instant Ajara Shopper Store Credit (Wallet Balance) which comes with an extra 5% bonus and zero waiting period.

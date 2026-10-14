@@ -15,6 +15,7 @@
 	<link href="/static/css/animate.css" rel="stylesheet">
 	<link href="/static/css/main.css" rel="stylesheet">
 	<link href="/static/css/responsive.css" rel="stylesheet">
+	<link href="/static/css/modern_store.css" rel="stylesheet">
 	<!--[if lt IE 9]>
     <script src="js/html5shiv.js"></script>
     <script src="js/respond.min.js"></script>
@@ -232,311 +233,209 @@
 
 <body>
 
-	<header id="header"><!--header-->
-		<div class="header_top"><!--header_top-->
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-6">
-						<div class="contactinfo">
-							<ul class="nav nav-pills">
-								<li><a href="/"><i class="fa fa-phone"></i> +2 95 01 88 821</a></li>
-								<li><a href="https://mail.google.com/mail/u/0/#inbox?compose=new"><i
-											class="fa fa-envelope"></i>mishrarakeshkumar766@gmail.com</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-sm-6">
-						<div class="social-icons pull-right">
-							<ul class="nav navbar-nav">
-								<li><a href="https://www.facebook.com/login/"><i class="fa fa-facebook"></i></a></li>
-								<li><a href="https://x.com/?lang=en"><i class="fa fa-twitter"></i></a></li>
-								<li><a href="https://in.linkedin.com/"><i class="fa fa-linkedin"></i></a></li>
-								<li><a href="https://dribbble.com/"><i class="fa fa-dribbble"></i></a></li>
-								<li><a href="https://www.google.com/"><i class="fa fa-google-plus"></i></a></li>
-							</ul>
-						</div>
-					</div>
+	<!-- Top Announcement Strip -->
+	<div class="top-announcement-bar">
+		<div class="container">
+			<div class="row" style="display: flex; align-items: center; justify-content: space-between;">
+				<div class="col-sm-7" style="display: flex; align-items: center;">
+					<span class="badge-glow">Offer</span>
+					<span>⚡ Free Express Delivery on orders above ₹499 | Powered by <strong>Lumen AI</strong></span>
+				</div>
+				<div class="col-sm-5 text-right hidden-xs">
+					<a href="{% url 'ai_support' %}"><span class="ai-pulse-dot"></span> AI Support 24/7</a>
+					<a href="/order/"><i class="fa fa-truck"></i> Track Order</a>
+					<a href="/contact_us/"><i class="fa fa-envelope-o"></i> Contact</a>
 				</div>
 			</div>
-		</div><!--/header_top-->
+		</div>
+	</div>
 
-		<div class="header-middle"><!--header-middle-->
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-4">
-						<div class="logo pull-left">
-							<a href="/"><img src="/static/images/home/logo.png" alt="" /></a>
-						</div>
-						<div class="btn-group pull-right">
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa"
-									data-toggle="dropdown">
-									USA
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a href="/">Canada</a></li>
-									<li><a href="/">UK</a></li>
-								</ul>
-							</div>
-
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa"
-									data-toggle="dropdown">
-									DOLLAR
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a href="/">Canadian Dollar</a></li>
-									<li><a href="/">Pound</a></li>
-								</ul>
-							</div>
-						</div>
+	<!-- Sticky Modern Glassmorphic Header -->
+	<header class="modern-navbar">
+		<div class="container">
+			<div class="modern-navbar-inner">
+				<!-- Brand Logo -->
+				<a href="/" class="modern-brand">
+					<div class="modern-brand-logo-icon">
+						<i class="fa fa-bolt"></i>
 					</div>
-					<div class="col-sm-8">
-						<div class="shop-menu pull-right">
-							<ul class="nav navbar-nav">
-								<li><a href="/"><i class="fa fa-user"></i> Account</a></li>
-								<li><a href="/order/"><i class="fa fa-star"></i> Your Order</a></li>
-								<li><a href="{% url 'feedback' %}"><i class="fa-solid fa-comment"></i> Give Feedback</a>
-								</li>
-								<li><a href="/cart/cart-detail/"><i class="fa fa-shopping-cart"></i> Cart
-										{% if request.session.cart %}
-										<span class="cart-count">{{ request.session.cart|length }}</span>
-										{% else %}
-										<span class="cart-count">0</span>
-										{% endif %}
-									</a></li>
-								{% if user.is_authenticated %}
-								<li>
-									<form method="post" action="{% url 'logout' %}" style="display:inline;">
-										{% csrf_token %}
-										<button type="submit"
-											style="border:none; background:none; cursor:pointer; margin-top: 10px;;">
-											<i class="fa fa-lock"></i> Logout
-										</button>
-									</form>
-								</li>
-								{% else %}
-								<li><a href="{% url 'login' %}"><i class="fa fa-lock"></i> Login</a></li>
-								{% endif %}
-
-							</ul>
-						</div>
+					<div class="modern-brand-text">
+						<div class="modern-brand-name">Ajara<span>Shopper</span></div>
+						<div class="modern-brand-tag">Autonomous AI-Powered Store</div>
 					</div>
+				</a>
+
+				<!-- Modern Search Bar -->
+				<div class="modern-search-wrapper">
+					<form method="get" action="/search/" style="margin: 0;">
+						<input name="query" type="text" class="modern-search-input" placeholder="Search curated fits, t-shirts, blazers, sneakers..." />
+						<button type="submit" class="modern-search-btn" title="Search">
+							<i class="fa fa-search"></i>
+						</button>
+					</form>
+				</div>
+
+				<!-- Nav Action Pills -->
+				<div class="modern-nav-actions">
+					<a href="{% url 'ai_support' %}" class="nav-pill-btn nav-pill-ai" title="AI Autonomous Support Desk">
+						<span class="ai-pulse-dot"></span>
+						<i class="fa fa-headphones" style="font-size: 15px;"></i>
+						<span>AI Support</span>
+					</a>
+
+					<a href="/order/" class="nav-pill-btn hidden-xs">
+						<i class="fa fa-archive"></i>
+						<span>Orders</span>
+					</a>
+
+					<a href="/cart/cart-detail/" class="nav-pill-btn nav-cart-btn">
+						<i class="fa fa-shopping-bag"></i>
+						<span>Cart</span>
+						<span class="nav-cart-badge">
+							{% if request.session.cart %}
+								{{ request.session.cart|length }}
+							{% else %}
+								0
+							{% endif %}
+						</span>
+					</a>
+
+					{% if user.is_authenticated %}
+					<div class="btn-group">
+						<button type="button" class="nav-pill-btn dropdown-toggle" data-toggle="dropdown" style="border: 1px solid var(--slate-200); background: #fff;">
+							<i class="fa fa-user-circle"></i>
+							<span>{{ user.username|truncatechars:10 }}</span>
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right" style="border-radius: 8px; box-shadow: var(--shadow-md); padding: 8px 0;">
+							<li><a href="/order/" style="padding: 8px 20px;"><i class="fa fa-star"></i> My Orders</a></li>
+							<li><a href="{% url 'ai_support' %}" style="padding: 8px 20px;"><i class="fa fa-headphones"></i> AI Support Desk</a></li>
+							<li class="divider"></li>
+							<li>
+								<form method="post" action="{% url 'logout' %}" style="margin: 0; padding: 0 20px;">
+									{% csrf_token %}
+									<button type="submit" style="border:none; background:none; cursor:pointer; color:#ef4444; font-weight:600; padding: 6px 0; width: 100%; text-align: left;">
+										<i class="fa fa-sign-out"></i> Logout
+									</button>
+								</form>
+							</li>
+						</ul>
+					</div>
+					{% else %}
+					<a href="{% url 'login' %}" class="nav-pill-btn" style="border: 1px solid var(--slate-300); background: #fff;">
+						<i class="fa fa-user"></i>
+						<span>Login</span>
+					</a>
+					{% endif %}
 				</div>
 			</div>
-		</div><!--/header-middle-->
+		</div>
 
-		<div class="header-bottom"><!--header-bottom-->
+		<!-- Subnav Category & Quick Links Strip -->
+		<div class="modern-subnav">
 			<div class="container">
-				<div class="row">
-					<div class="col-sm-9">
-						<div class="navbar-header">
-							<button type="button" class="navbar-toggle" data-toggle="collapse"
-								data-target=".navbar-collapse">
-								<span class="sr-only">Toggle navigation</span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-							</button>
-						</div>
-						<div class="mainmenu pull-left">
-							<ul class="nav navbar-nav collapse navbar-collapse">
-								<li><a href='/'>Home</a></li>
-								<li class="dropdown"><a href="product.html">Shop<i class="fa fa-angle-down"></i></a>
-									<ul role="menu" class="sub-menu">
-										<li><a href="/product/">Products</a></li>
-
-										<li><a href="{% url 'feedback' %}"> Give Feedback</a></li>
-										<li><a href="/cart/cart-detail/">Cart</a></li>
-										<li><a href="{% url 'login' %}">Login</a></li>
-									</ul>
-								</li>
-
-								<!-- <li><a href="404.html">404</a></li> -->
-								<li><a href="/contact_us/">Contact</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-sm-3">
-						<form method="get" action="/search/">
-							<div class="search_box pull-right">
-								<input name="query" type="text" placeholder="Search" />
-							</div>
-						</form>
-					</div>
-				</div>
+				<ul class="modern-subnav-list">
+					<li><a href="/" class="active"><i class="fa fa-home"></i> Home</a></li>
+					<li><a href="/product/"><i class="fa fa-th-large"></i> All Products</a></li>
+					<li><a href="/?sub_category=1">T-Shirts</a></li>
+					<li><a href="/?sub_category=2">Blazers</a></li>
+					<li><a href="/?sub_category=3">Sunglasses</a></li>
+					<li><a href="/?sub_category=4">Kids</a></li>
+					<li><a href="{% url 'ai_support' %}" style="color: var(--brand-secondary); font-weight: 700;"><i class="fa fa-bolt"></i> 24/7 AI Desk</a></li>
+					<li><a href="{% url 'feedback' %}"><i class="fa fa-commenting-o"></i> Feedback</a></li>
+					<li><a href="/contact_us/"><i class="fa fa-phone"></i> Help & Contact</a></li>
+				</ul>
 			</div>
-		</div><!--/header-bottom-->
-	</header><!--/header-->
+		</div>
+	</header>
 
 	{% block body %} {% endblock %}
 
-	<footer id="footer"><!--Footer-->
-		<div class="footer-top">
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-2">
-						<div class="companyinfo">
-							<h2><span>e</span>-shopper</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,sed do eiusmod tempor</p>
+	<!-- Modern 2026 E-Commerce Footer -->
+	<footer class="modern-footer">
+		<div class="container">
+			<div class="row">
+				<!-- Brand & AI Capability Column -->
+				<div class="col-sm-4 footer-col" style="margin-bottom: 24px;">
+					<a href="/" class="modern-brand" style="margin-bottom: 16px;">
+						<div class="modern-brand-logo-icon">
+							<i class="fa fa-bolt"></i>
 						</div>
+						<div class="modern-brand-text">
+							<div class="modern-brand-name" style="color: #fff;">Ajara<span style="color: var(--brand-primary);">Shopper</span></div>
+							<div class="modern-brand-tag" style="color: #94a3b8;">Autonomous AI-Powered Store</div>
+						</div>
+					</a>
+					<p style="color: #94a3b8; font-size: 13px; line-height: 1.6; margin-top: 14px; max-width: 320px;">
+						Curated premium lifestyle drops and next-gen essentials. Powered by <strong>Lumen AI</strong> autonomous support for instant, real-time customer care 24/7.
+					</p>
+					<div style="margin-top: 16px; display: inline-flex; align-items: center; gap: 8px; background: rgba(79, 70, 229, 0.15); border: 1px solid rgba(79, 70, 229, 0.3); border-radius: var(--radius-pill); padding: 6px 14px; color: #a5b4fc; font-size: 12px; font-weight: 600;">
+						<span class="ai-pulse-dot"></span> Lumen AI Agent Active
 					</div>
-					<div class="col-sm-7">
-						<div class="col-sm-3">
-							<div class="video-gallery text-center">
-								<a href="#">
-									<div class="iframe-img">
-										<img src="/static/images/home/iframe1.png" alt="" />
-									</div>
-									<div class="overlay-icon">
-										<i class="fa fa-play-circle-o"></i>
-									</div>
-								</a>
-								<p>Circle of Hands</p>
-								<h2>24 DEC 2014</h2>
-							</div>
-						</div>
+				</div>
 
-						<div class="col-sm-3">
-							<div class="video-gallery text-center">
-								<a href="#">
-									<div class="iframe-img">
-										<img src="/static/images/home/iframe2.png" alt="" />
-									</div>
-									<div class="overlay-icon">
-										<i class="fa fa-play-circle-o"></i>
-									</div>
-								</a>
-								<p>Circle of Hands</p>
-								<h2>24 DEC 2014</h2>
-							</div>
-						</div>
+				<!-- Quick Collections -->
+				<div class="col-sm-2 col-xs-6 footer-col" style="margin-bottom: 24px;">
+					<h4>Collections</h4>
+					<ul class="footer-links-list">
+						<li><a href="/?sub_category=1">Men's T-Shirts</a></li>
+						<li><a href="/?sub_category=2">Blazers & Suits</a></li>
+						<li><a href="/?sub_category=3">Sunglasses</a></li>
+						<li><a href="/?sub_category=4">Kids Collection</a></li>
+						<li><a href="/product/">All Products</a></li>
+					</ul>
+				</div>
 
-						<div class="col-sm-3">
-							<div class="video-gallery text-center">
-								<a href="#">
-									<div class="iframe-img">
-										<img src="/static/images/home/iframe3.png" alt="" />
-									</div>
-									<div class="overlay-icon">
-										<i class="fa fa-play-circle-o"></i>
-									</div>
-								</a>
-								<p>Circle of Hands</p>
-								<h2>24 DEC 2014</h2>
-							</div>
-						</div>
+				<!-- Customer Desk & Policies -->
+				<div class="col-sm-3 col-xs-6 footer-col" style="margin-bottom: 24px;">
+					<h4>Customer Desk</h4>
+					<ul class="footer-links-list">
+						<li><a href="{% url 'ai_support' %}" style="color: #ff8a65; font-weight: 600;"><i class="fa fa-bolt"></i> 24/7 AI Support Desk</a></li>
+						<li><a href="/order/"><i class="fa fa-truck"></i> Track Order Status</a></li>
+						<li><a href="/privecy/">Return & Refund Policy</a></li>
+						<li><a href="{% url 'feedback' %}"><i class="fa fa-star"></i> Customer Feedback</a></li>
+						<li><a href="/contact_us/">Contact Help Desk</a></li>
+					</ul>
+				</div>
 
-						<div class="col-sm-3">
-							<div class="video-gallery text-center">
-								<a href="#">
-									<div class="iframe-img">
-										<img src="/static/images/home/iframe4.png" alt="" />
-									</div>
-									<div class="overlay-icon">
-										<i class="fa fa-play-circle-o"></i>
-									</div>
-								</a>
-								<p>Circle of Hands</p>
-								<h2>24 DEC 2014</h2>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-3">
-						<div class="address">
-							<img src="/static/images/home/map.png" alt="" />
-							<p>On Independence Day
-								Here’s wishing our dreams
-								Of a new tomorrow
-								Come true for us…
-								Now and always!
-								Happy Independence Day</p>
-						</div>
-					</div>
+				<!-- Newsletter & Security -->
+				<div class="col-sm-3 footer-col" style="margin-bottom: 24px;">
+					<h4>Stay Ahead</h4>
+					<p style="color: #94a3b8; font-size: 13px; margin-bottom: 12px;">Get exclusive drop alerts and members-only deals straight to your inbox.</p>
+					<form action="{% url 'feedback' %}" method="get" style="margin-bottom: 14px;">
+						<input type="email" class="footer-newsletter-input" placeholder="Enter your email" required />
+						<button type="submit" class="btn-hero-primary" style="width: 100%; justify-content: center; padding: 10px 16px; font-size: 13px; border-radius: 6px;">Subscribe</button>
+					</form>
+				</div>
+			</div>
+
+			<!-- Bottom Copyright & Accepted Payment Methods -->
+			<div class="footer-bottom-strip">
+				<div>
+					<span>© 2026 <strong>AjaraShopper</strong>. All rights reserved. Built with Django &amp; Lumen AI.</span>
+				</div>
+				<div class="payment-badges-row">
+					<span style="color: #64748b; font-size: 12px; margin-right: 6px;">100% Secure Checkout:</span>
+					<span class="payment-badge">UPI / GPay</span>
+					<span class="payment-badge">RuPay</span>
+					<span class="payment-badge">Visa</span>
+					<span class="payment-badge">Mastercard</span>
+					<span class="payment-badge">Paytm</span>
 				</div>
 			</div>
 		</div>
+	</footer>
 
-		<div class="footer-widget">
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-2">
-						<div class="single-widget">
-							<h2>Service</h2>
-							<ul class="nav nav-pills nav-stacked">
-								<li><a href="#">Online Help</a></li>
-								<li><a href="contact_us/">Contact Us</a></li>
-								<li><a href="order/">Order Status</a></li>
-								<li><a href="privecy/">Change Location</a></li>
-								<li><a href="privecy/">FAQ’s</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-sm-2">
-						<div class="single-widget">
-							<h2>Quock Shop</h2>
-							<ul class="nav nav-pills nav-stacked">
-								<li><a href="/">T-Shirt</a></li>
-								<li><a href="/">Mens</a></li>
-								<li><a href="/">Womens</a></li>
-								<li><a href="/">Gift Cards</a></li>
-								<li><a href="/">Shoes</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-sm-2">
-						<div class="single-widget">
-							<h2>Policies</h2>
-							<ul class="nav nav-pills nav-stacked">
-								<li><a href="https://www.flipkart.com/pages/terms">Terms of Use</a></li>
-								<li><a href="privecy/">Privecy Policy</a></li>
-								<li><a href="privecy/">Refund Policy</a></li>
-								<li><a href="privecy/">Billing System</a></li>
-								<li><a href="privecy/">Ticket System</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-sm-2">
-						<div class="single-widget">
-							<h2>About Shopper</h2>
-							<ul class="nav nav-pills nav-stacked">
-								<li><a href="privecy/">Company Information</a></li>
-								<li><a href="privecy/">Careers</a></li>
-								<li><a href="privecy/">Store Location</a></li>
-								<li><a href="privecy/">Affillate Program</a></li>
-								<li><a href="privecy/">Copyright</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-sm-3 col-sm-offset-1">
-						<div class="single-widget">
-							<h2>About Shopper</h2>
-							<form action="#" class="searchform">
-								<input type="text" placeholder="Your email address" />
-								<button type="submit" class="btn btn-default"><i
-										class="fa fa-arrow-circle-o-right"></i></button>
-								<p>Get the most recent updates from <br />our site and be updated your self...</p>
-							</form>
-						</div>
-					</div>
-
-				</div>
-			</div>
+	<!-- Floating 24/7 AI Support Desk Copilot Widget -->
+	<a href="{% url 'ai_support' %}" class="floating-ai-copilot-fab" title="Open Lumen AI Autonomous Customer Support">
+		<div class="fab-avatar">
+			<i class="fa fa-headphones"></i>
 		</div>
-
-		<div class="footer-bottom">
-			<div class="container">
-				<div class="row">
-					<p class="pull-left">Copyright © 2013 E-SHOPPER Inc. All rights reserved.</p>
-					<p class="pull-right">Designed by <span><a target="_blank"
-								href="http://www.themeum.com">Themeum</a></span></p>
-				</div>
-			</div>
+		<div class="fab-text">
+			<span class="fab-title">AI Support Desk</span>
+			<span class="fab-subtitle"><span class="ai-pulse-dot"></span> Live 24/7 Help</span>
 		</div>
-
-	</footer><!--/Footer-->
+	</a>
 
 	<script src="/static/js/jquery.js"></script>
 	<script src="/static/js/bootstrap.min.js"></script>

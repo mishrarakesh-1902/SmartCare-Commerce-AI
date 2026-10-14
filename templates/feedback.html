@@ -1,172 +1,221 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback Form</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        body {
-            background: #ffffff;
-            font-family: 'Poppins', sans-serif;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
+{% extends 'master.html' %}
 
-        .container {
-            max-width: 500px;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-control {
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid rgba(0, 0, 0, 0.2);
-            background: #fff;
-            color: #333;
-        }
-
-        .form-control::placeholder {
-            color: rgba(0, 0, 0, 0.5);
-        }
-
-        .form-control:focus {
-            border-color: #ffdd57;
-            box-shadow: 0px 0px 10px rgba(255, 221, 87, 0.7);
-            outline: none;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: #ffdd57;
-            color: #333;
-            border: none;
-            padding: 12px;
-            font-size: 18px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
-        .btn-submit:hover {
-            background: #ffc107;
-            box-shadow: 0px 0px 15px rgba(255, 221, 87, 0.7);
-        }
-
-        .rating {
-            text-align: center;
-            font-size: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .rating input {
-            display: none;
-        }
-
-        .rating label {
-            cursor: pointer;
-            color: rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease-in-out;
-            font-size: 35px;
-        }
-
-        .rating input:checked ~ label,
-        .rating label:hover,
-        .rating label:hover ~ label,
-        .rating input:checked + label ~ label {
-            color: gold;
-            transform: scale(1.2);
-            text-shadow: 0px 0px 10px gold;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>🌟 Product Feedback Form 🌟</h2>
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="mb-3">
-            <label class="form-label">Brand Name</label>
-            <input type="text" name="brand_name" class="form-control" placeholder="Enter brand name" required>
+{% block body %}
+<section style="padding: 30px 0 70px;">
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <div style="margin-bottom: 24px;">
+            <ol class="breadcrumb" style="background: none; padding: 0; margin: 0; font-size: 13px;">
+                <li><a href="/" style="color: var(--slate-500);"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active" style="color: var(--slate-800); font-weight: 600;">Customer Feedback &amp; Review</li>
+            </ol>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Product Name</label>
-            <input type="text" name="product_name" class="form-control" placeholder="Enter product name" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Your Name</label>
-            <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Your Email</label>
-            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Rating:</label>
-            <div class="rating">
-                <input type="radio" name="rating" id="star5" value="5"><label for="star5">★</label>
-                <input type="radio" name="rating" id="star4" value="4"><label for="star4">★</label>
-                <input type="radio" name="rating" id="star3" value="3"><label for="star3">★</label>
-                <input type="radio" name="rating" id="star2" value="2"><label for="star2">★</label>
-                <input type="radio" name="rating" id="star1" value="1"><label for="star1">★</label>
+        <!-- Section Headline -->
+        <div class="section-headline">
+            <div>
+                <h2>Product &amp; Service Feedback</h2>
+                <p>Help us elevate your shopping experience. Share your thoughts on quality, sizing, or delivery.</p>
+            </div>
+            <div>
+                <a href="{% url 'ai_support' %}" class="btn-hero-secondary" style="background: var(--slate-900); color: #fff; font-size: 13px; padding: 8px 16px;">
+                    <span class="ai-pulse-dot"></span> Need Urgent Help? Ask AI Desk
+                </a>
             </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Your Feedback</label>
-            <textarea name="comments" class="form-control" rows="4" placeholder="Write your feedback..." required></textarea>
-        </div>
+        <div class="row">
+            <!-- Left: Modern Feedback Form -->
+            <div class="col-sm-7" style="margin-bottom: 30px;">
+                <div style="background: #ffffff; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 36px 32px; box-shadow: var(--shadow-sm);">
+                    <div style="margin-bottom: 24px;">
+                        <span class="hero-pill-badge" style="margin-bottom: 10px;">
+                            <i class="fa fa-star"></i> Verified Reviewer
+                        </span>
+                        <h3 style="font-weight: 800; font-size: 22px; margin: 0 0 6px 0; color: var(--slate-900);">
+                            Share Your Thoughts
+                        </h3>
+                        <p style="font-size: 13px; color: var(--slate-500); margin: 0;">
+                            Your feedback directly drives our seasonal catalog curation and customer care standards.
+                        </p>
+                    </div>
 
-        <button type="submit" class="btn btn-submit">🚀 Submit Feedback</button>
-    </form>
-</div>
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Product & Brand Row -->
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">
+                                        Brand Name <span style="color: #ef4444;">*</span>
+                                    </label>
+                                    <input type="text" name="brand_name" class="form-control" placeholder="e.g. Nike, Adidas, Ajara Label" required style="border-radius: 8px; height: 44px; border: 1px solid var(--slate-300);" />
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">
+                                        Product Name <span style="color: #ef4444;">*</span>
+                                    </label>
+                                    <input type="text" name="product_name" class="form-control" placeholder="e.g. Classic Heavyweight Tee" required style="border-radius: 8px; height: 44px; border: 1px solid var(--slate-300);" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Customer Info Row -->
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">
+                                        Your Name <span style="color: #ef4444;">*</span>
+                                    </label>
+                                    <input type="text" name="name" class="form-control" placeholder="Full Name" value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}" required style="border-radius: 8px; height: 44px; border: 1px solid var(--slate-300);" />
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">
+                                        Email Address <span style="color: #ef4444;">*</span>
+                                    </label>
+                                    <input type="email" name="email" class="form-control" placeholder="name@example.com" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" required style="border-radius: 8px; height: 44px; border: 1px solid var(--slate-300);" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Star Rating Widget -->
+                        <div class="form-group" style="margin-bottom: 24px; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 18px 20px; text-align: center;">
+                            <label style="font-size: 14px; font-weight: 700; color: var(--slate-900); display: block; margin-bottom: 8px;">
+                                Overall Experience Rating <span style="color: #ef4444;">*</span>
+                            </label>
+                            
+                            <div class="modern-star-rating" style="display: inline-flex; flex-direction: row-reverse; gap: 8px; justify-content: center; font-size: 34px;">
+                                <input type="radio" name="rating" id="star5" value="5" required style="display: none;" onchange="updateRatingText(5)" />
+                                <label for="star5" title="5 Stars - Outstanding" class="star-label">★</label>
+
+                                <input type="radio" name="rating" id="star4" value="4" style="display: none;" onchange="updateRatingText(4)" />
+                                <label for="star4" title="4 Stars - Very Good" class="star-label">★</label>
+
+                                <input type="radio" name="rating" id="star3" value="3" style="display: none;" onchange="updateRatingText(3)" />
+                                <label for="star3" title="3 Stars - Good" class="star-label">★</label>
+
+                                <input type="radio" name="rating" id="star2" value="2" style="display: none;" onchange="updateRatingText(2)" />
+                                <label for="star2" title="2 Stars - Fair" class="star-label">★</label>
+
+                                <input type="radio" name="rating" id="star1" value="1" style="display: none;" onchange="updateRatingText(1)" />
+                                <label for="star1" title="1 Star - Poor" class="star-label">★</label>
+                            </div>
+
+                            <div id="ratingTextDisplay" style="font-size: 13px; font-weight: 700; color: var(--brand-primary); margin-top: 6px; min-height: 20px;">
+                                Tap a star to rate
+                            </div>
+                        </div>
+
+                        <!-- Comments Textarea -->
+                        <div class="form-group" style="margin-bottom: 26px;">
+                            <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">
+                                Detailed Comments &amp; Review <span style="color: #ef4444;">*</span>
+                            </label>
+                            <textarea name="comments" class="form-control" rows="5" placeholder="Tell us about the fabric quality, stitching, fit, or delivery speed..." required style="border-radius: 8px; border: 1px solid var(--slate-300);"></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-hero-primary" style="width: 100%; justify-content: center; padding: 14px 24px; font-size: 15px; border-radius: var(--radius-sm);">
+                            <i class="fa fa-paper-plane"></i> Submit Customer Feedback
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right: Community Values & AI Support Link -->
+            <div class="col-sm-5">
+                <!-- Community Impact Card -->
+                <div style="background: #ffffff; border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 28px; margin-bottom: 24px; box-shadow: var(--shadow-xs);">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div class="modern-brand-logo-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); width: 40px; height: 40px; font-size: 18px;">
+                            <i class="fa fa-heart"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-weight: 800; font-size: 16px; color: var(--slate-900);">Why Your Review Matters</h4>
+                            <span style="font-size: 12px; color: var(--slate-500);">Direct consumer feedback loop</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px; color: var(--slate-600); line-height: 1.6;">
+                        <div style="display: flex; gap: 10px;">
+                            <i class="fa fa-check-circle" style="color: #10b981; font-size: 16px; margin-top: 2px;"></i>
+                            <span><strong>Authentic Community Reviews:</strong> Your reviews guide thousands of fellow shoppers in choosing the right fit.</span>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <i class="fa fa-check-circle" style="color: #10b981; font-size: 16px; margin-top: 2px;"></i>
+                            <span><strong>Catalog Upgrades:</strong> Brands review consumer ratings weekly to refine stitching, material, and cuts.</span>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <i class="fa fa-check-circle" style="color: #10b981; font-size: 16px; margin-top: 2px;"></i>
+                            <span><strong>Early Drop Rewards:</strong> Frequent reviewers receive exclusive invitations to limited seasonal drops.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instant AI Support Desk Callout -->
+                <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; border-radius: var(--radius-md); padding: 28px; box-shadow: var(--shadow-md);">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+                        <div class="modern-brand-logo-icon" style="background: linear-gradient(135deg, var(--brand-secondary) 0%, #6366f1 100%); width: 40px; height: 40px; font-size: 18px;">
+                            <i class="fa fa-headphones"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: #fff; margin: 0 0 2px 0; font-weight: 700; font-size: 16px;">Have an Issue with an Order?</h4>
+                            <span style="color: #10b981; font-size: 12px; font-weight: 600;"><span class="ai-pulse-dot"></span> Instant AI Resolution</span>
+                        </div>
+                    </div>
+
+                    <p style="color: #cbd5e1; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">
+                        Did your package arrive damaged, delayed, or in the wrong size? Don't wait for review moderation — our <strong>Lumen AI Agent</strong> can triage your order and create a return/replacement ticket immediately.
+                    </p>
+
+                    <a href="{% url 'ai_support' %}" class="btn-hero-primary" style="width: 100%; justify-content: center; font-size: 13px;">
+                        <i class="fa fa-bolt"></i> Get Instant Resolution with AI
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Star rating styles */
+.modern-star-rating {
+    user-select: none;
+}
+.star-label {
+    cursor: pointer;
+    color: #cbd5e1;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0;
+    line-height: 1;
+}
+.star-label:hover,
+.star-label:hover ~ .star-label,
+.modern-star-rating input:checked ~ .star-label {
+    color: #f59e0b !important;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    transform: scale(1.15);
+}
+</style>
 
 <script>
-    document.querySelectorAll('.rating input').forEach(radio => {
-        radio.addEventListener('change', function() {
-            let labels = document.querySelectorAll('.rating label');
-            labels.forEach(label => label.style.color = 'rgba(0, 0, 0, 0.3)');
-            this.nextElementSibling.style.color = 'gold';
-            let prev = this.previousElementSibling;
-            while (prev) {
-                prev.nextElementSibling.style.color = 'gold';
-                prev = prev.previousElementSibling;
-            }
-        });
-    });
+function updateRatingText(val) {
+    const textMap = {
+        5: "★★★★★ 5.0 - Exceptional! Exceeded expectations",
+        4: "★★★★☆ 4.0 - Very Good! Great quality and fit",
+        3: "★★★☆☆ 3.0 - Good, met standard expectations",
+        2: "★★☆☆☆ 2.0 - Fair, could be improved",
+        1: "★☆☆☆☆ 1.0 - Disappointing experience"
+    };
+    const el = document.getElementById('ratingTextDisplay');
+    if (el && textMap[val]) {
+        el.innerText = textMap[val];
+    }
+}
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+{% endblock %}

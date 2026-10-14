@@ -1,0 +1,17 @@
+Ajara Shopper - Order Tracking & Shipping Policy
+
+1. Shipping Timelines:
+- Standard Shipping: Delivered within 3 to 5 business days across major cities in India. For tier-2 and tier-3 locations, delivery may take up to 6 to 7 business days.
+- Express Delivery: Delivered within 24 to 48 hours for eligible pin codes.
+
+2. Tracking Your Order:
+Customers can check live order status directly from their account dashboard under 'Your Order' or by providing their Order ID in the AI Support Desk. Tracking details are activated within 12 hours of order dispatch.
+
+3. Dispatch Confirmation:
+All orders are processed and dispatched within 24 hours of successful payment confirmation. Customers receive real-time SMS and email alerts containing the courier partner name (Delhivery, BlueDart, or Shadowfax) and tracking AWB number.
+
+4. Delivery Rescheduling:
+If the customer is unavailable during delivery, our courier partner attempts delivery up to 3 times before returning the package (RTO). Customers can request a delivery date hold or address modification before dispatch by raising a ticket in the AI Support Desk.
+
+5. Delayed Shipments:
+If your order has not arrived within 6 business days, the AI Support Desk will automatically open an inquiry with the logistics coordinator and issue an expedited delivery ticket.

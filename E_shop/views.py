@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,HttpResponse
-from app.models import Category,Product,Contact_us,Order,Brand
+from app.models import Category,Product,Contact_us,Order,Brand,SupportTicket
 from django.contrib.auth import authenticate , login
 from app.models import UserCreateForm
 from django.contrib.auth.models import User
@@ -124,49 +124,48 @@ def Contact_Page(request):
         contact.save()
     return render(request,'contact.html')
 
+@login_required(login_url='/accounts/login/')
 def CheakOut(request):
     if request.method == "POST":
         address = request.POST.get('address')
         phone = request.POST.get('phone')
         pincode = request.POST.get('pincode')
-        cart = request.session.get('cart')
-        uid = request.session.get('_auth_user_id')
-        user = User.objects.get(pk = uid)
-        print(cart)
-
+        cart = request.session.get('cart', {})
+        user = request.user
 
         for i in cart:
-            a= int(cart[i]['price'])
-            b= cart[i]['quantity']
-            total = a*b
-            order = Order(
-                user = user,
-                product = cart[i]['name'],
-                price = cart[i]['price'],
-                quantity = cart[i]['quantity'],
-                image = cart[i]['image'],
-                address = address,
-                phone = phone,
-                pincode = pincode,
-                total = total ,
-            )
-            order.save()
+            try:
+                a = int(cart[i]['price'])
+                b = int(cart[i]['quantity'])
+                total = a * b
+                order = Order(
+                    user = user,
+                    product = cart[i]['name'],
+                    price = cart[i]['price'],
+                    quantity = cart[i]['quantity'],
+                    image = cart[i]['image'],
+                    address = address,
+                    phone = phone,
+                    pincode = pincode,
+                    total = str(total),
+                )
+                order.save()
+            except Exception as e:
+                print("Error creating order:", e)
+
         request.session['cart'] = {}    
-        return redirect("index")
+        return redirect("order")
 
     return HttpResponse("Your order has been placed")
 
 
+@login_required(login_url='/accounts/login/')
 def Your_Order(request):
-    uid = request.session.get('_auth_user_id')
-    user = User.objects.get(pk = uid)
-
-    order = Order.objects.filter(user = user)
+    user = request.user
+    order = Order.objects.filter(user = user).order_by('-id')
     context = {
         'order' : order,
     }
-
-
     return render(request , 'order.html' , context)
 
 def Product_page(request):
@@ -192,11 +191,20 @@ def Product_page(request):
 
 def Product_Detail(request , id):
     product = Product.objects.filter(id = id).first()
+    category = Category.objects.all()
+    brand = Brand.objects.all()
+    related_products = []
+    if product:
+        if product.category:
+            related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+        if not related_products:
+            related_products = Product.objects.exclude(id=product.id)[:4]
     
     context = {
-        'product' : product
-        
-        
+        'product': product,
+        'category': category,
+        'brand': brand,
+        'related_products': related_products,
     }
     return render(request, 'product_detail.html', context)
 
@@ -281,6 +289,106 @@ def feedback_view(request):
 
 def feedback_success(request):
     return render(request, 'feedback_success.html')  # A simple success message
+
+
+from ai_agent.agent import run_ecommerce_support
+from ai_agent.email_service import send_support_resolution_email
+from django.http import JsonResponse
+
+def ai_support_view(request):
+    """
+    Renders the Autonomous AI Customer Support Portal and processes incoming tickets.
+    """
+    user_orders = []
+    recent_tickets = []
+    
+    if request.user.is_authenticated:
+        user_orders = Order.objects.filter(user=request.user).order_by('-id')[:10]
+        recent_tickets = SupportTicket.objects.filter(user=request.user).order_by('-created_at')[:5]
+
+    ticket_result = None
+    email_status = False
+
+    if request.method == "POST":
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+        order_id = request.POST.get('order_id', '').strip()
+
+        # Fallbacks for authenticated users if empty
+        if not name and request.user.is_authenticated:
+            name = request.user.get_full_name() or request.user.username
+        if not email and request.user.is_authenticated:
+            email = request.user.email
+
+        if subject and message:
+            # 1. Run Autonomous AI Support Agent
+            ticket_result = run_ecommerce_support(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message,
+                order_id=order_id,
+                user=request.user if request.user.is_authenticated else None
+            )
+
+            # 2. Dispatch Resolution Email to Customer
+            email_status = send_support_resolution_email(
+                to_email=email,
+                customer_name=name,
+                ticket_id=ticket_result["ticket_id"],
+                subject=subject,
+                resolution_text=ticket_result["ai_response"],
+                order_id=ticket_result.get("order_id")
+            )
+
+            # 3. Save ticket to database for tracking
+            SupportTicket.objects.create(
+                ticket_id=ticket_result["ticket_id"],
+                user=request.user if request.user.is_authenticated else None,
+                order_id=ticket_result.get("order_id") or "",
+                name=name,
+                email=email,
+                subject=subject,
+                message=message,
+                category=ticket_result.get("category"),
+                urgency=ticket_result.get("urgency"),
+                sentiment=ticket_result.get("sentiment"),
+                action=ticket_result.get("action"),
+                ai_response=ticket_result.get("ai_response"),
+                status=ticket_result.get("status"),
+                email_sent=email_status
+            )
+
+            # Refresh recent tickets
+            if request.user.is_authenticated:
+                recent_tickets = SupportTicket.objects.filter(user=request.user).order_by('-created_at')[:5]
+
+            # If AJAX request, return JSON
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
+                return JsonResponse({
+                    "success": True,
+                    "ticket": ticket_result,
+                    "email_sent": email_status
+                })
+
+    return render(request, 'ai_support.html', {
+        'user_orders': user_orders,
+        'recent_tickets': recent_tickets,
+        'ticket_result': ticket_result,
+        'email_sent': email_status
+    })
+
+def ticket_detail_view(request, ticket_id):
+    """
+    Shows public or customer status of an individual support ticket.
+    """
+    ticket = SupportTicket.objects.filter(ticket_id=ticket_id).first()
+    if not ticket:
+        return redirect('ai_support')
+    return render(request, 'ticket_detail.html', {'ticket': ticket})
+
 
 
 

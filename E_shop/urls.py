@@ -69,7 +69,10 @@ urlpatterns = [
     path('product/' , views.Product_page , name="product"),
 
     #pruduct_details url setup
-    path('product/<str:id>' , views.Product_Detail , name="product_detail"),
+    path('product/<str:id>', views.Product_Detail, name="product_detail"),
+    path('product/<str:id>/', views.Product_Detail),
+    path('<int:id>', views.Product_Detail, name="product_detail_direct"),
+    path('<int:id>/', views.Product_Detail),
 
     #peivacy
     path('privecy/' , views.Privecy , name="privecy"),
@@ -88,11 +91,10 @@ urlpatterns = [
     path('feedback/', feedback_view, name='feedback'),
     path('feedback-success/', feedback_success, name='feedback_success'),   
 
-    
+    # Autonomous AI Customer Support Helpdesk
+    path('ai-support/', views.ai_support_view, name='ai_support'),
+    path('ai-support/ticket/<str:ticket_id>/', views.ticket_detail_view, name='ticket_detail'),
 
-
-
-    
 
 
 ] + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)

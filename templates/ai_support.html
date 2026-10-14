@@ -1,0 +1,313 @@
+{% extends "master.html" %}
+
+{% block body %}
+<style>
+    .support-card {
+        background: #ffffff;
+        border: 1px solid #f0f0e9;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    .badge-category {
+        background: #3498db;
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .badge-urgency-high {
+        background: #e74c3c;
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    .badge-urgency-medium {
+        background: #f39c12;
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    .badge-urgency-low {
+        background: #2ecc71;
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    .badge-sentiment {
+        background: #9b59b6;
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    .resolution-box {
+        background: #fdfaf6;
+        border-left: 5px solid #FE980F;
+        border-radius: 8px;
+        padding: 22px;
+        margin-top: 20px;
+        line-height: 1.7;
+        font-size: 15px;
+        color: #2c3e50;
+    }
+    .quick-tag {
+        display: inline-block;
+        background: #f5f5f0;
+        border: 1px solid #e2e2d8;
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-size: 12px;
+        margin: 4px 2px;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #555;
+    }
+    .quick-tag:hover {
+        background: #FE980F;
+        color: #fff;
+        border-color: #FE980F;
+    }
+    .order-badge-box {
+        background: #ebf5fb;
+        border: 1px solid #d4e6f1;
+        border-radius: 8px;
+        padding: 12px 18px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container" style="margin-top: 25px; margin-bottom: 60px;">
+    <!-- Breadcrumb & Title -->
+    <div class="row">
+        <div class="col-sm-12 text-center" style="margin-bottom: 30px;">
+            <h2 class="title" style="margin-bottom: 5px;">
+                <span style="color: #FE980F;">AI Customer Support</span> Desk
+            </h2>
+            <p style="color: #777; font-size: 15px;">
+                Instant, human-grade issue resolution powered by Lumen AI Agent • Live Order Integration • Email Dispatch
+            </p>
+        </div>
+    </div>
+
+    <!-- Live Ticket Resolution Result Display (If generated) -->
+    {% if ticket_result %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="support-card" style="border: 2px solid #2ecc71; background: #fbfffc;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border-bottom: 1px solid #e1f5e8; padding-bottom: 15px; margin-bottom: 20px;">
+                    <div>
+                        <h3 style="margin: 0; color: #27ae60; font-weight: 700;">
+                            <i class="fa fa-check-circle"></i> Ticket Generated & Resolved: #{{ ticket_result.ticket_id }}
+                        </h3>
+                        <span style="font-size: 12px; color: #888;">AI Reasoning Latency: {{ ticket_result.latency }}s • Status: <strong>{{ ticket_result.status|title }}</strong></span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <span class="badge-category">{{ ticket_result.category }}</span>
+                        {% if ticket_result.urgency == 'high' or ticket_result.urgency == 'critical' %}
+                            <span class="badge-urgency-high">{{ ticket_result.urgency }} Urgency</span>
+                        {% elif ticket_result.urgency == 'medium' %}
+                            <span class="badge-urgency-medium">{{ ticket_result.urgency }} Urgency</span>
+                        {% else %}
+                            <span class="badge-urgency-low">{{ ticket_result.urgency }} Urgency</span>
+                        {% endif %}
+                        <span class="badge-sentiment">{{ ticket_result.sentiment }} Sentiment</span>
+                    </div>
+                </div>
+
+                {% if ticket_result.order_details %}
+                <div class="order-badge-box">
+                    <strong style="color: #2980b9;"><i class="fa fa-box"></i> Verified Order Reference:</strong>
+                    Order #{{ ticket_result.order_details.id }} — <strong>{{ ticket_result.order_details.product }}</strong> 
+                    (Price: ₹{{ ticket_result.order_details.price }} | Placed: {{ ticket_result.order_details.date }} | {{ ticket_result.order_details.days_ago }} days ago)
+                    {% if ticket_result.order_details.is_eligible_for_return %}
+                        <span class="label label-success" style="margin-left: 10px;">Within 7-Day Return Window</span>
+                    {% else %}
+                        <span class="label label-warning" style="margin-left: 10px;">Past 7-Day Window</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="resolution-box">
+                    <h4 style="margin-top: 0; color: #FE980F; font-weight: 700;">
+                        <i class="fa fa-robot"></i> AI Resolution by Support Specialist:
+                    </h4>
+                    <p style="white-space: pre-wrap; margin-bottom: 0;">{{ ticket_result.ai_response }}</p>
+                </div>
+
+                <div style="margin-top: 20px; padding: 12px 18px; background: #eafaf1; border-radius: 8px; color: #27ae60; font-size: 14px;">
+                    <i class="fa fa-envelope"></i> <strong>Email Dispatched:</strong> A complete copy of this ticket and resolution has been sent to <strong>{{ ticket_result.email }}</strong>.
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Support Form & Sidebar -->
+    <div class="row">
+        <!-- Ticket Form -->
+        <div class="col-sm-8">
+            <div class="support-card">
+                <h3 style="margin-top: 0; margin-bottom: 8px; font-weight: 700; color: #333;">
+                    <i class="fa fa-ticket"></i> Raise a Support Ticket
+                </h3>
+                <p style="color: #777; font-size: 13px; margin-bottom: 20px;">
+                    Describe your issue below. Our autonomous AI Support Agent will diagnose your request against our store policies and dispatch a resolution to your email instantly.
+                </p>
+
+                <!-- Quick Prompt Suggestions -->
+                <div style="margin-bottom: 20px;">
+                    <span style="font-size: 12px; color: #888; font-weight: 600;">Quick Topics:</span><br>
+                    <span class="quick-tag" onclick="setQuickTopic('Where is my package?', 'I ordered a product a few days ago and want to know its current delivery location and estimated arrival date.')">📦 Track My Package</span>
+                    <span class="quick-tag" onclick="setQuickTopic('Return / Size Exchange Request', 'The item size does not fit me properly. I would like to exchange it for the next size up under the 7-day return policy.')">🔄 Request Size Exchange</span>
+                    <span class="quick-tag" onclick="setQuickTopic('Damaged Item Received', 'My package arrived today with broken packaging and the item is damaged. Please send a replacement immediately.')">⚠️ Damaged Item</span>
+                    <span class="quick-tag" onclick="setQuickTopic('Duplicate Charge Refund', 'I was charged twice on my card for my recent order. Please verify and refund the extra debit.')">💸 Refund Inquiry</span>
+                </div>
+
+                <form method="POST" action="{% url 'ai_support' %}">
+                    {% csrf_token %}
+
+                    <!-- Order Selector -->
+                    <div class="form-group">
+                        <label style="font-size: 13px; font-weight: 600; color: #444;">Link to Recent Order (Optional):</label>
+                        <select name="order_id" id="order_id" class="form-control" style="height: 42px; border-radius: 8px;">
+                            <option value="">-- General Question / No Order Linked --</option>
+                            {% for order in user_orders %}
+                                <option value="{{ order.id }}">
+                                    Order #{{ order.id }} - {{ order.product }} (₹{{ order.price }} - Placed {{ order.date }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label style="font-size: 13px; font-weight: 600; color: #444;">Your Name *</label>
+                            <input type="text" name="name" id="name" class="form-control" required
+                                   value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}"
+                                   placeholder="Full Name" style="height: 42px; border-radius: 8px;">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label style="font-size: 13px; font-weight: 600; color: #444;">Email Address *</label>
+                            <input type="email" name="email" id="email" class="form-control" required
+                                   value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"
+                                   placeholder="name@example.com" style="height: 42px; border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 13px; font-weight: 600; color: #444;">Subject *</label>
+                        <input type="text" name="subject" id="subject" class="form-control" required
+                               placeholder="e.g. Size exchange for shoes, Delivery delay" style="height: 42px; border-radius: 8px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 13px; font-weight: 600; color: #444;">Describe Your Issue *</label>
+                        <textarea name="message" id="message" rows="5" class="form-control" required
+                                  placeholder="Please provide details about what you need assistance with..."
+                                  style="border-radius: 8px;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" 
+                            style="background: #FE980F; border: none; font-size: 16px; font-weight: 700; padding: 14px; border-radius: 8px; margin-top: 15px; box-shadow: 0 4px 12px rgba(254, 152, 15, 0.3);">
+                        <i class="fa fa-paper-plane"></i> Submit Ticket & Get Instant AI Resolution
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar Info & History -->
+        <div class="col-sm-4">
+            <!-- Store Guarantee Card -->
+            <div class="support-card" style="background: #fdfaf6; border-color: #fce8cc;">
+                <h4 style="margin-top: 0; color: #FE980F; font-weight: 700;">
+                    <i class="fa fa-shield"></i> Ajara Shopper Guarantee
+                </h4>
+                <ul style="padding-left: 20px; font-size: 13px; color: #555; line-height: 2;">
+                    <li><strong>7-Day Returns:</strong> Free doorstep exchange & return.</li>
+                    <li><strong>Instant AI Resolution:</strong> 24/7 automated agent assistance.</li>
+                    <li><strong>Refund Guarantee:</strong> 100% refund credited within 24-48 hrs.</li>
+                    <li><strong>Direct Email Delivery:</strong> Status updates sent to inbox.</li>
+                    <li><strong>Human Escalation:</strong> Seamless handover for complex claims.</li>
+                </ul>
+            </div>
+
+            <!-- Recent Tickets for Logged-in User -->
+            {% if user.is_authenticated and recent_tickets %}
+            <div class="support-card">
+                <h4 style="margin-top: 0; font-weight: 700; color: #333;">
+                    <i class="fa fa-history"></i> Your Recent Tickets
+                </h4>
+                <div class="list-group" style="margin-bottom: 0;">
+                    {% for t in recent_tickets %}
+                    <a href="{% url 'ticket_detail' t.ticket_id %}" class="list-group-item" style="border-radius: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                            <strong style="color: #FE980F;">#{{ t.ticket_id }}</strong>
+                            <span class="label {% if t.status == 'resolved' %}label-success{% else %}label-danger{% endif %}">
+                                {{ t.status }}
+                            </span>
+                        </div>
+                        <p style="margin: 5px 0 2px; font-size: 13px; color: #555; font-weight: 600;">{{ t.subject|truncatechars:35 }}</p>
+                        <small style="color: #999;">{{ t.created_at|date:"M d, Y - H:i" }}</small>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Support Contact Info -->
+            <div class="support-card">
+                <h4 style="margin-top: 0; font-weight: 700; color: #333;">
+                    <i class="fa fa-envelope-o"></i> Need Human Assistance?
+                </h4>
+                <p style="font-size: 13px; color: #666;">
+                    If our AI agent flags your issue for human review, our senior operations manager will reach out within 2 hours.
+                </p>
+                <p style="font-size: 13px; margin-bottom: 0; color: #444;">
+                    <strong>Email:</strong> support@ajarashopper.com<br>
+                    <strong>Helpline:</strong> +91 9806751435
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setQuickTopic(subject, message) {
+    document.getElementById('subject').value = subject;
+    document.getElementById('message').value = message;
+    document.getElementById('message').focus();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('query');
+    if (q) {
+        const msgEl = document.getElementById('message');
+        const subjEl = document.getElementById('subject');
+        if (msgEl && !msgEl.value) {
+            msgEl.value = q;
+            if (subjEl && !subjEl.value) {
+                subjEl.value = q.length > 50 ? q.substring(0, 47) + '...' : q;
+            }
+            msgEl.focus();
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,137 +1,222 @@
 {% extends 'master.html' %}
 {% load cart_tag %}
-{% block body %}
 
-<section id="cart_items">
+{% block body %}
+<section style="padding: 30px 0 70px;">
     <div class="container">
-        <div class="breadcrumbs">
-            <ol class="breadcrumb">
-                <li><a href="/">Home</a></li>
-                <li class="active">Shopping Cart</li>
+        <!-- Breadcrumb Navigation -->
+        <div style="margin-bottom: 24px;">
+            <ol class="breadcrumb" style="background: none; padding: 0; margin: 0; font-size: 13px;">
+                <li><a href="/" style="color: var(--slate-500);"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active" style="color: var(--slate-800); font-weight: 600;">Shopping Bag</li>
             </ol>
         </div>
-        <div class="table-responsive cart_info">
-            <table class="table table-condensed">
-                <thead>
-                    <tr class="cart_menu">
-                        <td class="image">Item</td>
-                        <td class="description"></td>
-                        <td class="price">Price</td>
-                        <td class="quantity">Quantity</td>
-                        <td class="total">Total</td>
-                        <td></td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, value in request.session.cart.items %}
-                    <tr>
-                        <td class="cart_product">
-                            <a href="#">
-                                <img src="{{ value.image }}" alt="{{ value.name }}" style="max-width: 100px; max-height: 100px;">
-                            </a>
-                        </td>
-                        <td class="cart_description">
-                            <h4><a href="#">{{ value.name }}</a></h4>
-                        </td>
-                        <td class="cart_price">
-                            <p>₹{{ value.price }}</p>
-                        </td>
-                        <td class="cart_quantity">
-                            <div class="cart_quantity_button">
-                                <a class="cart_quantity_down" href="{% url 'item_decrement' value.product_id %}"> - </a>
-                                <input class="cart_quantity_input" type="text" name="quantity" value="{{ value.quantity }}" autocomplete="off" size="2">
-                                <a class="cart_quantity_up" href="{% url 'item_increment' value.product_id %}"> + </a>
-                            </div>
-                        </td>
-                        <td class="cart_total">
-                            <p class="cart_total_price">₹{{ value.price|multiply:value.quantity }}</p>
-                        </td>
-                        <td class="cart_delete">
-                            <a class="cart_quantity_delete" href="{% url 'item_clear' key %}"><i class="fa fa-times"></i></a>
-                        </td>
-                    </tr>
-                    {% endfor %}
 
-                    <tr>
-                      <td colspan="3"></td>
-                      <td><h4>Sub Total :</h4></td>
-                      <td><h3>₹{{ cart_total_amount }}</h3></td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td><a href="{% url 'cart_clear' %}" class="btn btn-danger">Clear Cart</a></td>
-                    <td colspan="4"></td>
-                    <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" id="checkoutBtn" style="float: right; 
-                      border-radius: 3px; position: inherit; top:2px">
-                        Checkout
-                    </button></td>
-                  </tr>
-                  
-          
-                  
-                </tfoot>
-            </table>
-           
-          
-
-           
-
+        {% if request.session.cart and request.session.cart.items %}
+        <!-- Free Shipping Meter -->
+        <div class="shipping-meter-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; color: var(--slate-800);">
+                <span><i class="fa fa-truck" style="color: #10b981; margin-right: 6px;"></i> You've qualified for <strong>FREE Express Shipping</strong>!</span>
+                <span style="color: #10b981;">100% Free</span>
+            </div>
+            <div class="shipping-meter-bar">
+                <div class="shipping-meter-fill" style="width: 100%;"></div>
+            </div>
         </div>
-        
-    </div>
-</section> <!--/#cart_items-->
-<br>
 
+        <div class="row">
+            <!-- Left: Cart Items List -->
+            <div class="col-sm-8">
+                <div class="cart-header-strip">
+                    <h3 style="font-weight: 800; margin: 0; color: var(--slate-900);">Your Bag ({{ request.session.cart|length }} Items)</h3>
+                    <a href="{% url 'cart_clear' %}" style="font-size: 13px; color: #ef4444; font-weight: 600;" onclick="return confirm('Clear all items from your bag?');">
+                        <i class="fa fa-trash-o"></i> Clear Bag
+                    </a>
+                </div>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form method="post" action="/cheakout/">
+                <div class="table-responsive">
+                    <table class="cart-table-modern">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th style="text-align: center;">Quantity</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, value in request.session.cart.items %}
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 14px;">
+                                        <img src="{{ value.image }}" alt="{{ value.name }}" class="cart-item-image" />
+                                        <div>
+                                            <h4 style="font-size: 15px; font-weight: 700; margin: 0 0 4px 0; color: var(--slate-900);">
+                                                {{ value.name }}
+                                            </h4>
+                                            <span style="font-size: 11px; font-weight: 600; color: #10b981; background: #ecfdf5; padding: 2px 6px; border-radius: 4px;">In Stock</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 700; color: var(--slate-900); font-size: 15px;">₹{{ value.price }}</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="cart-stepper">
+                                        <a href="{% url 'item_decrement' value.product_id %}" class="cart-stepper-btn" title="Decrease">&minus;</a>
+                                        <input type="text" class="cart-stepper-input" value="{{ value.quantity }}" readonly />
+                                        <a href="{% url 'item_increment' value.product_id %}" class="cart-stepper-btn" title="Increase">&#43;</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 800; color: var(--brand-primary); font-size: 16px;">
+                                        ₹{{ value.price|multiply:value.quantity }}
+                                    </span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <a href="{% url 'item_clear' key %}" class="btn-remove-item" title="Remove Item">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-          {% csrf_token %}
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">phone</label>
-            <input type="text" name="phone" class="form-control" id="recipient-name">
-          </div>
-          <div class="form-group">
-            <label for="message-text" class="col-form-label">address</label>
-            <textarea class="form-control" name="address" id="message-text"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">pincode</label>
-            <input type="text" name="pincode" class="form-control" >
-          </div>
+                <!-- Continue Shopping Pill -->
+                <div style="margin-top: 14px;">
+                    <a href="/product/" style="font-weight: 600; font-size: 13px; color: var(--slate-600); display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa fa-arrow-left"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div class="modal-footer">
-        
-            <button type="submit" class="btn btn-primary" style="border-radius: 4px;">checkout</button>
+            <!-- Right: Order Summary Sidebar -->
+            <div class="col-sm-4">
+                <div class="cart-summary-card">
+                    <h3 style="font-size: 18px; font-weight: 800; margin-top: 0; margin-bottom: 18px; color: var(--slate-900);">
+                        Order Summary
+                    </h3>
 
-          </div>
-        </form>
+                    <div class="cart-summary-row">
+                        <span>Bag Subtotal</span>
+                        <span style="font-weight: 700; color: var(--slate-800);">₹{{ cart_total_amount }}</span>
+                    </div>
 
-        <div>
-          <form method="post" action="{% url 'initiate_paytm_payment' %}">
-            {% csrf_token %}
-            <input type="hidden" name="order_id" value="{{ order.id }}">
-            <input type="hidden" name="amount" value="{{ order.total_amount }}">
-            <button type="submit" class="btn btn-success">Pay with Paytm</button>
-        </form>
+                    <div class="cart-summary-row">
+                        <span>Standard GST / Taxes</span>
+                        <span style="color: #10b981; font-weight: 600;">Included</span>
+                    </div>
+
+                    <div class="cart-summary-row">
+                        <span>Express Delivery</span>
+                        <span style="color: #10b981; font-weight: 700;">FREE</span>
+                    </div>
+
+                    <div class="cart-summary-total">
+                        <span>Total Payable</span>
+                        <span style="color: var(--brand-primary);">₹{{ cart_total_amount }}</span>
+                    </div>
+
+                    <button type="button" class="btn-proceed-checkout" data-toggle="modal" data-target="#exampleModal">
+                        <i class="fa fa-lock"></i> Proceed to Checkout
+                    </button>
+
+                    <!-- Trust Badges in Cart -->
+                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--slate-200); font-size: 12px; color: var(--slate-500); display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa fa-shield" style="color: var(--brand-secondary);"></i> 256-Bit SSL Encrypted Payment
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa fa-refresh" style="color: #10b981;"></i> 7-Day Doorstep Return Policy
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa fa-headphones" style="color: var(--brand-primary);"></i> 24/7 AI Customer Assistance
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
 
-      </div>
-      </div>
-
+        {% else %}
+        <!-- Empty Cart State -->
+        <div style="background: #ffffff; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 70px 20px; text-align: center; margin: 30px 0; box-shadow: var(--shadow-sm);">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--slate-100); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; color: var(--slate-400);">
+                <i class="fa fa-shopping-bag"></i>
+            </div>
+            <h2 style="font-weight: 800; color: var(--slate-900); margin-bottom: 8px;">Your Shopping Bag is Empty</h2>
+            <p style="color: var(--slate-500); max-width: 420px; margin: 0 auto 24px;">Looks like you haven't added anything to your cart yet. Explore our curated drops and discover your fit.</p>
+            <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <a href="/product/" class="btn-hero-primary" style="display: inline-flex;">
+                    <i class="fa fa-shopping-bag"></i> Start Shopping
+                </a>
+                <a href="{% url 'ai_support' %}" class="btn-hero-secondary" style="background: var(--slate-900); color: #fff; display: inline-flex;">
+                    <span class="ai-pulse-dot"></span> Ask AI for Recommendations
+                </a>
+            </div>
+        </div>
+        {% endif %}
     </div>
-  </div>
+</section>
+
+<!-- Modern Checkout Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="max-width: 520px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; font-size: 24px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="checkoutModalLabel" style="font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa fa-lock" style="color: var(--brand-primary);"></i> Secure Checkout
+                </h4>
+            </div>
+
+            <div class="modal-body">
+                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 13px; color: var(--slate-600); font-weight: 600;">Total Amount Due:</span>
+                    <span style="font-size: 18px; font-weight: 800; color: var(--brand-primary);">₹{{ cart_total_amount }}</span>
+                </div>
+
+                <form method="post" action="/cheakout/">
+                    {% csrf_token %}
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Mobile Number</label>
+                        <input type="text" name="phone" class="form-control" placeholder="10-digit mobile number" required style="border-radius: 8px; height: 44px;" />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Delivery Street Address</label>
+                        <textarea class="form-control" name="address" rows="3" placeholder="Flat, House no., Building, Street, Area" required style="border-radius: 8px;"></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Postal PIN Code</label>
+                        <input type="text" name="pincode" class="form-control" placeholder="6-digit postal code" required style="border-radius: 8px; height: 44px;" />
+                    </div>
+
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <button type="submit" class="btn-proceed-checkout" style="flex: 1;">
+                            <i class="fa fa-check"></i> Place Order (COD / Standard)
+                        </button>
+                    </div>
+                </form>
+
+                <div style="margin-top: 20px; text-align: center; border-top: 1px dashed var(--slate-200); padding-top: 16px;">
+                    <span style="font-size: 12px; color: var(--slate-500); display: block; margin-bottom: 10px;">Or pay instantly via Paytm Payment Gateway:</span>
+                    <form method="post" action="{% url 'initiate_paytm_payment' %}" style="margin: 0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                        <input type="hidden" name="amount" value="{{ cart_total_amount }}">
+                        <button type="submit" class="btn btn-default" style="width: 100%; border-radius: 8px; height: 42px; font-weight: 700; color: #002970; border-color: #002970; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fa fa-credit-card"></i> Pay Online with Paytm / UPI
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

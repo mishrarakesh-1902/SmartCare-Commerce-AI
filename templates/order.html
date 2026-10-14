@@ -1,64 +1,103 @@
 {% extends 'master.html' %}
 
 {% block body %}
-
-<section id="cart_items">
+<section style="padding: 30px 0 70px;">
     <div class="container">
-        <div class="breadcrumbs">
-            <ol class="breadcrumb">
-              <li><a href='/'>Home</a></li>
-              <li class="active">Your Order</li>
+        <!-- Breadcrumb Navigation -->
+        <div style="margin-bottom: 24px;">
+            <ol class="breadcrumb" style="background: none; padding: 0; margin: 0; font-size: 13px;">
+                <li><a href="/" style="color: var(--slate-500);"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active" style="color: var(--slate-800); font-weight: 600;">Your Orders</li>
             </ol>
         </div>
-        <div class="table-responsive cart_info">
-            <table class="table table-condensed">
-                <thead>
-                    <tr class="cart_menu">
-                        <td class="image">Item</td>
-                        <td class="description"></td>
-                        <td class="price">Price</td>
-                        <td class="quantity">Quantity</td>
-                        <td class="total">Total</td>
-                        <td></td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for i in order %}
-                    <tr>
-                        <td class="cart_product">
-                            <a href=""><img src="{{i.image}}" alt="{{i.name}}" style="max-width: 100px; max-height: 100px></a>
-                        </td>
-                        <td class= 'cart_description'>
-                            <h4><a href="">{{i.product}}</a></h4>
-                            <td>
 
-                            </td>
-                            
-                        </td>
-                        <td class="cart_price">
-                            <p>₹{{i.price}}</p>
-                        </td>
-                        
-                        <td class="cart_quantity">
-                            <div class="cart_quantity_button">
-                                <p>{{i.quantity}}</p>
-                            </div>
-                        </td>
-                        <td class="cart_total">
-                            <p class="cart_total_price">₹{{i.total}}</p>
-                        </td>
-                        <td class="cart_delete">
-                            <a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                   
-                </tbody>
-            </table>
+        <div class="section-headline">
+            <div>
+                <h2>Your Orders</h2>
+                <p>Track delivery status, review previous purchases, or get instant AI assistance</p>
+            </div>
+            <div>
+                <a href="{% url 'ai_support' %}?query=What%20is%20the%20status%20of%20my%20recent%20orders?" class="btn-hero-secondary" style="background: var(--slate-900); color: #fff; font-size: 13px; padding: 8px 16px;">
+                    <span class="ai-pulse-dot"></span> Track via AI Desk
+                </a>
+            </div>
         </div>
+
+        {% if order %}
+        <div class="row">
+            {% for i in order %}
+            <div class="col-sm-12" style="margin-bottom: 20px;">
+                <div style="background: #ffffff; border: 1px solid var(--slate-200); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-xs);">
+                    <!-- Order Card Header -->
+                    <div style="background: var(--slate-50); border-bottom: 1px solid var(--slate-200); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 16px; font-size: 13px;">
+                            <div>
+                                <span style="color: var(--slate-500);">Order Placed:</span>
+                                <strong style="color: var(--slate-800);">Recent</strong>
+                            </div>
+                            <div>
+                                <span style="color: var(--slate-500);">Total:</span>
+                                <strong style="color: var(--brand-primary); font-size: 15px;">₹{{ i.total }}</strong>
+                            </div>
+                            <div>
+                                <span style="color: var(--slate-500);">Ship To:</span>
+                                <strong style="color: var(--slate-800);">{{ i.address|truncatechars:25 }}</strong>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #10b981; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: var(--radius-pill);">
+                                <i class="fa fa-check-circle"></i> Order Confirmed &bull; Dispatching
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Order Card Body -->
+                    <div style="padding: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <img src="/{{ i.image }}" alt="{{ i.product }}" style="width: 80px; height: 80px; object-fit: contain; border-radius: var(--radius-sm); background: #f8fafc; border: 1px solid var(--slate-200); padding: 6px;" />
+                            <div>
+                                <h4 style="font-size: 16px; font-weight: 700; color: var(--slate-900); margin: 0 0 6px 0;">
+                                    {{ i.product }}
+                                </h4>
+                                <div style="font-size: 13px; color: var(--slate-500); margin-bottom: 4px;">
+                                    Price: <strong style="color: var(--slate-800);">₹{{ i.price }}</strong> &bull; Quantity: <strong style="color: var(--slate-800);">{{ i.quantity }}</strong>
+                                </div>
+                                <div style="font-size: 12px; color: var(--slate-400);">
+                                    Contact: {{ i.phone }} &bull; PIN: {{ i.pincode }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Action Buttons -->
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <a href="{% url 'ai_support' %}?query=I%20need%20help%20with%20my%20order%20for%20{{ i.product|urlencode }}" class="btn-hero-secondary" style="background: rgba(79, 70, 229, 0.08); border-color: rgba(79, 70, 229, 0.25); color: var(--brand-secondary) !important; font-size: 13px; padding: 10px 18px;">
+                                <span class="ai-pulse-dot"></span> Raise AI Ticket
+                            </a>
+                            <a href="/product/" class="btn-hero-primary" style="font-size: 13px; padding: 10px 18px;">
+                                Buy Again
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty Orders State -->
+        <div style="background: #ffffff; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 70px 20px; text-align: center; margin: 20px 0; box-shadow: var(--shadow-sm);">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--slate-100); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; color: var(--slate-400);">
+                <i class="fa fa-archive"></i>
+            </div>
+            <h2 style="font-weight: 800; color: var(--slate-900); margin-bottom: 8px;">No Orders Placed Yet</h2>
+            <p style="color: var(--slate-500); max-width: 420px; margin: 0 auto 24px;">When you purchase items from our catalog, their real-time delivery status and AI support tickets will appear right here.</p>
+            <div style="display: flex; justify-content: center; gap: 12px;">
+                <a href="/product/" class="btn-hero-primary" style="display: inline-flex;">
+                    <i class="fa fa-shopping-bag"></i> Explore New Drops
+                </a>
+            </div>
+        </div>
+        {% endif %}
     </div>
-</section> <!--/#cart_items-->
-
-
-
+</section>
 {% endblock %}
