@@ -524,7 +524,106 @@
             
             update();
         }
+
+        // Seamless In-Place Cart Addition (Never redirects to home)
+        document.addEventListener('DOMContentLoaded', function() {
+            let toastTimeout = null;
+
+            function showToast(productName, cartCount) {
+                const toast = document.getElementById('cart-toast');
+                if (!toast) return;
+
+                document.getElementById('cart-toast-title').textContent = (productName ? productName : 'Item') + ' Added!';
+                document.getElementById('cart-toast-body').textContent = 'Cart now has ' + cartCount + ' item(s).';
+
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+                toast.style.pointerEvents = 'auto';
+
+                if (toastTimeout) clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(20px)';
+                    toast.style.pointerEvents = 'none';
+                }, 3500);
+            }
+
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('a[href*="/cart/add/"]');
+                if (!btn) return;
+
+                // Stop browser from full-page redirect
+                e.preventDefault();
+                const url = btn.href;
+                const originalContent = btn.innerHTML;
+                
+                // Temporary feedback on button
+                btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Adding...';
+                btn.style.pointerEvents = 'none';
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    // If server redirects (e.g. to login page for unauthenticated user)
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.success) {
+                        // Button success animation
+                        btn.innerHTML = '<i class="fa fa-check" style="color: #10b981;"></i> Added!';
+                        setTimeout(() => {
+                            btn.innerHTML = originalContent;
+                            btn.style.pointerEvents = 'auto';
+                        }, 1600);
+
+                        // Update all cart count badges in header
+                        const badges = document.querySelectorAll('.nav-cart-badge');
+                        badges.forEach(badge => {
+                            badge.textContent = data.cart_count;
+                            badge.style.transform = 'scale(1.3)';
+                            badge.style.transition = 'transform 0.2s';
+                            setTimeout(() => {
+                                badge.style.transform = 'scale(1)';
+                            }, 250);
+                        });
+
+                        // Show sleek toast notification
+                        showToast(data.product_name, data.cart_count);
+                    } else if (data === null) {
+                        // Redirect was handled
+                    } else {
+                        // Fallback
+                        window.location.reload();
+                    }
+                })
+                .catch(err => {
+                    console.error('Cart add error:', err);
+                    window.location.reload();
+                });
+            });
+        });
     </script>
+
+    <!-- Toast Notification for Seamless Cart Addition -->
+    <div id="cart-toast" style="position: fixed; bottom: 25px; right: 25px; z-index: 999999; background: #0f172a; color: #fff; padding: 14px 22px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 14px; opacity: 0; transform: translateY(20px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; border-left: 4px solid #10b981; max-width: 380px;">
+        <div style="background: rgba(16, 185, 129, 0.2); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 16px; flex-shrink: 0;">
+            <i class="fa fa-check"></i>
+        </div>
+        <div style="flex-grow: 1;">
+            <div id="cart-toast-title" style="font-weight: 700; font-size: 14px; color: #f8fafc; line-height: 1.3;">Item Added!</div>
+            <div id="cart-toast-body" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Your cart has been updated.</div>
+        </div>
+        <a href="/cart/cart-detail/" style="background: var(--brand-primary); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; white-space: nowrap; margin-left: 6px;">
+            View Cart
+        </a>
+    </div>
 </body>
 
 </html>

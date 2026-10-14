@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
+from django.http import JsonResponse
 from app.models import Category, Product, Sub_category, Contact_us, Order, Brand, SupportTicket
 from django.contrib.auth import authenticate, login
 from app.models import UserCreateForm
@@ -96,7 +97,23 @@ def cart_add(request, id):
     cart = Cart(request)
     product = Product.objects.get(id=id)
     cart.add(product=product)
-    return redirect("index")
+
+    # If AJAX request, return JSON so page doesn't even reload
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
+        cart_count = len(request.session.get('cart', {}))
+        return JsonResponse({
+            'success': True,
+            'message': f'{product.name} added to cart!',
+            'cart_count': cart_count,
+            'product_name': product.name,
+            'product_price': product.price,
+        })
+
+    # Keep customer on the exact same page they clicked from
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect("product")
 
 
 @login_required(login_url='/accounts/login/')
