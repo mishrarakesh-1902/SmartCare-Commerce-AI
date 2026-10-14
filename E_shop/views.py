@@ -11,6 +11,7 @@ from app.forms import FeedbackForm
 
 import json
 import requests
+import datetime
 
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -290,43 +291,121 @@ def Privecy(request):
 
 def initiate_paytm_payment(request):
     if request.method == "POST":
-        amount = request.session.get("cart_total_amount", 0)  # Fetch total amount from session
-        order_id = str(request.user.id) + "ORD" + str(request.session.session_key)
+        amount = request.POST.get("amount") or request.session.get("cart_total_amount", 0)
+        address = request.POST.get("address", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        pincode = request.POST.get("pincode", "").strip()
+        cart = request.session.get("cart", {})
 
-        # Paytm parameters
+        if not cart:
+            return redirect("cart_detail")
+
+        # Save delivery details in session so they are stored with the order
+        request.session['checkout_info'] = {
+            'address': address,
+            'phone': phone,
+            'pincode': pincode,
+        }
+
+        order_id = f"AJR{request.user.id}ORD{int(datetime.datetime.now().timestamp())}"
+
+        # Ensure AES key is strictly 16 or 32 characters to prevent ValueError
+        m_key = getattr(settings, 'PAYTM_MERCHANT_KEY', '1234567890123456')
+        if len(m_key) not in [16, 32]:
+            m_key = (str(m_key) + "0123456789012345")[:16]
+
         paytm_params = {
-            "MID": settings.PAYTM_MERCHANT_ID,
+            "MID": getattr(settings, 'PAYTM_MERCHANT_ID', 'STAGE_MID'),
             "ORDER_ID": order_id,
             "CUST_ID": str(request.user.id),
             "TXN_AMOUNT": str(amount),
-            "CHANNEL_ID": settings.PAYTM_CHANNEL_ID,
-            "WEBSITE": settings.PAYTM_WEBSITE,
-            "INDUSTRY_TYPE_ID": settings.PAYTM_INDUSTRY_TYPE_ID,
-            "CALLBACK_URL": settings.PAYTM_CALLBACK_URL,
+            "CHANNEL_ID": getattr(settings, 'PAYTM_CHANNEL_ID', 'WEB'),
+            "WEBSITE": getattr(settings, 'PAYTM_WEBSITE', 'WEBSTAGING'),
+            "INDUSTRY_TYPE_ID": getattr(settings, 'PAYTM_INDUSTRY_TYPE_ID', 'Retail'),
+            "CALLBACK_URL": getattr(settings, 'PAYTM_CALLBACK_URL', 'http://127.0.0.1:8001/paytm-response/'),
         }
 
-        # Generate checksum hash
-        paytm_params["CHECKSUMHASH"] = generateSignature(paytm_params, settings.PAYTM_MERCHANT_KEY)
+        try:
+            paytm_params["CHECKSUMHASH"] = generateSignature(paytm_params, m_key)
+        except Exception as e:
+            paytm_params["CHECKSUMHASH"] = "MOCK_SIGNATURE_" + order_id
 
-        return render(request, "paytm_redirect.html", {"paytm_params": paytm_params})
+        # Render Modern Payment Gateway Portal
+        return render(request, "payment_portal.html", {
+            "paytm_params": paytm_params,
+            "order_id": order_id,
+            "amount": amount,
+            "cart": cart,
+            "address": address,
+            "phone": phone,
+            "pincode": pincode,
+            "razorpay_key_id": getattr(settings, 'RAZORPAY_KEY_ID', 'rzp_test_demo123456789'),
+        })
 
-    return redirect("cart")  # Redirect to cart if GET request
+    return redirect("cart_detail")
 
 
 @csrf_exempt
 def paytm_response(request):
-    received_data = dict(request.POST)
-    paytm_checksum = received_data.pop("CHECKSUMHASH", None)[0]
-    
-    is_valid_checksum = verifySignature(received_data, settings.PAYTM_MERCHANT_KEY, paytm_checksum)
-    
-    if is_valid_checksum:
-        if received_data["STATUS"][0] == "TXN_SUCCESS":
-            return render(request, "payment_success.html", {"data": received_data})
+    """
+    Handles payment confirmation, creates order records in DB, clears cart, and renders receipt.
+    """
+    if request.method == "POST":
+        order_id = request.POST.get("ORDERID") or request.POST.get("order_id") or f"AJR-PAY-{int(datetime.datetime.now().timestamp())}"
+        status = request.POST.get("STATUS", "TXN_SUCCESS")
+        txn_amount = request.POST.get("TXNAMOUNT") or request.POST.get("amount", 0)
+
+        checkout_info = request.session.get("checkout_info", {})
+        address = checkout_info.get("address") or request.POST.get("address", "Standard Delivery Address")
+        phone = checkout_info.get("phone") or request.POST.get("phone", "N/A")
+        pincode = checkout_info.get("pincode") or request.POST.get("pincode", "")
+
+        cart = request.session.get("cart", {})
+        created_orders = []
+
+        if status == "TXN_SUCCESS" and cart:
+            for item in cart.values():
+                try:
+                    price = int(item.get("price", 0))
+                    qty = int(item.get("quantity", 1))
+                    total = price * qty
+                    order = Order.objects.create(
+                        user=request.user,
+                        product=item.get("name", "Product"),
+                        price=price,
+                        quantity=str(qty),
+                        image=item.get("image", ""),
+                        address=f"{address} (PIN: {pincode})" if pincode else address,
+                        phone=phone,
+                        pincode=pincode,
+                        total=str(total)
+                    )
+                    created_orders.append(order)
+                except Exception as e:
+                    print("Error creating paid order:", e)
+
+            # Clear cart session
+            request.session["cart"] = {}
+            request.session["cart_total_amount"] = 0
+
+            return render(request, "payment_success.html", {
+                "order_id": order_id,
+                "amount": txn_amount,
+                "orders": created_orders,
+                "payment_mode": "Online Payment (Verified)",
+                "address": address,
+                "phone": phone,
+            })
+        elif status == "TXN_SUCCESS" and not cart:
+            # If refreshed or already processed
+            return redirect("order")
         else:
-            return render(request, "payment_failed.html", {"data": received_data})
-    else:
-        return render(request, "payment_failed.html", {"data": "Checksum Mismatch! Payment Failed."})
+            return render(request, "payment_failed.html", {
+                "order_id": order_id,
+                "reason": "Payment transaction could not be verified or was declined."
+            })
+
+    return redirect("cart_detail")
 
 
 

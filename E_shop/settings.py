@@ -163,27 +163,15 @@ LOGOUT_REDIRECT_URL = 'index'
 
 
 
-# Razorpay API Keys (Replace with your actual keys)
-# RAZORPAY_KEY_ID = "your_razorpay_key_id"
-# RAZORPAY_KEY_SECRET = "your_razorpay_key_secret"
+# Razorpay API Configuration
+RAZORPAY_KEY_ID = 'rzp_test_demo123456789'
+RAZORPAY_KEY_SECRET = 'demo_secret_key_1234567890'
 
-# RAZORPAY_KEY_ID = "test_1234567890abcdef"
-# RAZORPAY_KEY_SECRET = "test_secret_abcdef123456"
-
-# PAYTM_MERCHANT_ID = "your_merchant_id"
-# PAYTM_MERCHANT_KEY = "your_merchant_key"
-# PAYTM_WEBSITE = "WEBSTAGING"  # Use "DEFAULT" for production
-# PAYTM_CHANNEL_ID = "WEB"
-# PAYTM_INDUSTRY_TYPE_ID = "Retail"
-# PAYTM_CALLBACK_URL = "http://127.0.0.1:8000/paytm-response/"
-# PAYTM_TXN_URL = "https://securegw-stage.paytm.in/order/process"  # Use production URL when live
-
-
-# PAYTM_TXN_URL = "https://securegw.paytm.in/order/process"
-PAYTM_MERCHANT_ID = 'YOUR_MERCHANT_ID'
-PAYTM_MERCHANT_KEY = 'YOUR_MERCHANT_KEY'
-PAYTM_WEBSITE = 'WEBSTAGING'  # Change to 'DEFAULT' for production
+# Paytm Settings (Key MUST be strictly 16 or 32 characters for AES cipher)
+PAYTM_MERCHANT_ID = 'STAGE_MID_DEMO123'
+PAYTM_MERCHANT_KEY = '1234567890123456'  # 16-character key avoids AES length ValueError
+PAYTM_WEBSITE = 'WEBSTAGING'
 PAYTM_CHANNEL_ID = 'WEB'
 PAYTM_INDUSTRY_TYPE_ID = 'Retail'
-PAYTM_CALLBACK_URL = 'http://127.0.0.1:8000/paytm-response/'
+PAYTM_CALLBACK_URL = 'http://127.0.0.1:8001/paytm-response/'
 

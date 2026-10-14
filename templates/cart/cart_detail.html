@@ -180,41 +180,53 @@
                     <span style="font-size: 18px; font-weight: 800; color: var(--brand-primary);">₹{{ cart_total_amount }}</span>
                 </div>
 
-                <form method="post" action="/cheakout/">
+                <form method="post" id="checkoutMainForm" action="/cheakout/">
                     {% csrf_token %}
+                    <input type="hidden" name="amount" value="{{ cart_total_amount }}">
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Mobile Number</label>
-                        <input type="text" name="phone" class="form-control" placeholder="10-digit mobile number" required style="border-radius: 8px; height: 44px;" />
+                        <input type="text" name="phone" id="checkout_phone" class="form-control" placeholder="10-digit mobile number" required style="border-radius: 8px; height: 44px;" />
                     </div>
 
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Delivery Street Address</label>
-                        <textarea class="form-control" name="address" rows="3" placeholder="Flat, House no., Building, Street, Area" required style="border-radius: 8px;"></textarea>
+                        <textarea class="form-control" name="address" id="checkout_address" rows="3" placeholder="Flat, House no., Building, Street, Area" required style="border-radius: 8px;"></textarea>
                     </div>
 
                     <div class="form-group" style="margin-bottom: 24px;">
                         <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Postal PIN Code</label>
-                        <input type="text" name="pincode" class="form-control" placeholder="6-digit postal code" required style="border-radius: 8px; height: 44px;" />
+                        <input type="text" name="pincode" id="checkout_pincode" class="form-control" placeholder="6-digit postal code" required style="border-radius: 8px; height: 44px;" />
                     </div>
 
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <button type="submit" class="btn-proceed-checkout" style="flex: 1;">
-                            <i class="fa fa-check"></i> Place Order (COD / Standard)
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <button type="submit" class="btn-proceed-checkout" style="flex: 1; min-width: 180px; height: 44px;">
+                            <i class="fa fa-truck"></i> Cash on Delivery (COD)
+                        </button>
+                        <button type="button" onclick="submitOnlinePayment()" class="btn btn-default" style="flex: 1; min-width: 180px; border-radius: 8px; height: 44px; font-weight: 700; color: #fff; background: linear-gradient(135deg, #002970 0%, #0045ba 100%); border-color: #002970; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0, 41, 112, 0.25);">
+                            <i class="fa fa-credit-card"></i> Pay Online (UPI / Card)
                         </button>
                     </div>
                 </form>
 
-                <div style="margin-top: 20px; text-align: center; border-top: 1px dashed var(--slate-200); padding-top: 16px;">
-                    <span style="font-size: 12px; color: var(--slate-500); display: block; margin-bottom: 10px;">Or pay instantly via Paytm Payment Gateway:</span>
-                    <form method="post" action="{% url 'initiate_paytm_payment' %}" style="margin: 0;">
-                        {% csrf_token %}
-                        <input type="hidden" name="order_id" value="{{ order.id }}">
-                        <input type="hidden" name="amount" value="{{ cart_total_amount }}">
-                        <button type="submit" class="btn btn-default" style="width: 100%; border-radius: 8px; height: 42px; font-weight: 700; color: #002970; border-color: #002970; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <i class="fa fa-credit-card"></i> Pay Online with Paytm / UPI
-                        </button>
-                    </form>
-                </div>
+                <script>
+                    function submitOnlinePayment() {
+                        const form = document.getElementById('checkoutMainForm');
+                        const phone = document.getElementById('checkout_phone');
+                        const address = document.getElementById('checkout_address');
+                        const pincode = document.getElementById('checkout_pincode');
+
+                        if (!phone.value.trim() || !address.value.trim() || !pincode.value.trim()) {
+                            alert('Please fill in your Mobile number, Delivery Address, and Postal PIN code before proceeding.');
+                            if (!phone.value.trim()) phone.focus();
+                            else if (!address.value.trim()) address.focus();
+                            else pincode.focus();
+                            return;
+                        }
+
+                        form.action = "{% url 'initiate_paytm_payment' %}";
+                        form.submit();
+                    }
+                </script>
             </div>
         </div>
     </div>

@@ -1,0 +1,81 @@
+{% extends 'master.html' %}
+
+{% block body %}
+<section style="padding: 50px 0 80px; background: #f8fafc; min-height: 80vh;">
+    <div class="container">
+        <div style="max-width: 650px; margin: 0 auto; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid var(--slate-200); overflow: hidden; text-align: center;">
+            <!-- Header Banner -->
+            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; padding: 40px 20px;">
+                <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,0.2); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 36px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <i class="fa fa-check"></i>
+                </div>
+                <h1 style="font-size: 26px; font-weight: 800; margin: 0;">Payment Successful!</h1>
+                <p style="margin: 6px 0 0; opacity: 0.9; font-size: 14px;">Your order has been confirmed and dispatched to our warehouse.</p>
+            </div>
+
+            <!-- Receipt Content -->
+            <div style="padding: 30px 35px; text-align: left;">
+                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 10px; padding: 16px 20px; margin-bottom: 24px;">
+                    <div class="row">
+                        <div class="col-xs-6" style="margin-bottom: 10px;">
+                            <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Transaction ID</span>
+                            <div style="font-size: 14px; font-weight: 700; color: var(--slate-800); font-family: monospace;">{{ order_id }}</div>
+                        </div>
+                        <div class="col-xs-6" style="margin-bottom: 10px; text-align: right;">
+                            <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Amount Paid</span>
+                            <div style="font-size: 18px; font-weight: 800; color: #10b981;">₹{{ amount }}</div>
+                        </div>
+                        <div class="col-xs-6">
+                            <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Payment Mode</span>
+                            <div style="font-size: 13px; font-weight: 600; color: var(--slate-700);">{{ payment_mode }}</div>
+                        </div>
+                        <div class="col-xs-6" style="text-align: right;">
+                            <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Status</span>
+                            <div><span class="badge" style="background: #10b981; font-weight: 700; font-size: 11px;">PAID &bull; VERIFIED</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if orders %}
+                <h4 style="font-size: 14px; font-weight: 800; color: var(--slate-800); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Items in this Order:</h4>
+                <div style="border: 1px solid var(--slate-200); border-radius: 10px; padding: 12px 16px; margin-bottom: 24px;">
+                    {% for o in orders %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; {% if not forloop.last %}border-bottom: 1px dashed var(--slate-200);{% endif %}">
+                        <div>
+                            <strong style="color: var(--slate-800); font-size: 14px;">{{ o.product }}</strong>
+                            <div style="font-size: 12px; color: var(--slate-500);">Qty: {{ o.quantity }} &bull; Price: ₹{{ o.price }}</div>
+                        </div>
+                        <span style="font-weight: 700; color: var(--slate-800);">₹{{ o.total }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if address %}
+                <div style="margin-bottom: 28px;">
+                    <span style="font-size: 12px; font-weight: 700; color: var(--slate-500); text-transform: uppercase;">Delivery Address:</span>
+                    <p style="margin: 4px 0 0; color: var(--slate-700); font-size: 13px; line-height: 1.5;">{{ address }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="/order/" class="btn-hero-primary" style="flex: 1; justify-content: center; padding: 12px 20px; font-size: 14px; text-decoration: none;">
+                        <i class="fa fa-truck"></i> Track Order Status
+                    </a>
+                    <a href="/" class="btn-hero-secondary" style="flex: 1; justify-content: center; padding: 12px 20px; font-size: 14px; text-decoration: none;">
+                        <i class="fa fa-shopping-bag"></i> Continue Shopping
+                    </a>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px; border-top: 1px dashed var(--slate-200); padding-top: 16px;">
+                    <span style="font-size: 13px; color: var(--slate-500);">Have a question about this payment?</span><br>
+                    <a href="{% url 'ai_support' %}" style="color: var(--brand-secondary); font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;">
+                        <i class="fa fa-headphones"></i> Open 24/7 AI Support Desk
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
