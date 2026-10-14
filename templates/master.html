@@ -335,15 +335,17 @@
 		<div class="modern-subnav">
 			<div class="container">
 				<ul class="modern-subnav-list">
-					<li><a href="/" class="active"><i class="fa fa-home"></i> Home</a></li>
+					<li><a href="/"><i class="fa fa-home"></i> Home</a></li>
 					<li><a href="/product/"><i class="fa fa-th-large"></i> All Products</a></li>
-					<li><a href="/?sub_category=1">T-Shirts</a></li>
-					<li><a href="/?sub_category=2">Blazers</a></li>
-					<li><a href="/?sub_category=3">Sunglasses</a></li>
-					<li><a href="/?sub_category=4">Kids</a></li>
-					<li><a href="{% url 'ai_support' %}" style="color: var(--brand-secondary); font-weight: 700;"><i class="fa fa-bolt"></i> 24/7 AI Desk</a></li>
+					<li><a href="/product/?category=3"><i class="fa fa-male"></i> Men's</a></li>
+					<li><a href="/product/?sub_category=19">👕 T-Shirts</a></li>
+					<li><a href="/product/?category=5"><i class="fa fa-female"></i> Women's</a></li>
+					<li><a href="/product/?category=4"><i class="fa fa-child"></i> Kids</a></li>
+					<li><a href="/product/?category=6"><i class="fa fa-plug"></i> Electronics &amp; Home</a></li>
+					<li><a href="/product/?category=1"><i class="fa fa-mobile"></i> Mobiles</a></li>
+					<li><a href="{% url 'ai_support' %}" style="color: var(--brand-secondary); font-weight: 700;"><span class="ai-pulse-dot"></span> 24/7 AI Desk</a></li>
 					<li><a href="{% url 'feedback' %}"><i class="fa fa-commenting-o"></i> Feedback</a></li>
-					<li><a href="/contact_us/"><i class="fa fa-phone"></i> Help & Contact</a></li>
+					<li><a href="/contact_us/"><i class="fa fa-phone"></i> Help</a></li>
 				</ul>
 			</div>
 		</div>
@@ -378,10 +380,12 @@
 				<div class="col-sm-2 col-xs-6 footer-col" style="margin-bottom: 24px;">
 					<h4>Collections</h4>
 					<ul class="footer-links-list">
-						<li><a href="/?sub_category=1">Men's T-Shirts</a></li>
-						<li><a href="/?sub_category=2">Blazers & Suits</a></li>
-						<li><a href="/?sub_category=3">Sunglasses</a></li>
-						<li><a href="/?sub_category=4">Kids Collection</a></li>
+						<li><a href="/product/?sub_category=19">Men's T-Shirts</a></li>
+						<li><a href="/product/?category=3">Men's Clothing</a></li>
+						<li><a href="/product/?category=5">Women's Collection</a></li>
+						<li><a href="/product/?category=4">Kids Collection</a></li>
+						<li><a href="/product/?category=6">Home &amp; Electronics</a></li>
+						<li><a href="/product/?category=1">Mobiles &amp; Tech</a></li>
 						<li><a href="/product/">All Products</a></li>
 					</ul>
 				</div>

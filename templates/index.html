@@ -168,42 +168,84 @@
 <!-- Main Products Section -->
 <section>
     <div class="container">
-        <!-- Modern Category & Brand Filter Bar -->
+        <!-- Modern Two-Tier Category & Brand Filter Bar -->
         <div class="modern-filter-container">
             <div class="row">
-                <div class="col-sm-12" style="margin-bottom: 14px;">
+                <!-- Tier 1: Main Departments / Categories -->
+                <div class="col-sm-12" style="margin-bottom: 12px;">
                     <div class="filter-header-title">
-                        <i class="fa fa-filter" style="color: var(--brand-primary);"></i> Filter by Category
+                        <i class="fa fa-th-large" style="color: var(--brand-primary);"></i> Departments / Main Categories
                     </div>
                     <div class="chips-row">
-                        <a href="/" class="filter-chip {% if not request.GET.sub_category and not request.GET.brand %}active{% endif %}">
-                            <i class="fa fa-th"></i> All Items
+                        <a href="/" class="filter-chip {% if not request.GET.category and not request.GET.sub_category and not request.GET.brand %}active{% endif %}">
+                            <i class="fa fa-th"></i> All Departments
                         </a>
                         {% for cat in category %}
-                            {% for sub in cat.sub_category_set.all %}
-                            <a href="/?sub_category={{ sub.id }}" class="filter-chip {% if request.GET.sub_category == sub.id|stringformat:'s' %}active{% endif %}">
-                                {{ sub.name }}
-                            </a>
-                            {% endfor %}
+                        <a href="/?category={{ cat.id }}" class="filter-chip {% if active_category.id == cat.id and not request.GET.sub_category %}active{% endif %}">
+                            {% if "Men" in cat.name %}👔
+                            {% elif "women" in cat.name or "Women" in cat.name %}👗
+                            {% elif "Child" in cat.name or "Kids" in cat.name %}👶
+                            {% elif "Home" in cat.name %}⚡
+                            {% elif "Mobile" in cat.name %}📱
+                            {% elif "Computer" in cat.name %}💻
+                            {% else %}🏷️
+                            {% endif %}
+                            {{ cat.name }}
+                        </a>
                         {% endfor %}
                     </div>
                 </div>
 
-                {% if brand %}
-                <div class="col-sm-12" style="margin-top: 10px; padding-top: 12px; border-top: 1px dashed var(--slate-200);">
+                <!-- Tier 2: Sub-Categories -->
+                <div class="col-sm-12" style="margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--slate-200);">
                     <div class="filter-header-title" style="margin-bottom: 8px;">
-                        <i class="fa fa-bookmark-o" style="color: var(--brand-secondary);"></i> Popular Brands
+                        <i class="fa fa-tags" style="color: var(--brand-secondary);"></i> 
+                        {% if active_category %}
+                            Sub-categories in <strong>{{ active_category.name }}</strong>:
+                        {% else %}
+                            Browse by Specific Product Type:
+                        {% endif %}
                     </div>
                     <div class="chips-row">
-                        {% for b in brand %}
-                        <a href="/?brand={{ b.id }}" class="filter-chip {% if request.GET.brand == b.id|stringformat:'s' %}active{% endif %}">
-                            {{ b.name }}
-                        </a>
-                        {% endfor %}
-                        {% if request.GET.sub_category or request.GET.brand %}
-                        <a href="/" class="filter-chip" style="background: #fee2e2; border-color: #fca5a5; color: #dc2626;">
-                            <i class="fa fa-times"></i> Reset Filters
-                        </a>
+                        {% if active_category %}
+                            <a href="/?category={{ active_category.id }}" class="filter-chip {% if not request.GET.sub_category %}active{% endif %}">
+                                All in {{ active_category.name }}
+                            </a>
+                            {% for sub in active_category.sub_category_set.all %}
+                            <a href="/?category={{ active_category.id }}&sub_category={{ sub.id }}" class="filter-chip {% if request.GET.sub_category == sub.id|stringformat:'s' %}active{% endif %}">
+                                {{ sub.name }}
+                            </a>
+                            {% endfor %}
+                        {% else %}
+                            {% for cat in category %}
+                                {% for sub in cat.sub_category_set.all %}
+                                <a href="/?category={{ cat.id }}&sub_category={{ sub.id }}" class="filter-chip {% if request.GET.sub_category == sub.id|stringformat:'s' %}active{% endif %}">
+                                    {{ sub.name }}
+                                </a>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Brand Filter & Active Filter Reset -->
+                {% if brand or request.GET.category or request.GET.sub_category or request.GET.brand %}
+                <div class="col-sm-12" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--slate-200);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <div class="chips-row">
+                            <span style="font-size: 13px; font-weight: 600; color: var(--slate-600); margin-right: 6px;">Filter by Brand:</span>
+                            {% for b in brand %}
+                            <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sub_category %}sub_category={{ request.GET.sub_category }}&{% endif %}brand={{ b.id }}" class="filter-chip {% if request.GET.brand == b.id|stringformat:'s' %}active{% endif %}" style="padding: 4px 10px; font-size: 12px;">
+                                {{ b.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% if request.GET.category or request.GET.sub_category or request.GET.brand %}
+                        <div>
+                            <a href="/" class="filter-chip" style="background: #fee2e2; border-color: #fca5a5; color: #dc2626; font-weight: 600;">
+                                <i class="fa fa-times"></i> Reset All Filters
+                            </a>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
@@ -214,12 +256,32 @@
         <!-- Product Grid Header -->
         <div class="section-headline">
             <div>
-                <h2>Curated Drops</h2>
-                <p>Showing {{ product|length }} top picks tailored for your everyday rotation</p>
+                <h2>
+                    {% if active_sub_category %}
+                        {{ active_sub_category.name }}
+                    {% elif active_category %}
+                        {{ active_category.name }}
+                    {% elif active_brand %}
+                        {{ active_brand.name }} Collection
+                    {% else %}
+                        Curated Catalog Drops
+                    {% endif %}
+                </h2>
+                <p>
+                    Showing {{ product|length }} products
+                    {% if active_sub_category %}
+                        in <strong>{{ active_sub_category.name }}</strong> ({{ active_category.name }})
+                    {% elif active_category %}
+                        in <strong>{{ active_category.name }}</strong>
+                    {% endif %}
+                    {% if active_brand %}
+                        by <strong>{{ active_brand.name }}</strong>
+                    {% endif %}
+                </p>
             </div>
             <div class="hidden-xs">
                 <a href="/product/" style="font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
-                    View All Products <i class="fa fa-arrow-right"></i>
+                    View Full Catalog <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
         </div>
@@ -294,170 +356,134 @@
             {% endfor %}
         </div>
 
-        <!-- Curated Tabs Showcase -->
+        <!-- Curated Tabs Showcase with Real Database Products -->
         <div style="margin-top: 50px;">
             <div class="section-headline">
                 <div>
-                    <h2>Trending Categories</h2>
-                    <p>Handpicked selections across our most popular everyday segments</p>
+                    <h2>Trending Category Highlights</h2>
+                    <p>Handpicked authentic picks across our most popular everyday departments</p>
                 </div>
             </div>
 
             <div class="modern-filter-container" style="padding: 10px; background: #fff; margin-bottom: 30px;">
                 <ul class="nav nav-pills" style="display: flex; gap: 8px; flex-wrap: wrap; margin: 0;">
-                    <li class="active"><a href="#tab-tshirt" data-toggle="tab" style="border-radius: var(--radius-pill); font-weight: 600; padding: 10px 20px;">T-Shirts &amp; Polos</a></li>
-                    <li><a href="#tab-blazers" data-toggle="tab" style="border-radius: var(--radius-pill); font-weight: 600; padding: 10px 20px;">Blazers &amp; Jackets</a></li>
-                    <li><a href="#tab-sunglass" data-toggle="tab" style="border-radius: var(--radius-pill); font-weight: 600; padding: 10px 20px;">Eyewear</a></li>
-                    <li><a href="#tab-kids" data-toggle="tab" style="border-radius: var(--radius-pill); font-weight: 600; padding: 10px 20px;">Kids Essentials</a></li>
+                    <li class="active"><a href="#tab-tshirt" data-toggle="tab" style="border-radius: var(--radius-pill); font-weight: 600; padding: 10px 20px;">👕 T-Shirts &amp; Polos</a></li>
+                    <li><a href="#tab-women" data-toggle="tab" style="border-radius: var(--radius-pill); font-weight: 600; padding: 10px 20px;">👗 Women's Collection</a></li>
+                    <li><a href="#tab-tech" data-toggle="tab" style="border-radius: var(--radius-pill); font-weight: 600; padding: 10px 20px;">📱 Mobiles &amp; Tech</a></li>
+                    <li><a href="#tab-home" data-toggle="tab" style="border-radius: var(--radius-pill); font-weight: 600; padding: 10px 20px;">⚡ Home &amp; Appliances</a></li>
                 </ul>
             </div>
 
             <div class="tab-content">
+                <!-- Tab 1: Real T-shirts -->
                 <div class="tab-pane fade active in" id="tab-tshirt">
                     <div class="row">
-                        <div class="col-sm-3 col-xs-6">
+                        {% for item in trending_tshirts %}
+                        <div class="col-sm-3 col-xs-6" style="margin-bottom: 20px;">
                             <div class="modern-product-card">
                                 <div class="card-media-box">
-                                    <img src="/static/images/home/gallery1.jpg" alt="Casual Top" />
+                                    <a href="/product/{{ item.id }}">
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy" />
+                                    </a>
                                 </div>
                                 <div class="card-body-content">
-                                    <div class="card-category-meta">Summer Fit</div>
-                                    <h3 class="card-product-title"><a href="/product/">Ribbed Girl Top Classic</a></h3>
+                                    <div class="card-category-meta">{{ item.sub_category.name }}</div>
+                                    <h3 class="card-product-title"><a href="/product/{{ item.id }}">{{ item.name }}</a></h3>
                                     <div class="card-price-row">
-                                        <span class="price-current">₹799</span>
-                                        <span class="price-mrp">₹1,199</span>
+                                        <span class="price-current">₹{{ item.price }}</span>
+                                        <span class="price-mrp">₹{{ item.price|add:400 }}</span>
                                     </div>
-                                    <a href="/product/" class="btn-card-cart"><i class="fa fa-eye"></i> View Range</a>
+                                    <a href="{% url 'cart_add' item.id %}" class="btn-card-cart">
+                                        <i class="fa fa-shopping-bag"></i> Add to Cart
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-3 col-xs-6">
-                            <div class="modern-product-card">
-                                <div class="card-media-box">
-                                    <img src="/static/images/home/gallery2.jpg" alt="Polo Black" />
-                                </div>
-                                <div class="card-body-content">
-                                    <div class="card-category-meta">Street Edition</div>
-                                    <h3 class="card-product-title"><a href="/product/">Easy Polo Black Edition</a></h3>
-                                    <div class="card-price-row">
-                                        <span class="price-current">₹899</span>
-                                        <span class="price-mrp">₹1,299</span>
-                                    </div>
-                                    <a href="/product/" class="btn-card-cart"><i class="fa fa-eye"></i> View Range</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-3 col-xs-6">
-                            <div class="modern-product-card">
-                                <div class="card-media-box">
-                                    <img src="/static/images/home/gallery3.jpg" alt="Polo Crisp" />
-                                </div>
-                                <div class="card-body-content">
-                                    <div class="card-category-meta">Everyday Wear</div>
-                                    <h3 class="card-product-title"><a href="/product/">Urban Minimalist Tee</a></h3>
-                                    <div class="card-price-row">
-                                        <span class="price-current">₹699</span>
-                                        <span class="price-mrp">₹999</span>
-                                    </div>
-                                    <a href="/product/" class="btn-card-cart"><i class="fa fa-eye"></i> View Range</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-3 col-xs-6">
-                            <div class="modern-product-card">
-                                <div class="card-media-box">
-                                    <img src="/static/images/home/gallery4.jpg" alt="Heavy Cotton" />
-                                </div>
-                                <div class="card-body-content">
-                                    <div class="card-category-meta">Heavy Cotton</div>
-                                    <h3 class="card-product-title"><a href="/product/">Heavyweight Drop Tee</a></h3>
-                                    <div class="card-price-row">
-                                        <span class="price-current">₹999</span>
-                                        <span class="price-mrp">₹1,499</span>
-                                    </div>
-                                    <a href="/product/" class="btn-card-cart"><i class="fa fa-eye"></i> View Range</a>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="tab-blazers">
+                <!-- Tab 2: Real Women's Clothing -->
+                <div class="tab-pane fade" id="tab-women">
                     <div class="row">
-                        <div class="col-sm-3 col-xs-6">
+                        {% for item in trending_women %}
+                        <div class="col-sm-3 col-xs-6" style="margin-bottom: 20px;">
                             <div class="modern-product-card">
                                 <div class="card-media-box">
-                                    <img src="/static/images/home/gallery4.jpg" alt="Tailored Blazer" />
+                                    <a href="/product/{{ item.id }}">
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy" />
+                                    </a>
                                 </div>
                                 <div class="card-body-content">
-                                    <div class="card-category-meta">Tailored</div>
-                                    <h3 class="card-product-title"><a href="/product/">Onyx Slim Tailored Blazer</a></h3>
+                                    <div class="card-category-meta">{{ item.sub_category.name }}</div>
+                                    <h3 class="card-product-title"><a href="/product/{{ item.id }}">{{ item.name }}</a></h3>
                                     <div class="card-price-row">
-                                        <span class="price-current">₹2,499</span>
-                                        <span class="price-mrp">₹3,999</span>
+                                        <span class="price-current">₹{{ item.price }}</span>
+                                        <span class="price-mrp">₹{{ item.price|add:600 }}</span>
                                     </div>
-                                    <a href="/product/" class="btn-card-cart"><i class="fa fa-eye"></i> View Range</a>
+                                    <a href="{% url 'cart_add' item.id %}" class="btn-card-cart">
+                                        <i class="fa fa-shopping-bag"></i> Add to Cart
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-3 col-xs-6">
-                            <div class="modern-product-card">
-                                <div class="card-media-box">
-                                    <img src="/static/images/home/gallery3.jpg" alt="Smart Casual" />
-                                </div>
-                                <div class="card-body-content">
-                                    <div class="card-category-meta">Formal</div>
-                                    <h3 class="card-product-title"><a href="/product/">Charcoal Executive Jacket</a></h3>
-                                    <div class="card-price-row">
-                                        <span class="price-current">₹2,899</span>
-                                        <span class="price-mrp">₹4,299</span>
-                                    </div>
-                                    <a href="/product/" class="btn-card-cart"><i class="fa fa-eye"></i> View Range</a>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="tab-sunglass">
+                <!-- Tab 3: Real Mobiles & Tech -->
+                <div class="tab-pane fade" id="tab-tech">
                     <div class="row">
-                        <div class="col-sm-3 col-xs-6">
+                        {% for item in trending_tech %}
+                        <div class="col-sm-3 col-xs-6" style="margin-bottom: 20px;">
                             <div class="modern-product-card">
                                 <div class="card-media-box">
-                                    <img src="/static/images/home/gallery2.jpg" alt="Aviator" />
+                                    <a href="/product/{{ item.id }}">
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy" />
+                                    </a>
                                 </div>
                                 <div class="card-body-content">
-                                    <div class="card-category-meta">UV Protected</div>
-                                    <h3 class="card-product-title"><a href="/product/">Polarized Matte Sunglasses</a></h3>
+                                    <div class="card-category-meta">{{ item.sub_category.name }}</div>
+                                    <h3 class="card-product-title"><a href="/product/{{ item.id }}">{{ item.name }}</a></h3>
                                     <div class="card-price-row">
-                                        <span class="price-current">₹1,199</span>
-                                        <span class="price-mrp">₹1,999</span>
+                                        <span class="price-current">₹{{ item.price }}</span>
+                                        <span class="price-mrp">₹{{ item.price|add:2000 }}</span>
                                     </div>
-                                    <a href="/product/" class="btn-card-cart"><i class="fa fa-eye"></i> View Range</a>
+                                    <a href="{% url 'cart_add' item.id %}" class="btn-card-cart">
+                                        <i class="fa fa-shopping-bag"></i> Add to Cart
+                                    </a>
                                 </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="tab-kids">
+                <!-- Tab 4: Real Home & Appliances -->
+                <div class="tab-pane fade" id="tab-home">
                     <div class="row">
-                        <div class="col-sm-3 col-xs-6">
+                        {% for item in trending_home %}
+                        <div class="col-sm-3 col-xs-6" style="margin-bottom: 20px;">
                             <div class="modern-product-card">
                                 <div class="card-media-box">
-                                    <img src="/static/images/home/gallery1.jpg" alt="Kids Soft Tee" />
+                                    <a href="/product/{{ item.id }}">
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy" />
+                                    </a>
                                 </div>
                                 <div class="card-body-content">
-                                    <div class="card-category-meta">Junior Fits</div>
-                                    <h3 class="card-product-title"><a href="/product/">Kids Cotton Play Tee</a></h3>
+                                    <div class="card-category-meta">{{ item.sub_category.name }}</div>
+                                    <h3 class="card-product-title"><a href="/product/{{ item.id }}">{{ item.name }}</a></h3>
                                     <div class="card-price-row">
-                                        <span class="price-current">₹499</span>
-                                        <span class="price-mrp">₹799</span>
+                                        <span class="price-current">₹{{ item.price }}</span>
+                                        <span class="price-mrp">₹{{ item.price|add:1500 }}</span>
                                     </div>
-                                    <a href="/product/" class="btn-card-cart"><i class="fa fa-eye"></i> View Range</a>
+                                    <a href="{% url 'cart_add' item.id %}" class="btn-card-cart">
+                                        <i class="fa fa-shopping-bag"></i> Add to Cart
+                                    </a>
                                 </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

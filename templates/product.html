@@ -11,42 +11,84 @@
             </ol>
         </div>
 
-        <!-- Modern Category & Brand Filter Bar -->
+        <!-- Modern Two-Tier Category & Brand Filter Bar -->
         <div class="modern-filter-container">
             <div class="row">
-                <div class="col-sm-12" style="margin-bottom: 14px;">
+                <!-- Tier 1: Main Departments / Categories -->
+                <div class="col-sm-12" style="margin-bottom: 12px;">
                     <div class="filter-header-title">
-                        <i class="fa fa-filter" style="color: var(--brand-primary);"></i> Filter by Category
+                        <i class="fa fa-th-large" style="color: var(--brand-primary);"></i> Departments / Main Categories
                     </div>
                     <div class="chips-row">
-                        <a href="/product/" class="filter-chip {% if not request.GET.sub_category and not request.GET.brand %}active{% endif %}">
-                            <i class="fa fa-th"></i> All Items
+                        <a href="/product/" class="filter-chip {% if not request.GET.category and not request.GET.sub_category and not request.GET.brand %}active{% endif %}">
+                            <i class="fa fa-th"></i> All Departments
                         </a>
                         {% for cat in category %}
-                            {% for sub in cat.sub_category_set.all %}
-                            <a href="/product/?sub_category={{ sub.id }}" class="filter-chip {% if request.GET.sub_category == sub.id|stringformat:'s' %}active{% endif %}">
-                                {{ sub.name }}
-                            </a>
-                            {% endfor %}
+                        <a href="/product/?category={{ cat.id }}" class="filter-chip {% if active_category.id == cat.id and not request.GET.sub_category %}active{% endif %}">
+                            {% if "Men" in cat.name %}👔
+                            {% elif "women" in cat.name or "Women" in cat.name %}👗
+                            {% elif "Child" in cat.name or "Kids" in cat.name %}👶
+                            {% elif "Home" in cat.name %}⚡
+                            {% elif "Mobile" in cat.name %}📱
+                            {% elif "Computer" in cat.name %}💻
+                            {% else %}🏷️
+                            {% endif %}
+                            {{ cat.name }}
+                        </a>
                         {% endfor %}
                     </div>
                 </div>
 
-                {% if brand %}
-                <div class="col-sm-12" style="margin-top: 10px; padding-top: 12px; border-top: 1px dashed var(--slate-200);">
+                <!-- Tier 2: Sub-Categories -->
+                <div class="col-sm-12" style="margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--slate-200);">
                     <div class="filter-header-title" style="margin-bottom: 8px;">
-                        <i class="fa fa-bookmark-o" style="color: var(--brand-secondary);"></i> Filter by Brand
+                        <i class="fa fa-tags" style="color: var(--brand-secondary);"></i> 
+                        {% if active_category %}
+                            Sub-categories in <strong>{{ active_category.name }}</strong>:
+                        {% else %}
+                            Browse by Specific Product Type:
+                        {% endif %}
                     </div>
                     <div class="chips-row">
-                        {% for b in brand %}
-                        <a href="/product/?brand={{ b.id }}" class="filter-chip {% if request.GET.brand == b.id|stringformat:'s' %}active{% endif %}">
-                            {{ b.name }}
-                        </a>
-                        {% endfor %}
-                        {% if request.GET.sub_category or request.GET.brand %}
-                        <a href="/product/" class="filter-chip" style="background: #fee2e2; border-color: #fca5a5; color: #dc2626;">
-                            <i class="fa fa-times"></i> Reset Filters
-                        </a>
+                        {% if active_category %}
+                            <a href="/product/?category={{ active_category.id }}" class="filter-chip {% if not request.GET.sub_category %}active{% endif %}">
+                                All in {{ active_category.name }}
+                            </a>
+                            {% for sub in active_category.sub_category_set.all %}
+                            <a href="/product/?category={{ active_category.id }}&sub_category={{ sub.id }}" class="filter-chip {% if request.GET.sub_category == sub.id|stringformat:'s' %}active{% endif %}">
+                                {{ sub.name }}
+                            </a>
+                            {% endfor %}
+                        {% else %}
+                            {% for cat in category %}
+                                {% for sub in cat.sub_category_set.all %}
+                                <a href="/product/?category={{ cat.id }}&sub_category={{ sub.id }}" class="filter-chip {% if request.GET.sub_category == sub.id|stringformat:'s' %}active{% endif %}">
+                                    {{ sub.name }}
+                                </a>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Brand Filter & Active Filter Reset -->
+                {% if brand or request.GET.category or request.GET.sub_category or request.GET.brand %}
+                <div class="col-sm-12" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--slate-200);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <div class="chips-row">
+                            <span style="font-size: 13px; font-weight: 600; color: var(--slate-600); margin-right: 6px;">Filter by Brand:</span>
+                            {% for b in brand %}
+                            <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sub_category %}sub_category={{ request.GET.sub_category }}&{% endif %}brand={{ b.id }}" class="filter-chip {% if request.GET.brand == b.id|stringformat:'s' %}active{% endif %}" style="padding: 4px 10px; font-size: 12px;">
+                                {{ b.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% if request.GET.category or request.GET.sub_category or request.GET.brand %}
+                        <div>
+                            <a href="/product/" class="filter-chip" style="background: #fee2e2; border-color: #fca5a5; color: #dc2626; font-weight: 600;">
+                                <i class="fa fa-times"></i> Reset All Filters
+                            </a>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
@@ -57,8 +99,28 @@
         <!-- Section Headline -->
         <div class="section-headline">
             <div>
-                <h2>Store Catalog</h2>
-                <p>Browsing {{ product|length }} products with 24/7 AI-assisted support</p>
+                <h2>
+                    {% if active_sub_category %}
+                        {{ active_sub_category.name }}
+                    {% elif active_category %}
+                        {{ active_category.name }}
+                    {% elif active_brand %}
+                        {{ active_brand.name }} Collection
+                    {% else %}
+                        Store Catalog
+                    {% endif %}
+                </h2>
+                <p>
+                    Showing {{ product|length }} products
+                    {% if active_sub_category %}
+                        in <strong>{{ active_sub_category.name }}</strong> ({{ active_category.name }})
+                    {% elif active_category %}
+                        in <strong>{{ active_category.name }}</strong>
+                    {% endif %}
+                    {% if active_brand %}
+                        by <strong>{{ active_brand.name }}</strong>
+                    {% endif %}
+                </p>
             </div>
             <div style="font-size: 13px; color: var(--slate-500);">
                 <span>Sort: <strong>Newest First</strong></span>

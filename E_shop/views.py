@@ -1,20 +1,12 @@
-from django.shortcuts import render,redirect,HttpResponse
-from app.models import Category,Product,Contact_us,Order,Brand,SupportTicket
-from django.contrib.auth import authenticate , login
+from django.shortcuts import render, redirect, HttpResponse
+from app.models import Category, Product, Sub_category, Contact_us, Order, Brand, SupportTicket
+from django.contrib.auth import authenticate, login
 from app.models import UserCreateForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from cart.cart import Cart
 
-
-
-
-
-
-
-from app.forms import FeedbackForm  # Correct if forms.py is in the same app
-
-
+from app.forms import FeedbackForm
 
 import json
 import requests
@@ -28,25 +20,53 @@ def Master(request):
     return render(request, 'master.html')
 
 def Index(request):
-    category = Category.objects.all()
+    category = Category.objects.prefetch_related('sub_category_set').all()
     brand = Brand.objects.all()
     
     brandID = request.GET.get('brand')
-    categoryID = request.GET.get('sub_category')
+    categoryID = request.GET.get('category')
+    subCategoryID = request.GET.get('sub_category')
 
-    if categoryID:
-        product=Product.objects.filter(sub_category = categoryID).order_by('-id')
-    elif brandID:
-        product = Product.objects.filter(brand = brandID).order_by('-id')
-    else:
-        product = Product.objects.all()
+    products = Product.objects.all().select_related('category', 'sub_category', 'brand').order_by('-id')
+
+    active_category = None
+    active_sub_category = None
+    active_brand = None
+
+    if subCategoryID:
+        products = products.filter(sub_category_id=subCategoryID)
+        active_sub_category = Sub_category.objects.filter(id=subCategoryID).first()
+        if active_sub_category:
+            active_category = active_sub_category.category
+    elif categoryID:
+        products = products.filter(category_id=categoryID)
+        active_category = Category.objects.filter(id=categoryID).first()
+
+    if brandID:
+        products = products.filter(brand_id=brandID)
+        active_brand = Brand.objects.filter(id=brandID).first()
+
+    # Pre-filtered products for the curated trending section on homepage
+    trending_tshirts = Product.objects.filter(sub_category__name__iexact='T-shirt').order_by('-id')[:4]
+    if not trending_tshirts.exists():
+        trending_tshirts = Product.objects.filter(name__icontains='T-shirt')[:4]
+    trending_women = Product.objects.filter(category__name__icontains='women').order_by('-id')[:4]
+    trending_tech = Product.objects.filter(category__name__icontains='mobile').order_by('-id')[:4]
+    trending_home = Product.objects.filter(category__name__icontains='home').order_by('-id')[:4]
 
     context = {
-        'category':category,
-        'product' :product,
-        'brand':brand, 
-}
-    return render(request, 'index.html' , context)
+        'category': category,
+        'product': products,
+        'brand': brand,
+        'active_category': active_category,
+        'active_sub_category': active_sub_category,
+        'active_brand': active_brand,
+        'trending_tshirts': trending_tshirts,
+        'trending_women': trending_women,
+        'trending_tech': trending_tech,
+        'trending_home': trending_home,
+    }
+    return render(request, 'index.html', context)
 def signup(request):
     if request.method == 'POST':
         form = UserCreateForm(request.POST)
@@ -169,24 +189,40 @@ def Your_Order(request):
     return render(request , 'order.html' , context)
 
 def Product_page(request):
-    category = Category.objects.all()
+    category = Category.objects.prefetch_related('sub_category_set').all()
     brand = Brand.objects.all()
     brandID = request.GET.get('brand')
-    categoryID = request.GET.get('sub_category')
+    categoryID = request.GET.get('category')
+    subCategoryID = request.GET.get('sub_category')
 
-    if categoryID:
-        product=Product.objects.filter(sub_category = categoryID).order_by('-id')
-    elif brandID:
-        product = Product.objects.filter(brand = brandID).order_by('-id')
-    else:
-        product = Product.objects.all()
+    products = Product.objects.all().select_related('category', 'sub_category', 'brand').order_by('-id')
+
+    active_category = None
+    active_sub_category = None
+    active_brand = None
+
+    if subCategoryID:
+        products = products.filter(sub_category_id=subCategoryID)
+        active_sub_category = Sub_category.objects.filter(id=subCategoryID).first()
+        if active_sub_category:
+            active_category = active_sub_category.category
+    elif categoryID:
+        products = products.filter(category_id=categoryID)
+        active_category = Category.objects.filter(id=categoryID).first()
+
+    if brandID:
+        products = products.filter(brand_id=brandID)
+        active_brand = Brand.objects.filter(id=brandID).first()
 
     context = {
-        'category' : category,
-        'brand':brand,
-        'product': product,
+        'category': category,
+        'brand': brand,
+        'product': products,
+        'active_category': active_category,
+        'active_sub_category': active_sub_category,
+        'active_brand': active_brand,
     }
-    return render(request , 'product.html' , context)
+    return render(request, 'product.html', context)
 
 
 def Product_Detail(request , id):
