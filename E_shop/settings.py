@@ -26,7 +26,16 @@ SECRET_KEY = 'django-insecure-3(jns0^j)6(1+9#nhqo4)n*u0fb9f41c8b0pokpu@_^u_zahyk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['e-commerce-4-l3fc.onrender.com', 'localhost', '127.0.0.1', 'testserver', '*'] 
+ALLOWED_HOSTS = ['e-commerce-4-l3fc.onrender.com', 'localhost', '127.0.0.1', 'testserver', '.vercel.app', '.now.sh', '*'] 
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://*.now.sh',
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:8001',
+    'http://localhost:8000',
+    'http://localhost:8001',
+]
 
 
 
@@ -56,6 +65,7 @@ CART_SESSION_ID = 'cart'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -97,6 +107,19 @@ DATABASES = {
     }
 }
 
+# Remote PostgreSQL support via DATABASE_URL environment variable (Neon, Supabase, Vercel Postgres)
+try:
+    import dj_database_url
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if DATABASE_URL:
+        DATABASES['default'] = dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+except Exception:
+    pass
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -132,12 +155,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = '/static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,'static')
+    os.path.join(BASE_DIR, 'static')
 ]
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'images')
+
 
 
 
