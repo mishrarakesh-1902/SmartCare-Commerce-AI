@@ -1,6 +1,125 @@
 {% extends 'master.html' %}
 
 {% block body %}
+<style>
+/* Guaranteed horizontal scrollable cards for Department and Brand sections */
+.dept-nav-rail-wrapper {
+  overflow-x: auto !important;
+  margin: 0 0 16px 0 !important;
+  padding: 4px 0 8px 0 !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-behavior: smooth !important;
+}
+.dept-nav-rail-wrapper::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.dept-nav-rail {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 12px !important;
+  min-width: min-content !important;
+  flex-wrap: nowrap !important;
+}
+.dept-nav-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 10px 18px !important;
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  text-decoration: none !important;
+  color: #1e293b !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+  user-select: none !important;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.dept-nav-card:hover {
+  background: #ffffff !important;
+  border-color: #94a3b8 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08) !important;
+  color: #0f172a !important;
+}
+.dept-nav-card.active {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25) !important;
+  transform: translateY(-2px) !important;
+}
+.dept-nav-card.active .dept-card-icon-wrap {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+.dept-nav-card.active .dept-card-count {
+  color: #94a3b8 !important;
+}
+.dept-card-icon-wrap {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 10px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  color: #334155 !important;
+  flex-shrink: 0 !important;
+}
+.dept-card-info {
+  display: flex !important;
+  flex-direction: column !important;
+  text-align: left !important;
+}
+.dept-card-name {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  color: inherit !important;
+}
+.dept-card-count {
+  font-size: 11px !important;
+  color: #64748b !important;
+  font-weight: 600 !important;
+  margin-top: 2px !important;
+}
+.rail-scroll-nav {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+.rail-scroll-btn {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  padding: 0 !important;
+  outline: none !important;
+}
+.rail-scroll-btn:hover {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+}
+</style>
 <section style="padding: 24px 0 60px;">
     <div class="container">
         <!-- Breadcrumb Bar -->
@@ -114,36 +233,38 @@
             </div>
             {% endif %}
 
-            <!-- Tier 3: Brand Navigation Rail (Horizontal Scrollable Cards like Department section) -->
-            <div class="brand-nav-section">
-                <div class="brand-bar-header">
-                    <div class="brand-bar-title-wrap">
-                        <span class="hub-ctrl-label"><i class="fa fa-tags"></i> Explore Brands:</span>
+            <!-- Tier 3: Brand Navigation Rail (Exact same horizontal cards as Department section) -->
+            <div class="brand-nav-section" style="padding-top: 14px; border-top: 1px solid #f1f5f9; margin-top: 6px;">
+                <div class="brand-bar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px;">
+                    <div class="brand-bar-title-wrap" style="display: flex; align-items: center; gap: 8px;">
+                        <span class="hub-ctrl-label" style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; display: inline-flex; align-items: center; gap: 5px; margin: 0;">
+                            <i class="fa fa-shield"></i> Explore Brands:
+                        </span>
                         {% if active_brand %}
-                        <span class="brand-filter-pill-active">
+                        <span class="brand-filter-pill-active" style="display: inline-flex; align-items: center; gap: 6px; background: #ede9fe; color: #6366f1; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px;">
                             Filtered: <strong>{{ active_brand.name }}</strong>
-                            <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" title="Clear brand filter">&times;</a>
+                            <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" title="Clear brand filter" style="color: #6366f1; font-weight: 800; text-decoration: none; margin-left: 2px;">&times;</a>
                         </span>
                         {% else %}
-                        <span class="brand-filter-pill-hint">{{ brand|length }} Brands</span>
+                        <span class="brand-filter-pill-hint" style="font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 9px; border-radius: 999px;">{{ brand|length }} Brands</span>
                         {% endif %}
                     </div>
 
-                    <div class="brand-header-actions">
+                    <div class="brand-header-actions" style="display: flex; align-items: center; gap: 10px;">
                         <!-- Scroll Left/Right Arrow Buttons -->
-                        <div class="rail-scroll-nav" title="Scroll Brands">
-                            <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(-300)" aria-label="Scroll Brands Left">
+                        <div class="rail-scroll-nav" style="display: inline-flex; align-items: center; gap: 5px;">
+                            <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(-300)" aria-label="Scroll Brands Left" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid #e2e8f0; background: #ffffff; color: #334155; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
                                 <i class="fa fa-chevron-left"></i>
                             </button>
-                            <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(300)" aria-label="Scroll Brands Right">
+                            <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(300)" aria-label="Scroll Brands Right" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid #e2e8f0; background: #ffffff; color: #334155; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
                                 <i class="fa fa-chevron-right"></i>
                             </button>
                         </div>
 
                         <!-- Sorting Dropdown -->
-                        <div class="hub-sort-wrap">
-                            <label for="catalogSortSelect" class="hub-ctrl-label"><i class="fa fa-sort-amount-desc"></i> Sort:</label>
-                            <select id="catalogSortSelect" class="hub-sort-select" onchange="applySorting(this.value)">
+                        <div class="hub-sort-wrap" style="display: inline-flex; align-items: center; gap: 8px;">
+                            <label for="catalogSortSelect" class="hub-ctrl-label" style="font-size: 11.5px; font-weight: 700; color: #64748b; margin: 0; white-space: nowrap;"><i class="fa fa-sort-amount-desc"></i> Sort By:</label>
+                            <select id="catalogSortSelect" class="hub-sort-select" onchange="applySorting(this.value)" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; color: #1e293b; outline: none; cursor: pointer;">
                                 <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
                                 <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
                                 <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
@@ -153,27 +274,27 @@
                     </div>
                 </div>
 
-                <!-- Brand Horizontal Cards Rail -->
-                <div class="brand-nav-rail-wrapper" id="brandRailWrapper">
-                    <div class="brand-nav-rail">
+                <!-- Brand Horizontal Cards Rail (Identical to Department Rail) -->
+                <div class="dept-nav-rail-wrapper" id="brandRailWrapper" style="overflow-x: auto !important; margin: 0 0 16px 0 !important; padding: 4px 0 8px 0 !important; scrollbar-width: none !important; -webkit-overflow-scrolling: touch !important; scroll-behavior: smooth !important;">
+                    <div class="dept-nav-rail" style="display: flex !important; flex-direction: row !important; gap: 12px !important; min-width: min-content !important; flex-wrap: nowrap !important;">
                         <!-- All Brands Card -->
                         <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" 
-                           class="brand-nav-card {% if not active_brand %}active{% endif %}">
-                            <div class="brand-card-icon-wrap">
+                           class="dept-nav-card {% if not active_brand %}active{% endif %}">
+                            <div class="dept-card-icon-wrap">
                                 <i class="fa fa-th-large"></i>
                             </div>
-                            <div class="brand-card-info">
-                                <span class="brand-card-name">All Brands</span>
-                                <span class="brand-card-count">{{ total_products_count|default:"168" }} items</span>
+                            <div class="dept-card-info">
+                                <span class="dept-card-name">All Brands</span>
+                                <span class="dept-card-count">{{ total_products_count|default:"168" }} Products</span>
                             </div>
                         </a>
 
                         <!-- Individual Brand Cards -->
                         {% for b in brand %}
                         <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}brand={{ b.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
-                           class="brand-nav-card {% if active_brand.id == b.id %}active{% endif %}"
+                           class="dept-nav-card {% if active_brand.id == b.id %}active{% endif %}"
                            {% if active_brand.id == b.id %}id="activeBrandCard"{% endif %}>
-                            <div class="brand-card-icon-wrap">
+                            <div class="dept-card-icon-wrap">
                                 {% if "Apple" in b.name %}<i class="fa fa-apple"></i>
                                 {% elif "Samsung" in b.name or "Xiaomi" in b.name or "OnePlus" in b.name or "Google" in b.name %}<i class="fa fa-mobile-phone"></i>
                                 {% elif "Sony" in b.name or "boAt" in b.name %}<i class="fa fa-headphones"></i>
@@ -184,12 +305,12 @@
                                 {% elif "L'Oréal" in b.name or "Ordinary" in b.name or "Calvin" in b.name %}<i class="fa fa-diamond"></i>
                                 {% elif "Tourister" in b.name or "American" in b.name %}<i class="fa fa-suitcase"></i>
                                 {% elif "Spigen" in b.name or "Anker" in b.name %}<i class="fa fa-plug"></i>
-                                {% else %}<span class="brand-letter-badge">{{ b.name|slice:":1" }}</span>
+                                {% else %}<span style="font-weight: 800; font-size: 14px; color: inherit;">{{ b.name|slice:":1" }}</span>
                                 {% endif %}
                             </div>
-                            <div class="brand-card-info">
-                                <span class="brand-card-name">{{ b.name }}</span>
-                                <span class="brand-card-count">{{ b.num_products }} items</span>
+                            <div class="dept-card-info">
+                                <span class="dept-card-name">{{ b.name }}</span>
+                                <span class="dept-card-count">{{ b.num_products }} items</span>
                             </div>
                         </a>
                         {% endfor %}

@@ -1042,6 +1042,7 @@ a:hover, a:focus {
   color: var(--slate-800) !important;
   transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
+  white-space: nowrap;
   user-select: none;
 }
 
@@ -1215,7 +1216,7 @@ a:hover, a:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 12px;
   margin-bottom: 12px;
 }
