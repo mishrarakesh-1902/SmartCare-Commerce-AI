@@ -80,6 +80,51 @@ a:hover, a:focus {
 }
 
 /* ==========================================================================
+   Full Screen Fluid Layout Overrides (Edge-to-Edge Experience)
+   Eliminates narrow 1170px box & dead space on both sides of screen
+   ========================================================================== */
+.container {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: clamp(20px, 3.2vw, 48px) !important;
+  padding-right: clamp(20px, 3.2vw, 48px) !important;
+}
+
+@media (min-width: 768px) {
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Fluid Product Grid Scaling on Wide Screens */
+@media (min-width: 1400px) {
+  .col-md-3 {
+    width: 20% !important; /* 5 cards per row on large desktop */
+  }
+}
+
+@media (min-width: 1750px) {
+  .col-md-3 {
+    width: 16.666667% !important; /* 6 cards per row on ultrawide desktop */
+  }
+}
+
+/* ==========================================================================
    Header & Navigation
    ========================================================================== */
 
@@ -183,7 +228,7 @@ a:hover, a:focus {
 /* Modern Search Box */
 .modern-search-wrapper {
   flex: 1;
-  max-width: 540px;
+  max-width: 680px;
   position: relative;
 }
 
