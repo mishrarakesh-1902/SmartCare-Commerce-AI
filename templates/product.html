@@ -204,6 +204,18 @@
   white-space: nowrap !important;
   transition: all 0.2s ease !important;
 }
+
+#catalog-discovery-hub {
+  scroll-margin-top: 85px;
+}
+#catalog-ajax-container {
+  position: relative;
+  transition: opacity 0.18s ease;
+}
+#catalog-ajax-container.is-loading {
+  opacity: 0.45;
+  pointer-events: none;
+}
 </style>
 <section style="padding: 24px 0 60px;">
     <div class="container">
@@ -215,220 +227,221 @@
             </ol>
         </div>
 
-        <!-- Luxury Catalog Discovery Hub -->
-        <div class="catalog-discovery-hub">
-            <!-- Hub Header -->
-            <div class="hub-header-bar">
-                <div class="hub-title-group">
-                    <span class="hub-kicker"><i class="fa fa-sliders"></i> Smart Filter &amp; Discovery</span>
-                    <h2 class="hub-main-title">
-                        {% if active_sub_category %}
-                            {{ active_sub_category.name }}
-                        {% elif active_category %}
-                            {{ active_category.name }}
-                        {% elif active_brand %}
-                            {{ active_brand.name }} Collection
-                        {% else %}
-                            Explore All Departments
-                        {% endif %}
-                    </h2>
-                </div>
-
-                <div class="hub-header-actions">
-                    <div class="rail-scroll-nav" title="Scroll Departments">
-                        <button type="button" class="rail-scroll-btn" onclick="scrollDeptRail(-300)" aria-label="Scroll Departments Left">
-                            <i class="fa fa-chevron-left"></i>
-                        </button>
-                        <button type="button" class="rail-scroll-btn" onclick="scrollDeptRail(300)" aria-label="Scroll Departments Right">
-                            <i class="fa fa-chevron-right"></i>
-                        </button>
-                    </div>
-                    <span class="hub-stat-pill">
-                        <i class="fa fa-cubes"></i> <strong>{{ product|length }}</strong> Products Found
-                    </span>
-                    {% if active_category or active_sub_category or active_brand %}
-                    <a href="/product/" class="hub-clear-pill" title="Reset all active filters">
-                        <i class="fa fa-times-circle"></i> Clear All Filters
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Tier 1: Department Navigation Rail (Sleek Horizontal Cards) -->
-            <div class="dept-nav-rail-wrapper" id="deptRailWrapper">
-                <div class="dept-nav-rail">
-                    <!-- All Departments Card -->
-                    <a href="/product/{% if active_brand %}?brand={{ active_brand.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}{% elif current_sort and current_sort != 'newest' %}?sort={{ current_sort }}{% endif %}" 
-                       class="dept-nav-card {% if not active_category and not active_sub_category %}active{% endif %}">
-                        <div class="dept-card-icon-wrap">
-                            <i class="fa fa-th-large"></i>
-                        </div>
-                        <div class="dept-card-info">
-                            <span class="dept-card-name">All Departments</span>
-                            <span class="dept-card-count">{{ total_products_count|default:"168" }} Products</span>
-                        </div>
-                    </a>
-
-                    <!-- Individual Category Cards -->
-                    {% for cat in category %}
-                    <a href="?category={{ cat.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
-                       class="dept-nav-card {% if active_category.id == cat.id and not active_sub_category %}active{% elif active_category.id == cat.id %}active-parent{% endif %}">
-                        <div class="dept-card-icon-wrap">
-                            {% if "Men" in cat.name %}<i class="fa fa-male"></i>
-                            {% elif "women" in cat.name or "Women" in cat.name %}<i class="fa fa-female"></i>
-                            {% elif "Child" in cat.name or "Kids" in cat.name %}<i class="fa fa-smile-o"></i>
-                            {% elif "Home" in cat.name %}<i class="fa fa-home"></i>
-                            {% elif "Mobile" in cat.name %}<i class="fa fa-mobile-phone"></i>
-                            {% elif "Computer" in cat.name %}<i class="fa fa-laptop"></i>
-                            {% else %}<i class="fa fa-shopping-bag"></i>
+        <!-- Luxury Catalog Discovery Hub & Dynamic Product Catalog Container -->
+        <div id="catalog-ajax-container">
+            <div class="catalog-discovery-hub" id="catalog-discovery-hub">
+                <!-- Hub Header -->
+                <div class="hub-header-bar">
+                    <div class="hub-title-group">
+                        <span class="hub-kicker"><i class="fa fa-sliders"></i> Smart Filter &amp; Discovery</span>
+                        <h2 class="hub-main-title">
+                            {% if active_sub_category %}
+                                {{ active_sub_category.name }}
+                            {% elif active_category %}
+                                {{ active_category.name }}
+                            {% elif active_brand %}
+                                {{ active_brand.name }} Collection
+                            {% else %}
+                                Explore All Departments
                             {% endif %}
-                        </div>
-                        <div class="dept-card-info">
-                            <span class="dept-card-name">{{ cat.name }}</span>
-                            <span class="dept-card-count">{{ cat.num_products }} items</span>
-                        </div>
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Tier 2: Sub-Category Refinement (Contextual: Only shown when a department is chosen) -->
-            {% if active_category %}
-            <div class="subcat-refinement-section">
-                <div class="subcat-bar-header">
-                    <span class="subcat-label">
-                        <i class="fa fa-filter"></i> Specific Styles in <strong>{{ active_category.name }}</strong>:
-                    </span>
-                    <span class="subcat-meta-tag"><i class="fa fa-check"></i> Filtered by {{ active_category.name }}</span>
-                </div>
-
-                <div class="subcat-chips-rail">
-                    <a href="?category={{ active_category.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
-                       class="subcat-chip {% if not active_sub_category %}active{% endif %}">
-                        <i class="fa fa-th-list"></i> All in {{ active_category.name }}
-                    </a>
-                    {% for sub in active_category.sub_category_set.all %}
-                    <a href="?category={{ active_category.id }}&sub_category={{ sub.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
-                       class="subcat-chip {% if active_sub_category.id == sub.id %}active{% endif %}">
-                        {{ sub.name }}
-                        <span class="subcat-pill-count">{{ sub.num_products }}</span>
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Tier 3: Brand Navigation Rail (Exact same horizontal cards as Department section) -->
-            <div class="brand-nav-section" style="padding-top: 14px; border-top: 1px solid #f1f5f9; margin-top: 6px;">
-                <div class="brand-bar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px;">
-                    <div class="brand-bar-title-wrap" style="display: flex; align-items: center; gap: 8px;">
-                        <span class="hub-ctrl-label" style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; display: inline-flex; align-items: center; gap: 5px; margin: 0;">
-                            <i class="fa fa-shield"></i> Explore Brands:
-                        </span>
-                        {% if active_brand %}
-                        <span class="brand-filter-pill-active" style="display: inline-flex; align-items: center; gap: 6px; background: #ede9fe; color: #6366f1; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px;">
-                            Filtered: <strong>{{ active_brand.name }}</strong>
-                            <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" title="Clear brand filter" style="color: #6366f1; font-weight: 800; text-decoration: none; margin-left: 2px;">&times;</a>
-                        </span>
-                        {% else %}
-                        <span class="brand-filter-pill-hint" style="font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 9px; border-radius: 999px;">{{ brand|length }} Brands</span>
-                        {% endif %}
+                        </h2>
                     </div>
 
-                    <div class="brand-header-actions" style="display: flex; align-items: center; gap: 10px;">
-                        <!-- Scroll Left/Right Arrow Buttons -->
-                        <div class="rail-scroll-nav" style="display: inline-flex; align-items: center; gap: 5px;">
-                            <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(-300)" aria-label="Scroll Brands Left" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid #e2e8f0; background: #ffffff; color: #334155; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <div class="hub-header-actions">
+                        <div class="rail-scroll-nav" title="Scroll Departments">
+                            <button type="button" class="rail-scroll-btn" onclick="scrollDeptRail(-300)" aria-label="Scroll Departments Left">
                                 <i class="fa fa-chevron-left"></i>
                             </button>
-                            <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(300)" aria-label="Scroll Brands Right" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid #e2e8f0; background: #ffffff; color: #334155; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <button type="button" class="rail-scroll-btn" onclick="scrollDeptRail(300)" aria-label="Scroll Departments Right">
                                 <i class="fa fa-chevron-right"></i>
                             </button>
                         </div>
-
-                        <!-- Sorting Dropdown -->
-                        <div class="hub-sort-wrap" style="display: inline-flex; align-items: center; gap: 8px;">
-                            <label for="catalogSortSelect" class="hub-ctrl-label" style="font-size: 11.5px; font-weight: 700; color: #64748b; margin: 0; white-space: nowrap;"><i class="fa fa-sort-amount-desc"></i> Sort By:</label>
-                            <select id="catalogSortSelect" class="hub-sort-select" onchange="applySorting(this.value)" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; color: #1e293b; outline: none; cursor: pointer;">
-                                <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
-                                <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                                <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                                <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Product Name: A to Z</option>
-                            </select>
-                        </div>
+                        <span class="hub-stat-pill">
+                            <i class="fa fa-cubes"></i> <strong>{{ product|length }}</strong> Products Found
+                        </span>
+                        {% if active_category or active_sub_category or active_brand %}
+                        <a href="/product/#catalog-discovery-hub" class="hub-clear-pill" title="Reset all active filters">
+                            <i class="fa fa-times-circle"></i> Clear All Filters
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
 
-                <!-- Tier 3: Brand Navigation Rail (Distinct Luxury Capsule Pills) -->
-                <div class="dept-nav-rail-wrapper" id="brandRailWrapper" style="overflow-x: auto !important; margin: 0 0 16px 0 !important; padding: 4px 0 8px 0 !important; scrollbar-width: none !important; -webkit-overflow-scrolling: touch !important; scroll-behavior: smooth !important;">
-                    <div class="dept-nav-rail" style="display: flex !important; flex-direction: row !important; gap: 10px !important; min-width: min-content !important; flex-wrap: nowrap !important; align-items: center !important;">
-                        <!-- All Brands Capsule -->
-                        <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" 
-                           class="brand-pill-card {% if not active_brand %}active{% endif %}">
-                            <span class="brand-pill-avatar">
+                <!-- Tier 1: Department Navigation Rail (Sleek Horizontal Cards) -->
+                <div class="dept-nav-rail-wrapper" id="deptRailWrapper">
+                    <div class="dept-nav-rail">
+                        <!-- All Departments Card -->
+                        <a href="/product/{% if active_brand %}?brand={{ active_brand.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}{% elif current_sort and current_sort != 'newest' %}?sort={{ current_sort }}{% endif %}#catalog-discovery-hub" 
+                           class="dept-nav-card {% if not active_category and not active_sub_category %}active{% endif %}">
+                            <div class="dept-card-icon-wrap">
                                 <i class="fa fa-th-large"></i>
-                            </span>
-                            <span class="brand-pill-name">All Brands</span>
-                            <span class="brand-pill-count">{{ total_products_count|default:"168" }}</span>
+                            </div>
+                            <div class="dept-card-info">
+                                <span class="dept-card-name">All Departments</span>
+                                <span class="dept-card-count">{{ total_products_count|default:"168" }} Products</span>
+                            </div>
                         </a>
 
-                        <!-- Individual Brand Capsules -->
-                        {% for b in brand %}
-                        <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}brand={{ b.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
-                           class="brand-pill-card {% if active_brand.id == b.id %}active{% endif %}"
-                           {% if active_brand.id == b.id %}id="activeBrandCard"{% endif %}>
-                            <span class="brand-pill-avatar">
-                                {% if "Apple" in b.name %}<i class="fa fa-apple"></i>
-                                {% elif "Samsung" in b.name or "Xiaomi" in b.name or "OnePlus" in b.name or "Google" in b.name %}<i class="fa fa-mobile-phone"></i>
-                                {% elif "Sony" in b.name or "boAt" in b.name %}<i class="fa fa-headphones"></i>
-                                {% elif "HP" in b.name or "Lenovo" in b.name or "Dell" in b.name %}<i class="fa fa-laptop"></i>
-                                {% elif "Nike" in b.name or "Adidas" in b.name or "Decathlon" in b.name %}<i class="fa fa-trophy"></i>
-                                {% elif "Prestige" in b.name or "Pigeon" in b.name or "IKEA" in b.name or "Philips" in b.name %}<i class="fa fa-home"></i>
-                                {% elif "Casio" in b.name or "Titan" in b.name or "Fastrack" in b.name %}<i class="fa fa-clock-o"></i>
-                                {% elif "L'Oréal" in b.name or "Ordinary" in b.name or "Calvin" in b.name %}<i class="fa fa-diamond"></i>
-                                {% elif "Tourister" in b.name or "American" in b.name %}<i class="fa fa-suitcase"></i>
-                                {% elif "Spigen" in b.name or "Anker" in b.name %}<i class="fa fa-plug"></i>
-                                {% else %}<strong style="font-size: 12px; font-weight: 800;">{{ b.name|slice:":1" }}</strong>
+                        <!-- Individual Category Cards -->
+                        {% for cat in category %}
+                        <a href="?category={{ cat.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}#catalog-discovery-hub" 
+                           class="dept-nav-card {% if active_category.id == cat.id and not active_sub_category %}active{% elif active_category.id == cat.id %}active-parent{% endif %}">
+                            <div class="dept-card-icon-wrap">
+                                {% if "Men" in cat.name %}<i class="fa fa-male"></i>
+                                {% elif "women" in cat.name or "Women" in cat.name %}<i class="fa fa-female"></i>
+                                {% elif "Child" in cat.name or "Kids" in cat.name %}<i class="fa fa-smile-o"></i>
+                                {% elif "Home" in cat.name %}<i class="fa fa-home"></i>
+                                {% elif "Mobile" in cat.name %}<i class="fa fa-mobile-phone"></i>
+                                {% elif "Computer" in cat.name %}<i class="fa fa-laptop"></i>
+                                {% else %}<i class="fa fa-shopping-bag"></i>
                                 {% endif %}
-                            </span>
-                            <span class="brand-pill-name">{{ b.name }}</span>
-                            <span class="brand-pill-count">{{ b.num_products }}</span>
+                            </div>
+                            <div class="dept-card-info">
+                                <span class="dept-card-name">{{ cat.name }}</span>
+                                <span class="dept-card-count">{{ cat.num_products }} items</span>
+                            </div>
                         </a>
                         {% endfor %}
                     </div>
                 </div>
-            </div>
 
-            <!-- Active Applied Filters Ribbon (Only shows when a filter is applied) -->
-            {% if active_category or active_sub_category or active_brand %}
-            <div class="active-filters-ribbon">
-                <span class="ribbon-label"><i class="fa fa-check-circle"></i> Active Filters:</span>
-                
+                <!-- Tier 2: Sub-Category Refinement (Contextual: Only shown when a department is chosen) -->
                 {% if active_category %}
-                <span class="active-filter-badge">
-                    Dept: <strong>{{ active_category.name }}</strong>
-                    <a href="/product/{% if active_brand %}?brand={{ active_brand.id }}{% endif %}" title="Remove department filter">&times;</a>
-                </span>
+                <div class="subcat-refinement-section">
+                    <div class="subcat-bar-header">
+                        <span class="subcat-label">
+                            <i class="fa fa-filter"></i> Specific Styles in <strong>{{ active_category.name }}</strong>:
+                        </span>
+                        <span class="subcat-meta-tag"><i class="fa fa-check"></i> Filtered by {{ active_category.name }}</span>
+                    </div>
+
+                    <div class="subcat-chips-rail">
+                        <a href="?category={{ active_category.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}#catalog-discovery-hub" 
+                           class="subcat-chip {% if not active_sub_category %}active{% endif %}">
+                            <i class="fa fa-th-list"></i> All in {{ active_category.name }}
+                        </a>
+                        {% for sub in active_category.sub_category_set.all %}
+                        <a href="?category={{ active_category.id }}&sub_category={{ sub.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}#catalog-discovery-hub" 
+                           class="subcat-chip {% if active_sub_category.id == sub.id %}active{% endif %}">
+                            {{ sub.name }}
+                            <span class="subcat-pill-count">{{ sub.num_products }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% endif %}
 
-                {% if active_sub_category %}
-                <span class="active-filter-badge">
-                    Category: <strong>{{ active_sub_category.name }}</strong>
-                    <a href="?category={{ active_category.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}" title="Remove category filter">&times;</a>
-                </span>
-                {% endif %}
+                <!-- Tier 3: Brand Navigation Rail (Exact same horizontal cards as Department section) -->
+                <div class="brand-nav-section" style="padding-top: 14px; border-top: 1px solid #f1f5f9; margin-top: 6px;">
+                    <div class="brand-bar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px;">
+                        <div class="brand-bar-title-wrap" style="display: flex; align-items: center; gap: 8px;">
+                            <span class="hub-ctrl-label" style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; display: inline-flex; align-items: center; gap: 5px; margin: 0;">
+                                <i class="fa fa-shield"></i> Explore Brands:
+                            </span>
+                            {% if active_brand %}
+                            <span class="brand-filter-pill-active" style="display: inline-flex; align-items: center; gap: 6px; background: #ede9fe; color: #6366f1; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px;">
+                                Filtered: <strong>{{ active_brand.name }}</strong>
+                                <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}#catalog-discovery-hub" title="Clear brand filter" style="color: #6366f1; font-weight: 800; text-decoration: none; margin-left: 2px;">&times;</a>
+                            </span>
+                            {% else %}
+                            <span class="brand-filter-pill-hint" style="font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 9px; border-radius: 999px;">{{ brand|length }} Brands</span>
+                            {% endif %}
+                        </div>
 
-                {% if active_brand %}
-                <span class="active-filter-badge">
-                    Brand: <strong>{{ active_brand.name }}</strong>
-                    <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}{% endif %}" title="Remove brand filter">&times;</a>
-                </span>
-                {% endif %}
+                        <div class="brand-header-actions" style="display: flex; align-items: center; gap: 10px;">
+                            <!-- Scroll Left/Right Arrow Buttons -->
+                            <div class="rail-scroll-nav" style="display: inline-flex; align-items: center; gap: 5px;">
+                                <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(-300)" aria-label="Scroll Brands Left" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid #e2e8f0; background: #ffffff; color: #334155; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <i class="fa fa-chevron-left"></i>
+                                </button>
+                                <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(300)" aria-label="Scroll Brands Right" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid #e2e8f0; background: #ffffff; color: #334155; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <i class="fa fa-chevron-right"></i>
+                                </button>
+                            </div>
 
-                <a href="/product/" class="ribbon-clear-link">Clear All</a>
+                            <!-- Sorting Dropdown -->
+                            <div class="hub-sort-wrap" style="display: inline-flex; align-items: center; gap: 8px;">
+                                <label for="catalogSortSelect" class="hub-ctrl-label" style="font-size: 11.5px; font-weight: 700; color: #64748b; margin: 0; white-space: nowrap;"><i class="fa fa-sort-amount-desc"></i> Sort By:</label>
+                                <select id="catalogSortSelect" class="hub-sort-select" onchange="applySorting(this.value)" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; color: #1e293b; outline: none; cursor: pointer;">
+                                    <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
+                                    <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                                    <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                                    <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Product Name: A to Z</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tier 3: Brand Navigation Rail (Distinct Luxury Capsule Pills) -->
+                    <div class="dept-nav-rail-wrapper" id="brandRailWrapper" style="overflow-x: auto !important; margin: 0 0 16px 0 !important; padding: 4px 0 8px 0 !important; scrollbar-width: none !important; -webkit-overflow-scrolling: touch !important; scroll-behavior: smooth !important;">
+                        <div class="dept-nav-rail" style="display: flex !important; flex-direction: row !important; gap: 10px !important; min-width: min-content !important; flex-wrap: nowrap !important; align-items: center !important;">
+                            <!-- All Brands Capsule -->
+                            <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}#catalog-discovery-hub" 
+                               class="brand-pill-card {% if not active_brand %}active{% endif %}">
+                                <span class="brand-pill-avatar">
+                                    <i class="fa fa-th-large"></i>
+                                </span>
+                                <span class="brand-pill-name">All Brands</span>
+                                <span class="brand-pill-count">{{ total_products_count|default:"168" }}</span>
+                            </a>
+
+                            <!-- Individual Brand Capsules -->
+                            {% for b in brand %}
+                            <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}brand={{ b.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}#catalog-discovery-hub" 
+                               class="brand-pill-card {% if active_brand.id == b.id %}active{% endif %}"
+                               {% if active_brand.id == b.id %}id="activeBrandCard"{% endif %}>
+                                <span class="brand-pill-avatar">
+                                    {% if "Apple" in b.name %}<i class="fa fa-apple"></i>
+                                    {% elif "Samsung" in b.name or "Xiaomi" in b.name or "OnePlus" in b.name or "Google" in b.name %}<i class="fa fa-mobile-phone"></i>
+                                    {% elif "Sony" in b.name or "boAt" in b.name %}<i class="fa fa-headphones"></i>
+                                    {% elif "HP" in b.name or "Lenovo" in b.name or "Dell" in b.name %}<i class="fa fa-laptop"></i>
+                                    {% elif "Nike" in b.name or "Adidas" in b.name or "Decathlon" in b.name %}<i class="fa fa-trophy"></i>
+                                    {% elif "Prestige" in b.name or "Pigeon" in b.name or "IKEA" in b.name or "Philips" in b.name %}<i class="fa fa-home"></i>
+                                    {% elif "Casio" in b.name or "Titan" in b.name or "Fastrack" in b.name %}<i class="fa fa-clock-o"></i>
+                                    {% elif "L'Oréal" in b.name or "Ordinary" in b.name or "Calvin" in b.name %}<i class="fa fa-diamond"></i>
+                                    {% elif "Tourister" in b.name or "American" in b.name %}<i class="fa fa-suitcase"></i>
+                                    {% elif "Spigen" in b.name or "Anker" in b.name %}<i class="fa fa-plug"></i>
+                                    {% else %}<strong style="font-size: 12px; font-weight: 800;">{{ b.name|slice:":1" }}</strong>
+                                    {% endif %}
+                                </span>
+                                <span class="brand-pill-name">{{ b.name }}</span>
+                                <span class="brand-pill-count">{{ b.num_products }}</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Applied Filters Ribbon (Only shows when a filter is applied) -->
+                {% if active_category or active_sub_category or active_brand %}
+                <div class="active-filters-ribbon">
+                    <span class="ribbon-label"><i class="fa fa-check-circle"></i> Active Filters:</span>
+                    
+                    {% if active_category %}
+                    <span class="active-filter-badge">
+                        Dept: <strong>{{ active_category.name }}</strong>
+                        <a href="/product/{% if active_brand %}?brand={{ active_brand.id }}{% endif %}#catalog-discovery-hub" title="Remove department filter">&times;</a>
+                    </span>
+                    {% endif %}
+
+                    {% if active_sub_category %}
+                    <span class="active-filter-badge">
+                        Category: <strong>{{ active_sub_category.name }}</strong>
+                        <a href="?category={{ active_category.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}#catalog-discovery-hub" title="Remove category filter">&times;</a>
+                    </span>
+                    {% endif %}
+
+                    {% if active_brand %}
+                    <span class="active-filter-badge">
+                        Brand: <strong>{{ active_brand.name }}</strong>
+                        <a href="?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}{% endif %}#catalog-discovery-hub" title="Remove brand filter">&times;</a>
+                    </span>
+                    {% endif %}
+
+                    <a href="/product/#catalog-discovery-hub" class="ribbon-clear-link">Clear All</a>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
 
         <!-- Products Grid -->
         <div class="row">
@@ -495,18 +508,125 @@
                 </div>
                 <h3>No Products Found</h3>
                 <p style="color: var(--slate-500); margin-bottom: 20px;">Try switching your filter or browse all catalog products.</p>
-                <a href="/product/" class="btn-hero-primary" style="display: inline-flex;">Reset Filter</a>
+                <a href="/product/#catalog-discovery-hub" class="btn-hero-primary" style="display: inline-flex;">Reset Filter</a>
             </div>
             {% endfor %}
         </div>
+        </div><!-- End #catalog-ajax-container -->
     </div>
 </section>
 
 <script>
+// ==========================================================================
+// Catalog AJAX Filtering & Scroll Position Preservation Controller
+// ==========================================================================
+let isCatalogFetching = false;
+
+async function loadCatalogAjax(url) {
+    if (isCatalogFetching) return;
+    const container = document.getElementById('catalog-ajax-container');
+    if (!container) {
+        window.location.href = url;
+        return;
+    }
+
+    try {
+        isCatalogFetching = true;
+        container.classList.add('is-loading');
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            window.location.href = url;
+            return;
+        }
+
+        const htmlText = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        const newContainer = doc.getElementById('catalog-ajax-container');
+
+        if (newContainer) {
+            container.innerHTML = newContainer.innerHTML;
+            window.history.pushState({ path: url }, '', url);
+
+            // Re-sync sort dropdown value if present
+            const newSortSelect = doc.getElementById('catalogSortSelect');
+            const currentSortSelect = document.getElementById('catalogSortSelect');
+            if (newSortSelect && currentSortSelect) {
+                currentSortSelect.value = newSortSelect.value;
+            }
+
+            // Keep active cards centered in their horizontal rails
+            centerActiveFilters();
+        } else {
+            window.location.href = url;
+        }
+    } catch (err) {
+        console.error('AJAX catalog fetch failed, navigating normally:', err);
+        window.location.href = url;
+    } finally {
+        container.classList.remove('is-loading');
+        isCatalogFetching = false;
+    }
+}
+
+// Intercept filter and navigation link clicks inside the catalog container
+document.addEventListener('click', function(e) {
+    const filterLink = e.target.closest('#catalog-ajax-container a');
+    if (!filterLink) return;
+
+    const isFilter = filterLink.classList.contains('dept-nav-card') ||
+                     filterLink.classList.contains('brand-pill-card') ||
+                     filterLink.classList.contains('subcat-chip') ||
+                     filterLink.classList.contains('hub-clear-pill') ||
+                     filterLink.classList.contains('ribbon-clear-link') ||
+                     filterLink.closest('.active-filter-badge') ||
+                     filterLink.closest('.brand-filter-pill-active') ||
+                     (filterLink.classList.contains('btn-hero-primary') && filterLink.textContent.includes('Reset'));
+
+    if (isFilter) {
+        const href = filterLink.getAttribute('href');
+        if (href && !href.startsWith('javascript:')) {
+            e.preventDefault();
+            loadCatalogAjax(href);
+        }
+    }
+});
+
+// Intercept sorting change without full page redirect
 function applySorting(sortVal) {
     const url = new URL(window.location.href);
     url.searchParams.set('sort', sortVal);
-    window.location.href = url.toString();
+    url.hash = 'catalog-discovery-hub';
+    loadCatalogAjax(url.toString());
+}
+
+// Handle browser Back and Forward buttons seamlessly in-place
+window.addEventListener('popstate', function() {
+    if (document.getElementById('catalog-ajax-container')) {
+        loadCatalogAjax(window.location.href);
+    }
+});
+
+// Smoothly scroll active category or brand cards into view inside horizontal rails
+function centerActiveFilters() {
+    const activeBrand = document.getElementById('activeBrandCard');
+    const brandWrapper = document.getElementById('brandRailWrapper');
+    if (activeBrand && brandWrapper) {
+        const left = activeBrand.offsetLeft - brandWrapper.offsetLeft - 80;
+        if (left > 0) {
+            brandWrapper.scrollTo({ left: left, behavior: 'smooth' });
+        }
+    }
+
+    const activeDept = document.querySelector('#deptRailWrapper .dept-nav-card.active');
+    const deptWrapper = document.getElementById('deptRailWrapper');
+    if (activeDept && deptWrapper) {
+        const left = activeDept.offsetLeft - deptWrapper.offsetLeft - 80;
+        if (left > 0) {
+            deptWrapper.scrollTo({ left: left, behavior: 'smooth' });
+        }
+    }
 }
 
 function scrollBrandRail(distance) {
@@ -523,16 +643,36 @@ function scrollDeptRail(distance) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // If an active brand card is selected, smoothly scroll it into center view
-    const activeBrand = document.getElementById('activeBrandCard');
-    const brandWrapper = document.getElementById('brandRailWrapper');
-    if (activeBrand && brandWrapper) {
-        const left = activeBrand.offsetLeft - brandWrapper.offsetLeft - 80;
-        if (left > 0) {
-            brandWrapper.scrollTo({ left: left, behavior: 'smooth' });
+// Check initial load: If URL contains category, brand, sub_category, or sort, scroll straight to the hub
+(function checkInitialScroll() {
+    const params = new URLSearchParams(window.location.search);
+    const hasFilter = params.has('category') || params.has('brand') || params.has('sub_category') || params.has('sort');
+    const hasHash = window.location.hash.includes('catalog-discovery-hub');
+
+    if (hasFilter || hasHash) {
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
         }
+        function jumpToHub() {
+            const hub = document.getElementById('catalog-discovery-hub');
+            if (hub) {
+                const navBar = document.querySelector('.modern-navbar');
+                const offset = navBar ? navBar.offsetHeight + 15 : 85;
+                const top = hub.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({
+                    top: Math.max(0, top),
+                    behavior: 'instant'
+                });
+            }
+        }
+        jumpToHub();
+        document.addEventListener('DOMContentLoaded', jumpToHub);
+        window.addEventListener('load', jumpToHub);
     }
+})();
+
+document.addEventListener('DOMContentLoaded', function() {
+    centerActiveFilters();
 });
 </script>
 {% endblock %}
