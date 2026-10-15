@@ -119,6 +119,91 @@
   border-color: #0f172a !important;
   color: #ffffff !important;
 }
+
+/* Distinct Luxury Brand Capsule Pills */
+.brand-pill-card {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 14px 6px 7px !important;
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 999px !important;
+  text-decoration: none !important;
+  color: #1e293b !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+  user-select: none !important;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+}
+.brand-pill-card:hover {
+  background: #ffffff !important;
+  border-color: #6366f1 !important;
+  color: #4f46e5 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.14) !important;
+}
+.brand-pill-card:hover .brand-pill-avatar {
+  background: #ede9fe !important;
+  color: #4f46e5 !important;
+  border-color: #c7d2fe !important;
+}
+.brand-pill-card:hover .brand-pill-count {
+  background: #ede9fe !important;
+  color: #4f46e5 !important;
+}
+.brand-pill-card.active {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
+  border-color: #6366f1 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.32) !important;
+  transform: translateY(-2px) !important;
+}
+.brand-pill-card.active .brand-pill-avatar {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+}
+.brand-pill-card.active .brand-pill-name {
+  color: #ffffff !important;
+}
+.brand-pill-card.active .brand-pill-count {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+}
+.brand-pill-avatar {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50% !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13px !important;
+  color: #475569 !important;
+  flex-shrink: 0 !important;
+  transition: all 0.2s ease !important;
+}
+.brand-pill-name {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  color: #1e293b !important;
+  white-space: nowrap !important;
+}
+.brand-pill-count {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  background: #f1f5f9 !important;
+  padding: 2px 7px !important;
+  border-radius: 999px !important;
+  margin-left: 2px !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+}
 </style>
 <!-- Full-Width Seamless Hero Slider (Edge to Edge Screen Coverage) -->
 <section id="hero-slider-section" class="full-width-hero-slider">
@@ -573,44 +658,40 @@
                     </div>
                 </div>
 
-                <!-- Brand Horizontal Cards Rail (Identical to Department Rail) -->
+                <!-- Tier 3: Brand Navigation Rail (Distinct Luxury Capsule Pills) -->
                 <div class="dept-nav-rail-wrapper" id="brandRailWrapper" style="overflow-x: auto !important; margin: 0 0 16px 0 !important; padding: 4px 0 8px 0 !important; scrollbar-width: none !important; -webkit-overflow-scrolling: touch !important; scroll-behavior: smooth !important;">
-                    <div class="dept-nav-rail" style="display: flex !important; flex-direction: row !important; gap: 12px !important; min-width: min-content !important; flex-wrap: nowrap !important;">
-                        <!-- All Brands Card -->
+                    <div class="dept-nav-rail" style="display: flex !important; flex-direction: row !important; gap: 10px !important; min-width: min-content !important; flex-wrap: nowrap !important; align-items: center !important;">
+                        <!-- All Brands Capsule -->
                         <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" 
-                           class="dept-nav-card {% if not active_brand %}active{% endif %}">
-                            <div class="dept-card-icon-wrap">
+                           class="brand-pill-card {% if not active_brand %}active{% endif %}">
+                            <span class="brand-pill-avatar">
                                 <i class="fa fa-th-large"></i>
-                            </div>
-                            <div class="dept-card-info">
-                                <span class="dept-card-name">All Brands</span>
-                                <span class="dept-card-count">{{ total_products_count|default:"168" }} Products</span>
-                            </div>
+                            </span>
+                            <span class="brand-pill-name">All Brands</span>
+                            <span class="brand-pill-count">{{ total_products_count|default:"168" }}</span>
                         </a>
 
-                        <!-- Individual Brand Cards -->
+                        <!-- Individual Brand Capsules -->
                         {% for b in brand %}
                         <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}brand={{ b.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
-                           class="dept-nav-card {% if active_brand.id == b.id %}active{% endif %}"
+                           class="brand-pill-card {% if active_brand.id == b.id %}active{% endif %}"
                            {% if active_brand.id == b.id %}id="activeBrandCard"{% endif %}>
-                            <div class="dept-card-icon-wrap">
+                            <span class="brand-pill-avatar">
                                 {% if "Apple" in b.name %}<i class="fa fa-apple"></i>
                                 {% elif "Samsung" in b.name or "Xiaomi" in b.name or "OnePlus" in b.name or "Google" in b.name %}<i class="fa fa-mobile-phone"></i>
                                 {% elif "Sony" in b.name or "boAt" in b.name %}<i class="fa fa-headphones"></i>
                                 {% elif "HP" in b.name or "Lenovo" in b.name or "Dell" in b.name %}<i class="fa fa-laptop"></i>
-                                {% elif "Nike" in b.name or "Adidas" in b.name or "Decathlon" in b.name %}<i class="fa fa-shield"></i>
+                                {% elif "Nike" in b.name or "Adidas" in b.name or "Decathlon" in b.name %}<i class="fa fa-trophy"></i>
                                 {% elif "Prestige" in b.name or "Pigeon" in b.name or "IKEA" in b.name or "Philips" in b.name %}<i class="fa fa-home"></i>
                                 {% elif "Casio" in b.name or "Titan" in b.name or "Fastrack" in b.name %}<i class="fa fa-clock-o"></i>
                                 {% elif "L'Oréal" in b.name or "Ordinary" in b.name or "Calvin" in b.name %}<i class="fa fa-diamond"></i>
                                 {% elif "Tourister" in b.name or "American" in b.name %}<i class="fa fa-suitcase"></i>
                                 {% elif "Spigen" in b.name or "Anker" in b.name %}<i class="fa fa-plug"></i>
-                                {% else %}<span style="font-weight: 800; font-size: 14px; color: inherit;">{{ b.name|slice:":1" }}</span>
+                                {% else %}<strong style="font-size: 12px; font-weight: 800;">{{ b.name|slice:":1" }}</strong>
                                 {% endif %}
-                            </div>
-                            <div class="dept-card-info">
-                                <span class="dept-card-name">{{ b.name }}</span>
-                                <span class="dept-card-count">{{ b.num_products }} items</span>
-                            </div>
+                            </span>
+                            <span class="brand-pill-name">{{ b.name }}</span>
+                            <span class="brand-pill-count">{{ b.num_products }}</span>
                         </a>
                         {% endfor %}
                     </div>
