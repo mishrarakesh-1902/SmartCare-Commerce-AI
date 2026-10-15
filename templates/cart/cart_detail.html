@@ -187,17 +187,17 @@
 
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Mobile Number</label>
-                        <input type="text" name="phone" id="checkout_phone" class="form-control" placeholder="10-digit mobile number" required style="border-radius: 8px; height: 44px;" />
+                        <input type="text" name="phone" id="checkout_phone" class="form-control" value="{{ request.user.profile.phone|default:'' }}" placeholder="10-digit mobile number" required style="border-radius: 8px; height: 44px;" />
                     </div>
 
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Delivery Street Address</label>
-                        <textarea class="form-control" name="address" id="checkout_address" rows="3" placeholder="Flat, House no., Building, Street, Area" required style="border-radius: 8px;"></textarea>
+                        <textarea class="form-control" name="address" id="checkout_address" rows="3" placeholder="Flat, House no., Building, Street, Area" required style="border-radius: 8px;">{{ request.user.profile.address|default:'' }}</textarea>
                     </div>
 
                     <div class="form-group" style="margin-bottom: 24px;">
                         <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Postal PIN Code</label>
-                        <input type="text" name="pincode" id="checkout_pincode" class="form-control" placeholder="6-digit postal code" required style="border-radius: 8px; height: 44px;" />
+                        <input type="text" name="pincode" id="checkout_pincode" class="form-control" value="{{ request.user.profile.pincode|default:'' }}" placeholder="6-digit postal code" required style="border-radius: 8px; height: 44px;" />
                     </div>
 
                     <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">

@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 from django.db.models import Count, Prefetch
-from app.models import Category, Product, Sub_category, Contact_us, Order, Brand, SupportTicket
-from django.contrib.auth import authenticate, login
+from app.models import Category, Product, Sub_category, Contact_us, Order, Brand, SupportTicket, UserProfile, get_or_create_user_profile
+from django.contrib.auth import authenticate, login, update_session_auth_hash
+from django.contrib import messages
 from app.models import UserCreateForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -593,6 +594,116 @@ def ticket_detail_view(request, ticket_id):
     if not ticket:
         return redirect('ai_support')
     return render(request, 'ticket_detail.html', {'ticket': ticket})
+
+
+@login_required(login_url='/accounts/login/')
+def profile_view(request):
+    """
+    Comprehensive, high-standard customer profile view meeting modern e-commerce requirements:
+    - Personal Information management with avatar upload
+    - Saved Delivery Address Book (syncs directly to 1-click checkout)
+    - Full purchase order history & tracker
+    - Autonomous AI customer support tickets & history
+    - Account security and password management
+    """
+    user = request.user
+    profile = get_or_create_user_profile(user)
+    active_tab = request.GET.get('tab', 'details')
+
+    if request.method == "POST":
+        action = request.POST.get('action')
+
+        if action == 'update_profile':
+            first_name = request.POST.get('first_name', '').strip()
+            last_name = request.POST.get('last_name', '').strip()
+            email = request.POST.get('email', '').strip()
+            phone = request.POST.get('phone', '').strip()
+            bio = request.POST.get('bio', '').strip()
+
+            user.first_name = first_name
+            user.last_name = last_name
+            if email:
+                user.email = email
+            user.save()
+
+            profile.phone = phone
+            profile.bio = bio
+            if request.FILES.get('avatar'):
+                profile.avatar = request.FILES.get('avatar')
+            profile.save()
+
+            messages.success(request, "Your personal profile details have been successfully updated.")
+            return redirect(f"{request.path}?tab=details")
+
+        elif action == 'update_address':
+            address = request.POST.get('address', '').strip()
+            city = request.POST.get('city', '').strip()
+            state = request.POST.get('state', '').strip()
+            pincode = request.POST.get('pincode', '').strip()
+            phone = request.POST.get('phone', '').strip()
+
+            profile.address = address
+            profile.city = city
+            profile.state = state
+            profile.pincode = pincode
+            if phone:
+                profile.phone = phone
+            profile.save()
+
+            messages.success(request, "Default delivery address updated! This will auto-fill your future checkouts.")
+            return redirect(f"{request.path}?tab=address")
+
+        elif action == 'change_password':
+            old_password = request.POST.get('old_password', '')
+            new_password = request.POST.get('new_password', '')
+            confirm_password = request.POST.get('confirm_password', '')
+
+            if not user.check_password(old_password):
+                messages.error(request, "Current password does not match our records.")
+                return redirect(f"{request.path}?tab=security")
+
+            if new_password != confirm_password:
+                messages.error(request, "New password and confirmation do not match.")
+                return redirect(f"{request.path}?tab=security")
+
+            if len(new_password) < 6:
+                messages.error(request, "New password must be at least 6 characters long.")
+                return redirect(f"{request.path}?tab=security")
+
+            user.set_password(new_password)
+            user.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Your account password has been changed securely.")
+            return redirect(f"{request.path}?tab=security")
+
+    orders = Order.objects.filter(user=user).order_by('-id')
+    recent_orders = orders[:6]
+    total_orders = orders.count()
+
+    total_spent = 0
+    for o in orders:
+        try:
+            total_spent += int(float(o.total))
+        except (ValueError, TypeError):
+            pass
+
+    cart = request.session.get('cart', {})
+    cart_count = len(cart)
+
+    tickets = SupportTicket.objects.filter(user=user).order_by('-created_at')
+
+    return render(request, 'profile.html', {
+        'profile': profile,
+        'user': user,
+        'orders': orders,
+        'recent_orders': recent_orders,
+        'total_orders': total_orders,
+        'total_spent': total_spent,
+        'cart_count': cart_count,
+        'tickets': tickets,
+        'active_tab': active_tab,
+    })
+
 
 
 

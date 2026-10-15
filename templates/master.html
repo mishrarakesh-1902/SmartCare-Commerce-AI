@@ -244,6 +244,9 @@
 				<div class="col-sm-5 text-right hidden-xs">
 					<a href="{% url 'ai_support' %}"><span class="ai-pulse-dot"></span> AI Support 24/7</a>
 					<a href="/order/"><i class="fa fa-truck"></i> Track Order</a>
+					{% if user.is_authenticated %}
+					<a href="{% url 'user_profile' %}"><i class="fa fa-user"></i> My Profile</a>
+					{% endif %}
 					<a href="/contact_us/"><i class="fa fa-envelope-o"></i> Contact</a>
 				</div>
 			</div>
@@ -308,8 +311,9 @@
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu dropdown-menu-right" style="border-radius: 8px; box-shadow: var(--shadow-md); padding: 8px 0;">
-							<li><a href="/order/" style="padding: 8px 20px;"><i class="fa fa-star"></i> My Orders</a></li>
-							<li><a href="{% url 'ai_support' %}" style="padding: 8px 20px;"><i class="fa fa-headphones"></i> AI Support Desk</a></li>
+							<li><a href="{% url 'user_profile' %}" style="padding: 8px 20px; font-weight: 600; color: var(--slate-800);"><i class="fa fa-user-circle" style="color: var(--brand-primary); margin-right: 8px;"></i> My Profile</a></li>
+							<li><a href="/order/" style="padding: 8px 20px;"><i class="fa fa-archive" style="color: #f59e0b; margin-right: 8px;"></i> My Orders</a></li>
+							<li><a href="{% url 'ai_support' %}" style="padding: 8px 20px;"><i class="fa fa-headphones" style="color: #6366f1; margin-right: 8px;"></i> AI Support Desk</a></li>
 							<li class="divider"></li>
 							<li>
 								<form method="post" action="{% url 'logout' %}" style="margin: 0; padding: 0 20px;">

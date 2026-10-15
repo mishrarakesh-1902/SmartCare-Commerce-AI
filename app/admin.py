@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category,Sub_category,Product,ProductImage,Contact_us,Order,Brand,SupportTicket,Feedback
+from .models import Category,Sub_category,Product,ProductImage,Contact_us,Order,Brand,SupportTicket,Feedback,UserProfile
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
@@ -26,3 +26,9 @@ class SupportTicketAdmin(admin.ModelAdmin):
     list_filter = ('category', 'urgency', 'sentiment', 'status', 'email_sent')
     search_fields = ('ticket_id', 'name', 'email', 'subject', 'message', 'order_id')
     readonly_fields = ('ticket_id', 'created_at')
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'phone', 'city', 'state', 'pincode', 'created_at')
+    search_fields = ('user__username', 'user__email', 'phone', 'address', 'city', 'pincode')

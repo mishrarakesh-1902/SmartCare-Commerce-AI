@@ -95,6 +95,9 @@ urlpatterns = [
     path('ai-support/', views.ai_support_view, name='ai_support'),
     path('ai-support/ticket/<str:ticket_id>/', views.ticket_detail_view, name='ticket_detail'),
 
+    # Customer Account Profile
+    path('profile/', views.profile_view, name='user_profile'),
+
 
 
 ] + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)

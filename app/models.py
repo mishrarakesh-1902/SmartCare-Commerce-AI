@@ -203,3 +203,52 @@ class SupportTicket(models.Model):
 
     def __str__(self):
         return f"Ticket #{self.ticket_id} - {self.subject} ({self.status})"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    pincode = models.CharField(max_length=10, blank=True, null=True)
+    avatar = models.ImageField(upload_to='ecommerce/profile_pics/', blank=True, null=True)
+    bio = models.CharField(max_length=255, blank=True, null=True, default="Valued Shopper")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Profile of {self.user.username}"
+
+    @property
+    def full_name(self):
+        name = f"{self.user.first_name} {self.user.last_name}".strip()
+        return name if name else self.user.username
+
+    @property
+    def initials(self):
+        if self.user.first_name and self.user.last_name:
+            return f"{self.user.first_name[0]}{self.user.last_name[0]}".upper()
+        elif self.user.first_name:
+            return self.user.first_name[:2].upper()
+        return self.user.username[:2].upper()
+
+
+def get_or_create_user_profile(user):
+    profile, created = UserProfile.objects.get_or_create(user=user)
+    if created or not profile.address:
+        last_order = Order.objects.filter(user=user).order_by('-id').first()
+        if last_order:
+            changed = False
+            if not profile.phone and last_order.phone:
+                profile.phone = last_order.phone
+                changed = True
+            if not profile.address and last_order.address:
+                profile.address = last_order.address
+                changed = True
+            if not profile.pincode and last_order.pincode:
+                profile.pincode = last_order.pincode
+                changed = True
+            if changed:
+                profile.save()
+    return profile
