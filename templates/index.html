@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- Slide 1 Clone (For seamless infinite looping with 0s gap) -->
+            <!-- Slide 4: Slide 1 Clone (For seamless infinite continuous linear glide) -->
             <div class="hero-slide hero-slide-1" aria-hidden="true">
                 <div class="container">
                     <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
@@ -156,21 +156,106 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Slide 5: Slide 2 Clone (For seamless infinite continuous linear glide) -->
+            <div class="hero-slide hero-slide-2" aria-hidden="true">
+                <div class="container">
+                    <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
+                        <div class="col-sm-7 col-xs-12">
+                            <div class="modern-hero-content hero-content-col">
+                                <div class="hero-pill-badge" style="background: rgba(99, 102, 241, 0.25); border-color: rgba(129, 140, 248, 0.4); color: #c7d2fe;">
+                                    <i class="fa fa-tag"></i> Seasonal Drop Alert
+                                </div>
+                                <h1>Smart Fits, Polos &amp; <span>Tailored Blazers</span></h1>
+                                <p>Upgrade your wardrobe with verified high-comfort cotton essentials and statement layering pieces. Free shipping on orders over ₹499.</p>
+                                <div class="hero-cta-group">
+                                    <a href="/product/" class="btn-hero-primary" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
+                                        <i class="fa fa-bolt"></i> Explore Deals
+                                    </a>
+                                    <a href="/order/" class="btn-hero-secondary">
+                                        <i class="fa fa-truck"></i> Track Order
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 hidden-xs">
+                            <div class="hero-showcase-box">
+                                <div class="hero-image-backdrop"></div>
+                                <img src="/static/images/home/girl2.jpg" alt="Smart Casuals" class="hero-model-visual" />
+                                <div class="hero-card-tag">
+                                    <span class="hero-tag-icon" style="background: #4f46e5;"><i class="fa fa-shopping-bag"></i></span>
+                                    <div class="hero-tag-text">
+                                        <strong>Seasonal Styles</strong>
+                                        <span>Best Seller 4.9★</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Slide 3 Clone (For seamless infinite continuous linear glide) -->
+            <div class="hero-slide hero-slide-3" aria-hidden="true">
+                <div class="container">
+                    <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
+                        <div class="col-sm-7 col-xs-12">
+                            <div class="modern-hero-content hero-content-col">
+                                <div class="hero-pill-badge" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(52, 211, 153, 0.4); color: #6ee7b7;">
+                                    <span class="ai-pulse-dot"></span> Powered by Lumen AI
+                                </div>
+                                <h1>Autonomous <span>AI Customer Care</span></h1>
+                                <p>Need help with size recommendations, order tracking, returns, or product queries? Lumen AI is active 24/7 to solve your needs in seconds.</p>
+                                <div class="hero-cta-group">
+                                    <a href="{% url 'ai_support' %}" class="btn-hero-primary" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                                        <i class="fa fa-headphones"></i> Launch AI Desk
+                                    </a>
+                                    <a href="/product/" class="btn-hero-secondary">
+                                        <i class="fa fa-eye"></i> Browse Catalog
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 hidden-xs">
+                            <div class="hero-showcase-box">
+                                <div class="hero-image-backdrop"></div>
+                                <img src="/static/images/home/girl3.jpg" alt="Autonomous AI Shopping" class="hero-model-visual" />
+                                <div class="hero-card-tag">
+                                    <span class="hero-tag-icon" style="background: #10b981;"><i class="fa fa-bolt"></i></span>
+                                    <div class="hero-tag-text">
+                                        <strong>AI Assistant Active</strong>
+                                        <span>Instant Auto Replies</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Sleek Slider Controls (Left / Right floating navigation arrows) -->
-        <button type="button" class="hero-nav-arrow hero-nav-prev" onclick="moveHeroSlide(-1)" aria-label="Previous Slide">
+        <!-- Floating Skip Chevrons -->
+        <button type="button" class="hero-nav-arrow hero-nav-prev" onclick="skipHeroSlide(-1)" aria-label="Previous Slide">
             <i class="fa fa-chevron-left"></i>
         </button>
-        <button type="button" class="hero-nav-arrow hero-nav-next" onclick="moveHeroSlide(1)" aria-label="Next Slide">
+        <button type="button" class="hero-nav-arrow hero-nav-next" onclick="skipHeroSlide(1)" aria-label="Next Slide">
             <i class="fa fa-chevron-right"></i>
         </button>
 
-        <!-- Dynamic Indicator Dots -->
-        <div class="hero-indicators-container">
-            <div class="hero-dot active" onclick="jumpToHeroSlide(0)"></div>
-            <div class="hero-dot" onclick="jumpToHeroSlide(1)"></div>
-            <div class="hero-dot" onclick="jumpToHeroSlide(2)"></div>
+        <!-- Dynamic Indicator Dots & Live Continuous Showcase Badge -->
+        <div class="hero-bottom-controls-wrap">
+            <div class="hero-indicators-container">
+                <div class="hero-dot active" onclick="jumpToHeroSlide(0)" title="Poster 1: Urban Drops"></div>
+                <div class="hero-dot" onclick="jumpToHeroSlide(1)" title="Poster 2: Seasonal Fits"></div>
+                <div class="hero-dot" onclick="jumpToHeroSlide(2)" title="Poster 3: Lumen AI Care"></div>
+            </div>
+
+            <div class="hero-continuous-badge" id="heroContinuousBadge" onclick="toggleHeroGlide()" title="Click to Pause or Resume Continuous Motion">
+                <span class="hero-pulse-badge-dot" id="heroPulseDot"></span>
+                <span class="hero-badge-title" id="heroGlideStatus">CONTINUOUS SHOWCASE</span>
+                <span class="hero-badge-divider"></span>
+                <span class="hero-badge-action"><i class="fa fa-pause" id="heroGlideIcon"></i> <span id="heroActionText">Pause</span></span>
+            </div>
         </div>
     </div>
 </section>
@@ -650,103 +735,93 @@ function applySorting(sortVal) {
 }
 
 // ==========================================================================
-// Full-Width Seamless Hero Slider Controller (Simultaneous 0s-gap sliding)
+// Continuous Full-Width Gliding Showcase Controller
 // ==========================================================================
-let currentHeroIndex = 0;
-const realSlidesCount = 3;
-const heroTransitionSpeed = 1900; // 1.9s slow cinematic gliding speed
-let isHeroSliding = false;
-let heroAutoSlideTimer = null;
+const HERO_CYCLE_DURATION = 45000; // 45 seconds total for 3 posters
+const HERO_SLIDES_COUNT = 3;
+const HERO_SLIDE_STEP = HERO_CYCLE_DURATION / HERO_SLIDES_COUNT; // 15000ms per poster
+let isHeroManuallyPaused = false;
 
-function updateHeroIndicators(idx) {
-    const dots = document.querySelectorAll('.hero-dot');
-    const activeDotIdx = (idx % realSlidesCount + realSlidesCount) % realSlidesCount;
-    dots.forEach((dot, i) => {
-        if (i === activeDotIdx) dot.classList.add('active');
-        else dot.classList.remove('active');
-    });
+function getHeroAnimation() {
+    const track = document.getElementById('heroSliderTrack');
+    if (!track) return null;
+    const anims = track.getAnimations();
+    return (anims && anims.length > 0) ? anims[0] : null;
 }
 
-function moveHeroSlide(direction) {
-    if (isHeroSliding) return;
+function toggleHeroGlide() {
     const track = document.getElementById('heroSliderTrack');
+    const badge = document.getElementById('heroContinuousBadge');
+    const statusText = document.getElementById('heroGlideStatus');
+    const icon = document.getElementById('heroGlideIcon');
+    const actionText = document.getElementById('heroActionText');
     if (!track) return;
 
-    isHeroSliding = true;
-    currentHeroIndex += direction;
+    isHeroManuallyPaused = !isHeroManuallyPaused;
 
-    // Apply smooth slow slide transition
-    track.style.transition = `transform ${heroTransitionSpeed}ms cubic-bezier(0.25, 1, 0.4, 1)`;
-    track.style.transform = `translateX(-${currentHeroIndex * 100}%)`;
+    if (isHeroManuallyPaused) {
+        track.classList.add('is-paused');
+        if (badge) badge.classList.add('is-paused');
+        if (statusText) statusText.textContent = 'SHOWCASE PAUSED';
+        if (icon) icon.className = 'fa fa-play';
+        if (actionText) actionText.textContent = 'Resume';
+    } else {
+        track.classList.remove('is-paused');
+        if (badge) badge.classList.remove('is-paused');
+        if (statusText) statusText.textContent = 'CONTINUOUS SHOWCASE';
+        if (icon) icon.className = 'fa fa-pause';
+        if (actionText) actionText.textContent = 'Pause';
+    }
+}
 
-    updateHeroIndicators(currentHeroIndex);
-
-    setTimeout(() => {
-        // When reaching the cloned slide at the end, snap back to first slide seamlessly with no animation
-        if (currentHeroIndex >= realSlidesCount) {
-            track.style.transition = 'none';
-            currentHeroIndex = 0;
-            track.style.transform = `translateX(0%)`;
-        } else if (currentHeroIndex < 0) {
-            track.style.transition = 'none';
-            currentHeroIndex = realSlidesCount - 1;
-            track.style.transform = `translateX(-${currentHeroIndex * 100}%)`;
-        }
-        isHeroSliding = false;
-    }, heroTransitionSpeed);
-
-    restartHeroAutoPlay();
+function skipHeroSlide(direction) {
+    const anim = getHeroAnimation();
+    if (anim) {
+        let cur = anim.currentTime || 0;
+        let nextTime = cur + (direction * HERO_SLIDE_STEP);
+        if (nextTime < 0) nextTime += HERO_CYCLE_DURATION;
+        anim.currentTime = nextTime % HERO_CYCLE_DURATION;
+    }
 }
 
 function jumpToHeroSlide(index) {
-    if (isHeroSliding || index === currentHeroIndex) return;
-    const track = document.getElementById('heroSliderTrack');
-    if (!track) return;
-
-    isHeroSliding = true;
-    currentHeroIndex = index;
-    track.style.transition = `transform ${heroTransitionSpeed}ms cubic-bezier(0.25, 1, 0.4, 1)`;
-    track.style.transform = `translateX(-${currentHeroIndex * 100}%)`;
-    updateHeroIndicators(currentHeroIndex);
-
-    setTimeout(() => {
-        isHeroSliding = false;
-    }, heroTransitionSpeed);
-
-    restartHeroAutoPlay();
+    const anim = getHeroAnimation();
+    if (anim) {
+        anim.currentTime = (index * HERO_SLIDE_STEP) % HERO_CYCLE_DURATION;
+    }
 }
 
-function startHeroAutoPlay() {
-    heroAutoSlideTimer = setInterval(() => {
-        moveHeroSlide(1);
-    }, 6000); // 6s display time + 1.9s slow cinematic slide
+// Sync active indicator dot with continuous glide position
+function syncHeroIndicators() {
+    const anim = getHeroAnimation();
+    if (anim) {
+        const cur = (anim.currentTime || 0) % HERO_CYCLE_DURATION;
+        const activeIdx = Math.floor((cur + 2000) / HERO_SLIDE_STEP) % HERO_SLIDES_COUNT;
+        const dots = document.querySelectorAll('.hero-dot');
+        dots.forEach((dot, i) => {
+            if (i === activeIdx) dot.classList.add('active');
+            else dot.classList.remove('active');
+        });
+    }
+    requestAnimationFrame(syncHeroIndicators);
 }
 
-function restartHeroAutoPlay() {
-    clearInterval(heroAutoSlideTimer);
-    startHeroAutoPlay();
-}
-
-// Touch swipe support and hover-pause
 document.addEventListener('DOMContentLoaded', () => {
-    startHeroAutoPlay();
+    requestAnimationFrame(syncHeroIndicators);
+
     const viewport = document.getElementById('heroSliderViewport');
     if (viewport) {
-        viewport.addEventListener('mouseenter', () => clearInterval(heroAutoSlideTimer));
-        viewport.addEventListener('mouseleave', () => restartHeroAutoPlay());
-
         let startX = 0;
-        let endX = 0;
         viewport.addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
         }, { passive: true });
 
         viewport.addEventListener('touchend', (e) => {
-            endX = e.changedTouches[0].clientX;
+            const endX = e.changedTouches[0].clientX;
             const diffX = startX - endX;
             if (Math.abs(diffX) > 40) {
-                if (diffX > 0) moveHeroSlide(1);
-                else moveHeroSlide(-1);
+                if (diffX > 0) skipHeroSlide(1);
+                else skipHeroSlide(-1);
             }
         }, { passive: true });
     }

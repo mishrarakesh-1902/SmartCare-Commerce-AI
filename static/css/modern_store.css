@@ -383,14 +383,31 @@ a:hover, a:focus {
 
 .hero-slider-track {
   display: flex;
-  width: 100%;
+  width: 600%;
   will-change: transform;
+  animation: heroContinuousGlide 45s linear infinite;
+}
+
+.hero-slider-track:hover,
+.full-width-hero-slider:hover .hero-slider-track,
+.hero-slider-track.is-paused {
+  animation-play-state: paused !important;
+}
+
+@keyframes heroContinuousGlide {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
 .hero-slide {
-  min-width: 100%;
-  width: 100%;
-  flex-shrink: 0;
+  width: calc(100% / 6);
+  min-width: calc(100% / 6);
+  max-width: calc(100% / 6);
+  flex: 0 0 calc(100% / 6);
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -634,21 +651,27 @@ a:hover, a:focus {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
-/* Indicators */
-.hero-indicators-container {
+/* Bottom Controls Wrap (Dots + Continuous Flow Badge) */
+.hero-bottom-controls-wrap {
   position: absolute;
   bottom: 22px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 10px;
-  z-index: 10;
+  gap: 16px;
+  z-index: 12;
+}
+
+.hero-indicators-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .hero-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.35);
   cursor: pointer;
@@ -659,15 +682,86 @@ a:hover, a:focus {
 }
 
 .hero-dot:hover {
-  background: rgba(255, 255, 255, 0.75);
-  transform: scale(1.15);
+  background: rgba(255, 255, 255, 0.85);
+  transform: scale(1.2);
 }
 
 .hero-dot.active {
-  width: 36px;
+  width: 28px;
   border-radius: 6px;
   background: #ffffff;
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+}
+
+/* Floating Continuous Flow Badge */
+.hero-continuous-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 30px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.25s ease;
+}
+
+.hero-continuous-badge:hover {
+  background: rgba(15, 23, 42, 0.95);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.hero-pulse-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: pulseDotLive 1.8s infinite;
+}
+
+.hero-continuous-badge.is-paused .hero-pulse-badge-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 10px #f59e0b;
+  animation: none;
+}
+
+@keyframes pulseDotLive {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.75); }
+}
+
+.hero-badge-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.hero-badge-divider {
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.hero-badge-action {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hero-continuous-badge:hover .hero-badge-action {
+  color: #ffffff;
 }
 
 @media (max-width: 767px) {
