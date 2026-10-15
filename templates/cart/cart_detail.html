@@ -180,9 +180,11 @@
                     <span style="font-size: 18px; font-weight: 800; color: var(--brand-primary);">₹{{ cart_total_amount }}</span>
                 </div>
 
-                <form method="post" id="checkoutMainForm" action="/cheakout/">
+                <form method="post" id="checkoutMainForm" action="{% url 'cheakout' %}">
                     {% csrf_token %}
                     <input type="hidden" name="amount" value="{{ cart_total_amount }}">
+                    <input type="hidden" name="payment_mode" id="checkout_payment_mode" value="cod">
+
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px;">Mobile Number</label>
                         <input type="text" name="phone" id="checkout_phone" class="form-control" placeholder="10-digit mobile number" required style="border-radius: 8px; height: 44px;" />
@@ -199,18 +201,17 @@
                     </div>
 
                     <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                        <button type="submit" class="btn-proceed-checkout" style="flex: 1; min-width: 180px; height: 44px;">
+                        <button type="button" id="btnCodSubmit" onclick="submitCODOrder()" class="btn-proceed-checkout" style="flex: 1; min-width: 180px; height: 44px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                             <i class="fa fa-truck"></i> Cash on Delivery (COD)
                         </button>
-                        <button type="button" onclick="submitOnlinePayment()" class="btn btn-default" style="flex: 1; min-width: 180px; border-radius: 8px; height: 44px; font-weight: 700; color: #fff; background: linear-gradient(135deg, #002970 0%, #0045ba 100%); border-color: #002970; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0, 41, 112, 0.25);">
+                        <button type="button" id="btnOnlineSubmit" onclick="submitOnlinePayment()" class="btn btn-default" style="flex: 1; min-width: 180px; border-radius: 8px; height: 44px; font-weight: 700; color: #fff; background: linear-gradient(135deg, #002970 0%, #0045ba 100%); border-color: #002970; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0, 41, 112, 0.25);">
                             <i class="fa fa-credit-card"></i> Pay Online (UPI / Card)
                         </button>
                     </div>
                 </form>
 
                 <script>
-                    function submitOnlinePayment() {
-                        const form = document.getElementById('checkoutMainForm');
+                    function validateCheckoutInputs() {
                         const phone = document.getElementById('checkout_phone');
                         const address = document.getElementById('checkout_address');
                         const pincode = document.getElementById('checkout_pincode');
@@ -220,11 +221,52 @@
                             if (!phone.value.trim()) phone.focus();
                             else if (!address.value.trim()) address.focus();
                             else pincode.focus();
-                            return;
+                            return false;
                         }
 
+                        if (phone.value.trim().length < 10) {
+                            alert('Please enter a valid 10-digit mobile number.');
+                            phone.focus();
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                    function submitCODOrder() {
+                        if (!validateCheckoutInputs()) return;
+                        const form = document.getElementById('checkoutMainForm');
+                        const modeInput = document.getElementById('checkout_payment_mode');
+                        if (modeInput) modeInput.value = 'cod';
+                        form.action = "{% url 'cheakout' %}";
+                        form.submit();
+                    }
+
+                    function submitOnlinePayment() {
+                        if (!validateCheckoutInputs()) return;
+                        const form = document.getElementById('checkoutMainForm');
+                        const modeInput = document.getElementById('checkout_payment_mode');
+                        if (modeInput) modeInput.value = 'online';
                         form.action = "{% url 'initiate_paytm_payment' %}";
                         form.submit();
+                    }
+
+                    // Reset form action to cheakout upon page restore from bfcache
+                    window.addEventListener('pageshow', function() {
+                        const form = document.getElementById('checkoutMainForm');
+                        if (form) {
+                            form.action = "{% url 'cheakout' %}";
+                        }
+                    });
+
+                    // Ensure clean action on modal open
+                    if (window.jQuery) {
+                        $('#exampleModal').on('show.bs.modal', function() {
+                            const form = document.getElementById('checkoutMainForm');
+                            if (form) {
+                                form.action = "{% url 'cheakout' %}";
+                            }
+                        });
                     }
                 </script>
             </div>

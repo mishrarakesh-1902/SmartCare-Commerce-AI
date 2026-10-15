@@ -55,7 +55,7 @@
                     <!-- Order Card Body -->
                     <div style="padding: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
                         <div style="display: flex; align-items: center; gap: 20px;">
-                            <img src="/{{ i.image }}" alt="{{ i.product }}" style="width: 80px; height: 80px; object-fit: contain; border-radius: var(--radius-sm); background: #f8fafc; border: 1px solid var(--slate-200); padding: 6px;" />
+                            <img src="{% if i.image.url %}{{ i.image.url }}{% elif i.image|slice:':1' == '/' %}{{ i.image }}{% else %}/{{ i.image }}{% endif %}" alt="{{ i.product }}" style="width: 80px; height: 80px; object-fit: contain; border-radius: var(--radius-sm); background: #f8fafc; border: 1px solid var(--slate-200); padding: 6px;" />
                             <div>
                                 <h4 style="font-size: 16px; font-weight: 700; color: var(--slate-900); margin: 0 0 6px 0;">
                                     {{ i.product }}

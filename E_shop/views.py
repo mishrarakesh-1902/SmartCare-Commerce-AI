@@ -184,36 +184,63 @@ def Contact_Page(request):
 @login_required(login_url='/accounts/login/')
 def CheakOut(request):
     if request.method == "POST":
-        address = request.POST.get('address')
-        phone = request.POST.get('phone')
-        pincode = request.POST.get('pincode')
+        address = request.POST.get('address', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        pincode = request.POST.get('pincode', '').strip()
         cart = request.session.get('cart', {})
         user = request.user
 
-        for i in cart:
+        if not cart:
+            return redirect("cart_detail")
+
+        created_orders = []
+        total_amount = 0
+
+        for key, item in cart.items():
             try:
-                a = int(cart[i]['price'])
-                b = int(cart[i]['quantity'])
-                total = a * b
-                order = Order(
-                    user = user,
-                    product = cart[i]['name'],
-                    price = cart[i]['price'],
-                    quantity = cart[i]['quantity'],
-                    image = cart[i]['image'],
-                    address = address,
-                    phone = phone,
-                    pincode = pincode,
-                    total = str(total),
+                price = int(float(item.get('price', 0)))
+                qty = int(item.get('quantity', 1))
+                item_total = price * qty
+                total_amount += item_total
+                order = Order.objects.create(
+                    user=user,
+                    product=item.get('name', 'Product'),
+                    price=price,
+                    quantity=str(qty),
+                    image=item.get('image', ''),
+                    address=f"{address} (PIN: {pincode})" if pincode else address,
+                    phone=phone,
+                    pincode=pincode,
+                    total=str(item_total),
                 )
-                order.save()
+                created_orders.append(order)
             except Exception as e:
-                print("Error creating order:", e)
+                print("Error creating COD order:", e)
 
-        request.session['cart'] = {}    
-        return redirect("order")
+        # Completely empty the cart session
+        try:
+            cart_obj = Cart(request)
+            cart_obj.clear()
+        except Exception:
+            pass
+        request.session['cart'] = {}
+        request.session['cart_total_amount'] = 0
+        request.session.modified = True
 
-    return HttpResponse("Your order has been placed")
+        order_id = f"COD{user.id}ORD{int(datetime.datetime.now().timestamp())}"
+
+        return render(request, "payment_success.html", {
+            "order_id": order_id,
+            "amount": total_amount,
+            "orders": created_orders,
+            "payment_mode": "Cash on Delivery (COD)",
+            "payment_status": "ORDER CONFIRMED &bull; COD",
+            "is_cod": True,
+            "address": f"{address} (PIN: {pincode})" if pincode else address,
+            "phone": phone,
+        })
+
+    return redirect("order")
 
 
 @login_required(login_url='/accounts/login/')
@@ -437,6 +464,8 @@ def paytm_response(request):
                 "amount": txn_amount,
                 "orders": created_orders,
                 "payment_mode": "Online Payment (Verified)",
+                "payment_status": "PAID &bull; VERIFIED",
+                "is_cod": False,
                 "address": address,
                 "phone": phone,
             })
