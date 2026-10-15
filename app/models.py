@@ -46,7 +46,65 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+    def get_gallery_images(self):
+        """
+        Returns an ordered list of image dicts:
+        [{'url': '/ecommerce/pimg/...', 'alt': 'Front Angle', 'label': 'Front', 'angle': 'Front View'}]
+        Combines the primary image with any additional uploaded angle images.
+        """
+        gallery = []
+        if self.image:
+            gallery.append({
+                'url': f"/{self.image}",
+                'alt': f"{self.name} - Front View",
+                'label': 'Front',
+                'angle': 'Primary / Front View'
+            })
+        for idx, item in enumerate(self.additional_images.all(), start=1):
+            if item.image:
+                label = item.alt_text or f"Angle {idx + 1}"
+                gallery.append({
+                    'url': f"/{item.image}",
+                    'alt': f"{self.name} - {label}",
+                    'label': label,
+                    'angle': item.alt_text or f"Perspective {idx + 1}"
+                })
+        
+        # Smart fallback: if only 1 image exists, pull complementary angle perspectives
+        if len(gallery) < 2 and (self.sub_category_id or self.category_id):
+            perspective_names = ["Side Profile Angle", "Back Angle", "Texture & Detail", "Perspective View"]
+            qs = Product.objects.exclude(id=self.id)
+            if self.sub_category_id:
+                related_imgs = list(qs.filter(sub_category_id=self.sub_category_id).values_list('image', flat=True)[:3])
+            else:
+                related_imgs = list(qs.filter(category_id=self.category_id).values_list('image', flat=True)[:3])
+            
+            for i, r_img in enumerate(related_imgs):
+                if r_img:
+                    lbl = perspective_names[i % len(perspective_names)]
+                    gallery.append({
+                        'url': f"/{r_img}",
+                        'alt': f"{self.name} - {lbl}",
+                        'label': lbl,
+                        'angle': lbl
+                    })
+        return gallery
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, related_name='additional_images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='ecommerce/pimg')
+    alt_text = models.CharField(max_length=150, blank=True, null=True, help_text="e.g. Back View, Side Profile, Detail Close-up")
+    order = models.PositiveIntegerField(default=0, help_text="Order in gallery")
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = "Product Image"
+        verbose_name_plural = "Product Additional Images"
+
+    def __str__(self):
+        return f"{self.product.name} - {self.alt_text or 'Image Angle'}"
 
 
 class UserCreateForm(UserCreationForm):

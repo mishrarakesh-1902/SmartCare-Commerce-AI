@@ -1,9 +1,20 @@
 from django.contrib import admin
-from .models import Category,Sub_category,Product,Contact_us,Order,Brand,SupportTicket,Feedback
+from .models import Category,Sub_category,Product,ProductImage,Contact_us,Order,Brand,SupportTicket,Feedback
 
-admin.site.register(Category)
-admin.site.register(Sub_category)
-admin.site.register(Product)
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 3
+    fields = ('image', 'alt_text', 'order')
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'sub_category', 'brand', 'price', 'Availability')
+    list_filter = ('category', 'sub_category', 'brand', 'Availability')
+    search_fields = ('name',)
+    inlines = [ProductImageInline]
+
+admin.site.register(ProductImage)
+
 admin.site.register(Contact_us)
 admin.site.register(Order)
 admin.site.register(Brand)

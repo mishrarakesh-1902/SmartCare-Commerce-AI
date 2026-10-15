@@ -18,10 +18,71 @@
         <!-- Main Product Card & Details Box -->
         <div class="pdp-wrapper">
             <div class="row">
-                <!-- Left: Media & Gallery -->
+                <!-- Left: Media & Multi-Angle Gallery -->
                 <div class="col-sm-6">
-                    <div class="pdp-gallery-main">
-                        <img src="/{{ product.image }}" alt="{{ product.name }}" id="mainProductImg" />
+                    <div class="pdp-gallery-container">
+                        <!-- Thumbnails Rail (Amazon/Myntra style vertical/horizontal selector) -->
+                        {% if gallery_images|length > 1 %}
+                        <div class="pdp-thumbnails-rail" id="pdpThumbnailsRail">
+                            {% for img in gallery_images %}
+                            <div class="pdp-thumb-card {% if forloop.first %}active{% endif %}"
+                                 data-index="{{ forloop.counter0 }}"
+                                 onclick="selectGalleryImage({{ forloop.counter0 }})"
+                                 onmouseenter="selectGalleryImage({{ forloop.counter0 }})"
+                                 title="{{ img.angle }}">
+                                <img src="{{ img.url }}" alt="{{ img.alt }}" loading="lazy" />
+                                <span class="pdp-thumb-badge">{{ img.label|truncatechars:9 }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Main Showcase Stage -->
+                        <div class="pdp-stage-column">
+                            <div class="pdp-main-stage" id="pdpMainStage">
+                                <!-- Angle & Counter Badges -->
+                                <div class="pdp-stage-badges">
+                                    <span class="pdp-angle-badge" id="currentAngleBadge">
+                                        <i class="fa fa-camera"></i> <span id="currentAngleText">{{ gallery_images.0.angle|default:"Primary View" }}</span>
+                                    </span>
+                                </div>
+
+                                {% if gallery_images|length > 1 %}
+                                <span class="pdp-counter-badge" id="imageCounterBadge">
+                                    1 / {{ gallery_images|length }}
+                                </span>
+                                {% endif %}
+
+                                <!-- Fullscreen / HD Expand Button -->
+                                <button type="button" class="pdp-stage-action-btn pdp-btn-expand" onclick="openLightbox()" title="Click to Inspect Fullscreen">
+                                    <i class="fa fa-arrows-alt"></i>
+                                </button>
+
+                                <!-- Zoom Viewport with Hover Lens & Inspection -->
+                                <div class="pdp-zoom-viewport" id="pdpZoomViewport"
+                                     onmousemove="handleImageZoom(event)"
+                                     onmouseleave="resetImageZoom()"
+                                     onclick="openLightbox()">
+                                    <img src="{% if gallery_images %}{{ gallery_images.0.url }}{% else %}/{{ product.image }}{% endif %}" 
+                                         alt="{{ product.name }}" 
+                                         id="mainProductImg" 
+                                         class="pdp-stage-img" />
+                                    <div class="pdp-zoom-hint">
+                                        <i class="fa fa-search-plus"></i> Hover to zoom &bull; Click to inspect
+                                    </div>
+                                </div>
+
+                                <!-- Stage Navigation Chevrons -->
+                                {% if gallery_images|length > 1 %}
+                                <button type="button" class="pdp-nav-arrow pdp-nav-prev" onclick="navigateGallery(-1)" title="Previous Angle">
+                                    <i class="fa fa-chevron-left"></i>
+                                </button>
+                                <button type="button" class="pdp-nav-arrow pdp-nav-next" onclick="navigateGallery(1)" title="Next Angle">
+                                    <i class="fa fa-chevron-right"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Trust Strip Under Image -->
@@ -267,7 +328,200 @@
     </div>
 </section>
 
+<!-- Fullscreen HD Image Lightbox Modal -->
+<div id="pdpLightboxModal" class="pdp-lightbox-overlay" onclick="closeLightboxOnBackdrop(event)">
+    <div class="pdp-lightbox-content" onclick="event.stopPropagation()">
+        <button type="button" class="pdp-lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+        <div class="pdp-lightbox-counter" id="lightboxCounter">1 / {{ gallery_images|length }}</div>
+        <div class="pdp-lightbox-img-wrapper">
+            <img id="lightboxImg" src="{% if gallery_images %}{{ gallery_images.0.url }}{% else %}/{{ product.image }}{% endif %}" alt="{{ product.name }}" />
+        </div>
+        <div class="pdp-lightbox-caption" id="lightboxCaption">
+            {{ product.name }} &bull; {{ gallery_images.0.angle|default:"Product View" }}
+        </div>
+        
+        {% if gallery_images|length > 1 %}
+        <button type="button" class="pdp-lightbox-arrow pdp-lb-prev" onclick="navigateLightbox(-1)" aria-label="Previous">
+            <i class="fa fa-chevron-left"></i>
+        </button>
+        <button type="button" class="pdp-lightbox-arrow pdp-lb-next" onclick="navigateLightbox(1)" aria-label="Next">
+            <i class="fa fa-chevron-right"></i>
+        </button>
+
+        <div class="pdp-lightbox-thumbs" id="lightboxThumbs">
+            {% for img in gallery_images %}
+            <div class="pdp-lb-thumb {% if forloop.first %}active{% endif %}" 
+                 onclick="selectGalleryImage({{ forloop.counter0 }}); syncLightboxImage({{ forloop.counter0 }});">
+                <img src="{{ img.url }}" alt="{{ img.alt }}" />
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
 <script>
+// Gallery Data Array
+const galleryImages = [
+    {% for img in gallery_images %}
+    {
+        url: "{{ img.url }}",
+        alt: "{{ img.alt|escapejs }}",
+        label: "{{ img.label|escapejs }}",
+        angle: "{{ img.angle|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% empty %}
+    {
+        url: "/{{ product.image }}",
+        alt: "{{ product.name|escapejs }}",
+        label: "Front",
+        angle: "Front View"
+    }
+    {% endfor %}
+];
+
+let currentGalleryIndex = 0;
+
+function selectGalleryImage(index) {
+    if (index < 0 || index >= galleryImages.length) return;
+    currentGalleryIndex = index;
+    const item = galleryImages[index];
+
+    // Main Stage Image update with crossfade
+    const mainImg = document.getElementById('mainProductImg');
+    if (mainImg) {
+        mainImg.style.opacity = '0.3';
+        mainImg.style.transform = 'scale(0.96)';
+        setTimeout(() => {
+            mainImg.src = item.url;
+            mainImg.alt = item.alt;
+            mainImg.style.opacity = '1';
+            mainImg.style.transform = 'scale(1)';
+        }, 120);
+    }
+
+    // Update Counter & Angle Badges
+    const counterBadge = document.getElementById('imageCounterBadge');
+    if (counterBadge) {
+        counterBadge.textContent = `${index + 1} / ${galleryImages.length}`;
+    }
+
+    const angleText = document.getElementById('currentAngleText');
+    if (angleText) {
+        angleText.textContent = item.angle || item.label || 'Product Angle';
+    }
+
+    // Update active thumbnail card in the rail
+    const thumbs = document.querySelectorAll('.pdp-thumb-card');
+    thumbs.forEach((thumb, idx) => {
+        if (idx === index) {
+            thumb.classList.add('active');
+            thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        } else {
+            thumb.classList.remove('active');
+        }
+    });
+
+    // If Lightbox is open, sync it as well
+    syncLightboxImage(index);
+}
+
+function navigateGallery(direction) {
+    if (galleryImages.length <= 1) return;
+    let nextIndex = (currentGalleryIndex + direction + galleryImages.length) % galleryImages.length;
+    selectGalleryImage(nextIndex);
+}
+
+// Hover Zoom on Main Stage (cursor position lens zoom)
+function handleImageZoom(e) {
+    const viewport = document.getElementById('pdpZoomViewport');
+    const img = document.getElementById('mainProductImg');
+    if (!viewport || !img) return;
+
+    const rect = viewport.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    img.style.transformOrigin = `${x}% ${y}%`;
+    img.style.transform = 'scale(2.2)';
+}
+
+function resetImageZoom() {
+    const img = document.getElementById('mainProductImg');
+    if (img) {
+        img.style.transformOrigin = 'center center';
+        img.style.transform = 'scale(1)';
+    }
+}
+
+// Lightbox Modal Controls
+function openLightbox() {
+    const modal = document.getElementById('pdpLightboxModal');
+    if (modal) {
+        syncLightboxImage(currentGalleryIndex);
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeLightbox() {
+    const modal = document.getElementById('pdpLightboxModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function closeLightboxOnBackdrop(e) {
+    if (e.target.id === 'pdpLightboxModal') {
+        closeLightbox();
+    }
+}
+
+function syncLightboxImage(index) {
+    const item = galleryImages[index];
+    if (!item) return;
+
+    const lbImg = document.getElementById('lightboxImg');
+    if (lbImg) {
+        lbImg.src = item.url;
+    }
+
+    const lbCounter = document.getElementById('lightboxCounter');
+    if (lbCounter) {
+        lbCounter.textContent = `${index + 1} / ${galleryImages.length}`;
+    }
+
+    const lbCaption = document.getElementById('lightboxCaption');
+    if (lbCaption) {
+        lbCaption.innerHTML = `{{ product.name|escapejs }} &bull; <strong>${item.angle || item.label}</strong>`;
+    }
+
+    const lbThumbs = document.querySelectorAll('.pdp-lb-thumb');
+    lbThumbs.forEach((t, i) => {
+        if (i === index) t.classList.add('active');
+        else t.classList.remove('active');
+    });
+}
+
+function navigateLightbox(direction) {
+    navigateGallery(direction);
+}
+
+// Keyboard Navigation (Arrow keys and Escape)
+document.addEventListener('keydown', function(e) {
+    const modal = document.getElementById('pdpLightboxModal');
+    const isModalOpen = modal && modal.classList.contains('active');
+
+    if (e.key === 'Escape' && isModalOpen) {
+        closeLightbox();
+    } else if (e.key === 'ArrowLeft') {
+        navigateGallery(-1);
+    } else if (e.key === 'ArrowRight') {
+        navigateGallery(1);
+    }
+});
+
 function selectSize(element) {
     const pills = document.querySelectorAll('.size-pill');
     pills.forEach(p => p.classList.remove('active'));

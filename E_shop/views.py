@@ -254,8 +254,11 @@ def Product_Detail(request , id):
         if not related_products:
             related_products = Product.objects.exclude(id=product.id)[:4]
     
+    gallery_images = product.get_gallery_images() if product else []
+    
     context = {
         'product': product,
+        'gallery_images': gallery_images,
         'category': category,
         'brand': brand,
         'related_products': related_products,
