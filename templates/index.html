@@ -806,7 +806,24 @@ function syncHeroIndicators() {
     requestAnimationFrame(syncHeroIndicators);
 }
 
+// Dynamically calculate and set exact remaining screen height for hero banner
+function updateHeroBannerHeight() {
+    const announcement = document.querySelector('.top-announcement-bar');
+    const navbar = document.querySelector('.modern-navbar');
+    let headerHeight = 0;
+    if (announcement) headerHeight += announcement.offsetHeight;
+    if (navbar) headerHeight += navbar.offsetHeight;
+
+    if (headerHeight > 0) {
+        document.documentElement.style.setProperty('--header-total-height', headerHeight + 'px');
+    }
+}
+window.addEventListener('resize', updateHeroBannerHeight);
+window.addEventListener('load', updateHeroBannerHeight);
+updateHeroBannerHeight();
+
 document.addEventListener('DOMContentLoaded', () => {
+    updateHeroBannerHeight();
     requestAnimationFrame(syncHeroIndicators);
 
     const viewport = document.getElementById('heroSliderViewport');
