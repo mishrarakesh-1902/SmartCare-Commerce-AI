@@ -111,16 +111,22 @@ a:hover, a:focus {
   }
 }
 
-/* Fluid Product Grid Scaling on Wide Screens */
+/* Product Grid: Enforce exactly 4 products per row across all desktop screens */
+@media (min-width: 992px) {
+  .col-md-3 {
+    width: 25% !important; /* Exactly 4 cards per row */
+  }
+}
+
 @media (min-width: 1400px) {
   .col-md-3 {
-    width: 20% !important; /* 5 cards per row on large desktop */
+    width: 25% !important; /* Exactly 4 cards per row */
   }
 }
 
 @media (min-width: 1750px) {
   .col-md-3 {
-    width: 16.666667% !important; /* 6 cards per row on ultrawide desktop */
+    width: 25% !important; /* Exactly 4 cards per row */
   }
 }
 
@@ -1391,20 +1397,20 @@ a:hover, a:focus {
 .modern-product-card {
   background: #ffffff;
   border: 1px solid var(--slate-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   transition: all var(--transition-base);
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: var(--shadow-xs);
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
 }
 
 .modern-product-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-8px);
   border-color: var(--slate-300);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
 }
 
 /* Card Image Box */
@@ -1412,12 +1418,13 @@ a:hover, a:focus {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
+  min-height: 280px;
   background: #f8fafc;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 24px;
 }
 
 .card-media-box img {
@@ -1434,45 +1441,45 @@ a:hover, a:focus {
 /* Badge Tags on Card */
 .card-badge-top {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 14px;
+  left: 14px;
   z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .badge-tag-sale {
   background: #ef4444;
   color: #fff;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
 }
 
 .badge-tag-new {
   background: var(--brand-secondary);
   color: #fff;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
 }
 
 /* Quick Action Overlay Icons */
 .card-quick-actions {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 14px;
+  right: 14px;
   z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   opacity: 0;
   transform: translateX(10px);
   transition: all var(--transition-fast);
@@ -1484,16 +1491,16 @@ a:hover, a:focus {
 }
 
 .quick-action-btn {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: #ffffff;
   color: var(--slate-700);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  box-shadow: var(--shadow-sm);
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
   border: 1px solid var(--slate-200);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -1503,33 +1510,33 @@ a:hover, a:focus {
   background: var(--brand-primary);
   color: #ffffff;
   border-color: var(--brand-primary);
-  transform: scale(1.1);
+  transform: scale(1.12);
 }
 
 /* Card Body Content */
 .card-body-content {
-  padding: 16px;
+  padding: 20px 22px 22px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
 .card-category-meta {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 12.5px;
+  font-weight: 700;
   color: var(--slate-400);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
 }
 
 .card-product-title {
-  font-size: 15px;
+  font-size: 16.5px;
   font-weight: 700;
   color: var(--slate-900);
-  margin: 0 0 8px 0;
-  line-height: 1.35;
-  height: 42px;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  height: 46px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1549,8 +1556,8 @@ a:hover, a:focus {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 12px;
-  font-size: 12px;
+  margin-bottom: 14px;
+  font-size: 13px;
 }
 
 .card-stars {
@@ -1558,49 +1565,49 @@ a:hover, a:focus {
 }
 
 .card-rating-num {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--slate-600);
 }
 
 .card-price-row {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 10px;
   margin-top: auto;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .price-current {
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--slate-900);
   font-family: var(--font-primary);
 }
 
 .price-mrp {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--slate-400);
   text-decoration: line-through;
 }
 
 .price-discount-pill {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #16a34a;
   background: #dcfce7;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
 /* Card Cart Action Button */
 .btn-card-cart {
   width: 100%;
-  padding: 10px 16px;
+  padding: 13px 20px;
   background: var(--slate-900);
   color: #ffffff !important;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 13px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 14px;
   border: none;
   display: flex;
   align-items: center;
@@ -1609,12 +1616,13 @@ a:hover, a:focus {
   transition: all var(--transition-fast);
   cursor: pointer;
   text-decoration: none !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
 }
 
 .btn-card-cart:hover {
   background: var(--brand-primary);
-  box-shadow: 0 4px 14px var(--brand-primary-glow);
-  transform: translateY(-1px);
+  box-shadow: 0 6px 18px var(--brand-primary-glow);
+  transform: translateY(-2px);
 }
 
 /* ==========================================================================
