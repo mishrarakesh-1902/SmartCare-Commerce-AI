@@ -1,119 +1,176 @@
 {% extends 'master.html' %}
 
 {% block body %}
-<!-- Modern Hero Slider -->
-<section id="slider">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                <div id="slider-carousel" class="carousel slide" data-ride="carousel" data-interval="5000">
-                    <ol class="carousel-indicators">
-                        <li data-target="#slider-carousel" data-slide-to="0" class="active"></li>
-                        <li data-target="#slider-carousel" data-slide-to="1"></li>
-                        <li data-target="#slider-carousel" data-slide-to="2"></li>
-                    </ol>
-
-                    <div class="carousel-inner" style="border-radius: var(--radius-lg); overflow: hidden;">
-                        <!-- Slide 1 -->
-                        <div class="item active">
-                            <div class="modern-hero-banner">
-                                <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
-                                    <div class="col-sm-7">
-                                        <div class="modern-hero-content">
-                                            <div class="hero-pill-badge">
-                                                <i class="fa fa-sparkles"></i> 2026 Curated Collection
-                                            </div>
-                                            <h1>Modern Lifestyle &amp; <span>Urban Drops</span></h1>
-                                            <p>Discover premium fashion engineered for comfort and distinct streetwear aesthetics. Enjoy frictionless checkout and 24/7 AI-assisted shopping.</p>
-                                            <div class="hero-cta-group">
-                                                <a href="/product/" class="btn-hero-primary">
-                                                    <i class="fa fa-shopping-bag"></i> Shop Collection
-                                                </a>
-                                                <a href="{% url 'ai_support' %}" class="btn-hero-secondary">
-                                                    <span class="ai-pulse-dot"></span> Ask AI Assistant
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-5 hidden-xs">
-                                        <div class="modern-hero-image-wrap">
-                                            <img src="/static/images/home/girl1.jpg" alt="Fashion Drops" class="img-responsive" />
-                                        </div>
-                                    </div>
+<!-- Full-Width Seamless Hero Slider (Edge to Edge Screen Coverage) -->
+<section id="hero-slider-section" class="full-width-hero-slider">
+    <div class="hero-slider-viewport" id="heroSliderViewport">
+        <div class="hero-slider-track" id="heroSliderTrack">
+            <!-- Slide 1: Modern Lifestyle & Urban Drops -->
+            <div class="hero-slide hero-slide-1">
+                <div class="container">
+                    <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
+                        <div class="col-sm-7 col-xs-12">
+                            <div class="modern-hero-content hero-content-col">
+                                <div class="hero-pill-badge">
+                                    <i class="fa fa-sparkles"></i> 2026 Curated Collection
+                                </div>
+                                <h1>Modern Lifestyle &amp; <span>Urban Drops</span></h1>
+                                <p>Discover premium fashion engineered for comfort and distinct streetwear aesthetics. Enjoy frictionless checkout and 24/7 AI-assisted shopping.</p>
+                                <div class="hero-cta-group">
+                                    <a href="/product/" class="btn-hero-primary">
+                                        <i class="fa fa-shopping-bag"></i> Shop Collection
+                                    </a>
+                                    <a href="{% url 'ai_support' %}" class="btn-hero-secondary">
+                                        <span class="ai-pulse-dot"></span> Ask AI Assistant
+                                    </a>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Slide 2 -->
-                        <div class="item">
-                            <div class="modern-hero-banner" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);">
-                                <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
-                                    <div class="col-sm-7">
-                                        <div class="modern-hero-content">
-                                            <div class="hero-pill-badge" style="background: rgba(99, 102, 241, 0.25); border-color: rgba(129, 140, 248, 0.4); color: #c7d2fe;">
-                                                <i class="fa fa-tag"></i> Seasonal Drop Alert
-                                            </div>
-                                            <h1>Smart Fits, Polos &amp; <span>Tailored Blazers</span></h1>
-                                            <p>Upgrade your wardrobe with verified high-comfort cotton essentials and statement layering pieces. Free shipping on orders over ₹499.</p>
-                                            <div class="hero-cta-group">
-                                                <a href="/product/" class="btn-hero-primary" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
-                                                    <i class="fa fa-bolt"></i> Explore Deals
-                                                </a>
-                                                <a href="/order/" class="btn-hero-secondary">
-                                                    <i class="fa fa-truck"></i> Track Order
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-5 hidden-xs">
-                                        <div class="modern-hero-image-wrap">
-                                            <img src="/static/images/home/girl2.jpg" alt="Smart Casuals" class="img-responsive" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 3 -->
-                        <div class="item">
-                            <div class="modern-hero-banner" style="background: linear-gradient(135deg, #090d16 0%, #151e33 60%, #1f2d4d 100%);">
-                                <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
-                                    <div class="col-sm-7">
-                                        <div class="modern-hero-content">
-                                            <div class="hero-pill-badge" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(52, 211, 153, 0.4); color: #6ee7b7;">
-                                                <span class="ai-pulse-dot"></span> Powered by Lumen AI
-                                            </div>
-                                            <h1>Autonomous <span>AI Customer Care</span></h1>
-                                            <p>Need help with size recommendations, order tracking, returns, or product queries? Lumen AI is active 24/7 to solve your needs in seconds.</p>
-                                            <div class="hero-cta-group">
-                                                <a href="{% url 'ai_support' %}" class="btn-hero-primary" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
-                                                    <i class="fa fa-headphones"></i> Launch AI Desk
-                                                </a>
-                                                <a href="/product/" class="btn-hero-secondary">
-                                                    <i class="fa fa-eye"></i> Browse Catalog
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-5 hidden-xs">
-                                        <div class="modern-hero-image-wrap">
-                                            <img src="/static/images/home/girl3.jpg" alt="Autonomous AI Shopping" class="img-responsive" />
-                                        </div>
+                        <div class="col-sm-5 hidden-xs">
+                            <div class="hero-showcase-box">
+                                <div class="hero-image-backdrop"></div>
+                                <img src="/static/images/home/girl1.jpg" alt="Fashion Drops" class="hero-model-visual" />
+                                <div class="hero-card-tag">
+                                    <span class="hero-tag-icon"><i class="fa fa-sparkles"></i></span>
+                                    <div class="hero-tag-text">
+                                        <strong>Urban Essentials</strong>
+                                        <span>Curated 2026 Fit</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Slider Controls -->
-                    <a href="#slider-carousel" class="left control-carousel hidden-xs" data-slide="prev" style="left: 15px; background: rgba(0,0,0,0.4); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; top: 50%; transform: translateY(-50%);">
-                        <i class="fa fa-chevron-left" style="color: #fff; font-size: 16px;"></i>
-                    </a>
-                    <a href="#slider-carousel" class="right control-carousel hidden-xs" data-slide="next" style="right: 15px; background: rgba(0,0,0,0.4); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; top: 50%; transform: translateY(-50%);">
-                        <i class="fa fa-chevron-right" style="color: #fff; font-size: 16px;"></i>
-                    </a>
                 </div>
             </div>
+
+            <!-- Slide 2: Smart Fits, Polos & Tailored Blazers -->
+            <div class="hero-slide hero-slide-2">
+                <div class="container">
+                    <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
+                        <div class="col-sm-7 col-xs-12">
+                            <div class="modern-hero-content hero-content-col">
+                                <div class="hero-pill-badge" style="background: rgba(99, 102, 241, 0.25); border-color: rgba(129, 140, 248, 0.4); color: #c7d2fe;">
+                                    <i class="fa fa-tag"></i> Seasonal Drop Alert
+                                </div>
+                                <h1>Smart Fits, Polos &amp; <span>Tailored Blazers</span></h1>
+                                <p>Upgrade your wardrobe with verified high-comfort cotton essentials and statement layering pieces. Free shipping on orders over ₹499.</p>
+                                <div class="hero-cta-group">
+                                    <a href="/product/" class="btn-hero-primary" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
+                                        <i class="fa fa-bolt"></i> Explore Deals
+                                    </a>
+                                    <a href="/order/" class="btn-hero-secondary">
+                                        <i class="fa fa-truck"></i> Track Order
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 hidden-xs">
+                            <div class="hero-showcase-box">
+                                <div class="hero-image-backdrop"></div>
+                                <img src="/static/images/home/girl2.jpg" alt="Smart Casuals" class="hero-model-visual" />
+                                <div class="hero-card-tag">
+                                    <span class="hero-tag-icon" style="background: #4f46e5;"><i class="fa fa-shopping-bag"></i></span>
+                                    <div class="hero-tag-text">
+                                        <strong>Seasonal Styles</strong>
+                                        <span>Best Seller 4.9★</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Autonomous AI Customer Care -->
+            <div class="hero-slide hero-slide-3">
+                <div class="container">
+                    <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
+                        <div class="col-sm-7 col-xs-12">
+                            <div class="modern-hero-content hero-content-col">
+                                <div class="hero-pill-badge" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(52, 211, 153, 0.4); color: #6ee7b7;">
+                                    <span class="ai-pulse-dot"></span> Powered by Lumen AI
+                                </div>
+                                <h1>Autonomous <span>AI Customer Care</span></h1>
+                                <p>Need help with size recommendations, order tracking, returns, or product queries? Lumen AI is active 24/7 to solve your needs in seconds.</p>
+                                <div class="hero-cta-group">
+                                    <a href="{% url 'ai_support' %}" class="btn-hero-primary" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                                        <i class="fa fa-headphones"></i> Launch AI Desk
+                                    </a>
+                                    <a href="/product/" class="btn-hero-secondary">
+                                        <i class="fa fa-eye"></i> Browse Catalog
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 hidden-xs">
+                            <div class="hero-showcase-box">
+                                <div class="hero-image-backdrop"></div>
+                                <img src="/static/images/home/girl3.jpg" alt="Autonomous AI Shopping" class="hero-model-visual" />
+                                <div class="hero-card-tag">
+                                    <span class="hero-tag-icon" style="background: #10b981;"><i class="fa fa-bolt"></i></span>
+                                    <div class="hero-tag-text">
+                                        <strong>AI Assistant Active</strong>
+                                        <span>Instant Auto Replies</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 1 Clone (For seamless infinite looping with 0s gap) -->
+            <div class="hero-slide hero-slide-1" aria-hidden="true">
+                <div class="container">
+                    <div class="row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
+                        <div class="col-sm-7 col-xs-12">
+                            <div class="modern-hero-content hero-content-col">
+                                <div class="hero-pill-badge">
+                                    <i class="fa fa-sparkles"></i> 2026 Curated Collection
+                                </div>
+                                <h1>Modern Lifestyle &amp; <span>Urban Drops</span></h1>
+                                <p>Discover premium fashion engineered for comfort and distinct streetwear aesthetics. Enjoy frictionless checkout and 24/7 AI-assisted shopping.</p>
+                                <div class="hero-cta-group">
+                                    <a href="/product/" class="btn-hero-primary">
+                                        <i class="fa fa-shopping-bag"></i> Shop Collection
+                                    </a>
+                                    <a href="{% url 'ai_support' %}" class="btn-hero-secondary">
+                                        <span class="ai-pulse-dot"></span> Ask AI Assistant
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 hidden-xs">
+                            <div class="hero-showcase-box">
+                                <div class="hero-image-backdrop"></div>
+                                <img src="/static/images/home/girl1.jpg" alt="Fashion Drops" class="hero-model-visual" />
+                                <div class="hero-card-tag">
+                                    <span class="hero-tag-icon"><i class="fa fa-sparkles"></i></span>
+                                    <div class="hero-tag-text">
+                                        <strong>Urban Essentials</strong>
+                                        <span>Curated 2026 Fit</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sleek Slider Controls (Left / Right floating navigation arrows) -->
+        <button type="button" class="hero-nav-arrow hero-nav-prev" onclick="moveHeroSlide(-1)" aria-label="Previous Slide">
+            <i class="fa fa-chevron-left"></i>
+        </button>
+        <button type="button" class="hero-nav-arrow hero-nav-next" onclick="moveHeroSlide(1)" aria-label="Next Slide">
+            <i class="fa fa-chevron-right"></i>
+        </button>
+
+        <!-- Dynamic Indicator Dots -->
+        <div class="hero-indicators-container">
+            <div class="hero-dot active" onclick="jumpToHeroSlide(0)"></div>
+            <div class="hero-dot" onclick="jumpToHeroSlide(1)"></div>
+            <div class="hero-dot" onclick="jumpToHeroSlide(2)"></div>
         </div>
     </div>
 </section>
@@ -591,5 +648,108 @@ function applySorting(sortVal) {
     url.searchParams.set('sort', sortVal);
     window.location.href = url.toString();
 }
+
+// ==========================================================================
+// Full-Width Seamless Hero Slider Controller (Simultaneous 0s-gap sliding)
+// ==========================================================================
+let currentHeroIndex = 0;
+const realSlidesCount = 3;
+const heroTransitionSpeed = 1900; // 1.9s slow cinematic gliding speed
+let isHeroSliding = false;
+let heroAutoSlideTimer = null;
+
+function updateHeroIndicators(idx) {
+    const dots = document.querySelectorAll('.hero-dot');
+    const activeDotIdx = (idx % realSlidesCount + realSlidesCount) % realSlidesCount;
+    dots.forEach((dot, i) => {
+        if (i === activeDotIdx) dot.classList.add('active');
+        else dot.classList.remove('active');
+    });
+}
+
+function moveHeroSlide(direction) {
+    if (isHeroSliding) return;
+    const track = document.getElementById('heroSliderTrack');
+    if (!track) return;
+
+    isHeroSliding = true;
+    currentHeroIndex += direction;
+
+    // Apply smooth slow slide transition
+    track.style.transition = `transform ${heroTransitionSpeed}ms cubic-bezier(0.25, 1, 0.4, 1)`;
+    track.style.transform = `translateX(-${currentHeroIndex * 100}%)`;
+
+    updateHeroIndicators(currentHeroIndex);
+
+    setTimeout(() => {
+        // When reaching the cloned slide at the end, snap back to first slide seamlessly with no animation
+        if (currentHeroIndex >= realSlidesCount) {
+            track.style.transition = 'none';
+            currentHeroIndex = 0;
+            track.style.transform = `translateX(0%)`;
+        } else if (currentHeroIndex < 0) {
+            track.style.transition = 'none';
+            currentHeroIndex = realSlidesCount - 1;
+            track.style.transform = `translateX(-${currentHeroIndex * 100}%)`;
+        }
+        isHeroSliding = false;
+    }, heroTransitionSpeed);
+
+    restartHeroAutoPlay();
+}
+
+function jumpToHeroSlide(index) {
+    if (isHeroSliding || index === currentHeroIndex) return;
+    const track = document.getElementById('heroSliderTrack');
+    if (!track) return;
+
+    isHeroSliding = true;
+    currentHeroIndex = index;
+    track.style.transition = `transform ${heroTransitionSpeed}ms cubic-bezier(0.25, 1, 0.4, 1)`;
+    track.style.transform = `translateX(-${currentHeroIndex * 100}%)`;
+    updateHeroIndicators(currentHeroIndex);
+
+    setTimeout(() => {
+        isHeroSliding = false;
+    }, heroTransitionSpeed);
+
+    restartHeroAutoPlay();
+}
+
+function startHeroAutoPlay() {
+    heroAutoSlideTimer = setInterval(() => {
+        moveHeroSlide(1);
+    }, 6000); // 6s display time + 1.9s slow cinematic slide
+}
+
+function restartHeroAutoPlay() {
+    clearInterval(heroAutoSlideTimer);
+    startHeroAutoPlay();
+}
+
+// Touch swipe support and hover-pause
+document.addEventListener('DOMContentLoaded', () => {
+    startHeroAutoPlay();
+    const viewport = document.getElementById('heroSliderViewport');
+    if (viewport) {
+        viewport.addEventListener('mouseenter', () => clearInterval(heroAutoSlideTimer));
+        viewport.addEventListener('mouseleave', () => restartHeroAutoPlay());
+
+        let startX = 0;
+        let endX = 0;
+        viewport.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        }, { passive: true });
+
+        viewport.addEventListener('touchend', (e) => {
+            endX = e.changedTouches[0].clientX;
+            const diffX = startX - endX;
+            if (Math.abs(diffX) > 40) {
+                if (diffX > 0) moveHeroSlide(1);
+                else moveHeroSlide(-1);
+            }
+        }, { passive: true });
+    }
+});
 </script>
 {% endblock %}
