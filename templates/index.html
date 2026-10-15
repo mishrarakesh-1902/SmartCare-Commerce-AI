@@ -330,6 +330,14 @@
                 </div>
 
                 <div class="hub-header-actions">
+                    <div class="rail-scroll-nav" title="Scroll Departments">
+                        <button type="button" class="rail-scroll-btn" onclick="scrollDeptRail(-300)" aria-label="Scroll Departments Left">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <button type="button" class="rail-scroll-btn" onclick="scrollDeptRail(300)" aria-label="Scroll Departments Right">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
                     <span class="hub-stat-pill">
                         <i class="fa fa-cubes"></i> <strong>{{ product|length }}</strong> Products Found
                     </span>
@@ -342,7 +350,7 @@
             </div>
 
             <!-- Tier 1: Department Navigation Rail (Sleek Horizontal Cards) -->
-            <div class="dept-nav-rail-wrapper">
+            <div class="dept-nav-rail-wrapper" id="deptRailWrapper">
                 <div class="dept-nav-rail">
                     <!-- All Departments Card -->
                     <a href="/{% if active_brand %}?brand={{ active_brand.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}{% elif current_sort and current_sort != 'newest' %}?sort={{ current_sort }}{% endif %}" 
@@ -352,7 +360,7 @@
                         </div>
                         <div class="dept-card-info">
                             <span class="dept-card-name">All Departments</span>
-                            <span class="dept-card-count">{{ total_products_count|default:"68" }} Products</span>
+                            <span class="dept-card-count">{{ total_products_count|default:"168" }} Products</span>
                         </div>
                     </a>
 
@@ -405,35 +413,86 @@
             </div>
             {% endif %}
 
-            <!-- Tier 3: Bottom Control Bar (Brand Filter + Sorting Dropdown) -->
-            <div class="hub-footer-controls">
-                <!-- Brand Filter Group -->
-                <div class="hub-brands-wrap">
-                    <span class="hub-ctrl-label"><i class="fa fa-shield"></i> Brand:</span>
-                    <div class="hub-brand-pills">
-                        <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" 
-                           class="brand-chip {% if not active_brand %}active{% endif %}">
-                            All Brands
-                        </a>
-                        {% for b in brand %}
-                        <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}brand={{ b.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
-                           class="brand-chip {% if active_brand.id == b.id %}active{% endif %}">
-                            {{ b.name }}
-                            <span class="brand-chip-count">{{ b.num_products }}</span>
-                        </a>
-                        {% endfor %}
+            <!-- Tier 3: Brand Navigation Rail (Horizontal Scrollable Cards like Department section) -->
+            <div class="brand-nav-section">
+                <div class="brand-bar-header">
+                    <div class="brand-bar-title-wrap">
+                        <span class="hub-ctrl-label"><i class="fa fa-tags"></i> Explore Brands:</span>
+                        {% if active_brand %}
+                        <span class="brand-filter-pill-active">
+                            Filtered: <strong>{{ active_brand.name }}</strong>
+                            <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" title="Clear brand filter">&times;</a>
+                        </span>
+                        {% else %}
+                        <span class="brand-filter-pill-hint">{{ brand|length }} Brands</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="brand-header-actions">
+                        <!-- Scroll Left/Right Arrow Buttons -->
+                        <div class="rail-scroll-nav" title="Scroll Brands">
+                            <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(-300)" aria-label="Scroll Brands Left">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <button type="button" class="rail-scroll-btn" onclick="scrollBrandRail(300)" aria-label="Scroll Brands Right">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Sorting Dropdown -->
+                        <div class="hub-sort-wrap">
+                            <label for="catalogSortSelect" class="hub-ctrl-label"><i class="fa fa-sort-amount-desc"></i> Sort:</label>
+                            <select id="catalogSortSelect" class="hub-sort-select" onchange="applySorting(this.value)">
+                                <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
+                                <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                                <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                                <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Product Name: A to Z</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Sorting Dropdown -->
-                <div class="hub-sort-wrap">
-                    <label for="catalogSortSelect" class="hub-ctrl-label"><i class="fa fa-sort-amount-desc"></i> Sort By:</label>
-                    <select id="catalogSortSelect" class="hub-sort-select" onchange="applySorting(this.value)">
-                        <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
-                        <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                        <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                        <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Product Name: A to Z</option>
-                    </select>
+                <!-- Brand Horizontal Cards Rail -->
+                <div class="brand-nav-rail-wrapper" id="brandRailWrapper">
+                    <div class="brand-nav-rail">
+                        <!-- All Brands Card -->
+                        <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" 
+                           class="brand-nav-card {% if not active_brand %}active{% endif %}">
+                            <div class="brand-card-icon-wrap">
+                                <i class="fa fa-th-large"></i>
+                            </div>
+                            <div class="brand-card-info">
+                                <span class="brand-card-name">All Brands</span>
+                                <span class="brand-card-count">{{ total_products_count|default:"168" }} items</span>
+                            </div>
+                        </a>
+
+                        <!-- Individual Brand Cards -->
+                        {% for b in brand %}
+                        <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}brand={{ b.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
+                           class="brand-nav-card {% if active_brand.id == b.id %}active{% endif %}"
+                           {% if active_brand.id == b.id %}id="activeBrandCard"{% endif %}>
+                            <div class="brand-card-icon-wrap">
+                                {% if "Apple" in b.name %}<i class="fa fa-apple"></i>
+                                {% elif "Samsung" in b.name or "Xiaomi" in b.name or "OnePlus" in b.name or "Google" in b.name %}<i class="fa fa-mobile-phone"></i>
+                                {% elif "Sony" in b.name or "boAt" in b.name %}<i class="fa fa-headphones"></i>
+                                {% elif "HP" in b.name or "Lenovo" in b.name or "Dell" in b.name %}<i class="fa fa-laptop"></i>
+                                {% elif "Nike" in b.name or "Adidas" in b.name or "Decathlon" in b.name %}<i class="fa fa-shield"></i>
+                                {% elif "Prestige" in b.name or "Pigeon" in b.name or "IKEA" in b.name or "Philips" in b.name %}<i class="fa fa-home"></i>
+                                {% elif "Casio" in b.name or "Titan" in b.name or "Fastrack" in b.name %}<i class="fa fa-clock-o"></i>
+                                {% elif "L'Oréal" in b.name or "Ordinary" in b.name or "Calvin" in b.name %}<i class="fa fa-diamond"></i>
+                                {% elif "Tourister" in b.name or "American" in b.name %}<i class="fa fa-suitcase"></i>
+                                {% elif "Spigen" in b.name or "Anker" in b.name %}<i class="fa fa-plug"></i>
+                                {% else %}<span class="brand-letter-badge">{{ b.name|slice:":1" }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="brand-card-info">
+                                <span class="brand-card-name">{{ b.name }}</span>
+                                <span class="brand-card-count">{{ b.num_products }} items</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
 
@@ -713,6 +772,32 @@ function applySorting(sortVal) {
     url.searchParams.set('sort', sortVal);
     window.location.href = url.toString();
 }
+
+function scrollBrandRail(distance) {
+    const el = document.getElementById('brandRailWrapper');
+    if (el) {
+        el.scrollBy({ left: distance, behavior: 'smooth' });
+    }
+}
+
+function scrollDeptRail(distance) {
+    const el = document.getElementById('deptRailWrapper');
+    if (el) {
+        el.scrollBy({ left: distance, behavior: 'smooth' });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // If an active brand card is selected, smoothly scroll it into center view
+    const activeBrand = document.getElementById('activeBrandCard');
+    const brandWrapper = document.getElementById('brandRailWrapper');
+    if (activeBrand && brandWrapper) {
+        const left = activeBrand.offsetLeft - brandWrapper.offsetLeft - 80;
+        if (left > 0) {
+            brandWrapper.scrollTo({ left: left, behavior: 'smooth' });
+        }
+    }
+});
 
 // ==========================================================================
 // Continuous Full-Width Gliding Showcase Controller
