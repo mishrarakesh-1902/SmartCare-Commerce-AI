@@ -168,89 +168,182 @@
 <!-- Main Products Section -->
 <section>
     <div class="container">
-        <!-- Modern Two-Tier Category & Brand Filter Bar -->
-        <div class="modern-filter-container">
-            <div class="row">
-                <!-- Tier 1: Main Departments / Categories -->
-                <div class="col-sm-12" style="margin-bottom: 12px;">
-                    <div class="filter-header-title">
-                        <i class="fa fa-th-large" style="color: var(--brand-primary);"></i> Departments / Main Categories
-                    </div>
-                    <div class="chips-row">
-                        <a href="/" class="filter-chip {% if not request.GET.category and not request.GET.sub_category and not request.GET.brand %}active{% endif %}">
-                            <i class="fa fa-th"></i> All Departments
-                        </a>
-                        {% for cat in category %}
-                        <a href="/?category={{ cat.id }}" class="filter-chip {% if active_category.id == cat.id and not request.GET.sub_category %}active{% endif %}">
-                            {% if "Men" in cat.name %}👔
-                            {% elif "women" in cat.name or "Women" in cat.name %}👗
-                            {% elif "Child" in cat.name or "Kids" in cat.name %}👶
-                            {% elif "Home" in cat.name %}⚡
-                            {% elif "Mobile" in cat.name %}📱
-                            {% elif "Computer" in cat.name %}💻
-                            {% else %}🏷️
+        <!-- Luxury Catalog Discovery Hub -->
+        <div class="catalog-discovery-hub">
+            <!-- Hub Header -->
+            <div class="hub-header-bar">
+                <div class="hub-title-group">
+                    <span class="hub-kicker"><i class="fa fa-sliders"></i> Smart Filter &amp; Discovery</span>
+                    <h2 class="hub-main-title">
+                        {% if active_sub_category %}
+                            {{ active_sub_category.name }}
+                        {% elif active_category %}
+                            {{ active_category.name }}
+                        {% elif active_brand %}
+                            {{ active_brand.name }} Collection
+                        {% else %}
+                            Explore All Departments
+                        {% endif %}
+                    </h2>
+                </div>
+
+                <div class="hub-header-actions">
+                    <span class="hub-stat-pill">
+                        <i class="fa fa-cubes"></i> <strong>{{ product|length }}</strong> Products Found
+                    </span>
+                    {% if active_category or active_sub_category or active_brand %}
+                    <a href="/" class="hub-clear-pill" title="Reset all active filters">
+                        <i class="fa fa-times-circle"></i> Clear All Filters
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tier 1: Department Navigation Rail (Sleek Horizontal Cards) -->
+            <div class="dept-nav-rail-wrapper">
+                <div class="dept-nav-rail">
+                    <!-- All Departments Card -->
+                    <a href="/{% if active_brand %}?brand={{ active_brand.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}{% elif current_sort and current_sort != 'newest' %}?sort={{ current_sort }}{% endif %}" 
+                       class="dept-nav-card {% if not active_category and not active_sub_category %}active{% endif %}">
+                        <div class="dept-card-icon-wrap">
+                            <i class="fa fa-th-large"></i>
+                        </div>
+                        <div class="dept-card-info">
+                            <span class="dept-card-name">All Departments</span>
+                            <span class="dept-card-count">{{ total_products_count|default:"68" }} Products</span>
+                        </div>
+                    </a>
+
+                    <!-- Individual Category Cards -->
+                    {% for cat in category %}
+                    <a href="/?category={{ cat.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
+                       class="dept-nav-card {% if active_category.id == cat.id and not active_sub_category %}active{% elif active_category.id == cat.id %}active-parent{% endif %}">
+                        <div class="dept-card-icon-wrap">
+                            {% if "Men" in cat.name %}<i class="fa fa-male"></i>
+                            {% elif "women" in cat.name or "Women" in cat.name %}<i class="fa fa-female"></i>
+                            {% elif "Child" in cat.name or "Kids" in cat.name %}<i class="fa fa-child"></i>
+                            {% elif "Home" in cat.name %}<i class="fa fa-home"></i>
+                            {% elif "Mobile" in cat.name %}<i class="fa fa-mobile-phone"></i>
+                            {% elif "Computer" in cat.name %}<i class="fa fa-laptop"></i>
+                            {% else %}<i class="fa fa-shopping-bag"></i>
                             {% endif %}
-                            {{ cat.name }}
+                        </div>
+                        <div class="dept-card-info">
+                            <span class="dept-card-name">{{ cat.name }}</span>
+                            <span class="dept-card-count">{{ cat.num_products }} items</span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Tier 2: Sub-Category Refinement (Contextual & Clean) -->
+            <div class="subcat-refinement-section">
+                <div class="subcat-bar-header">
+                    <span class="subcat-label">
+                        <i class="fa fa-filter"></i>
+                        {% if active_category %}
+                            Specific Styles in <strong>{{ active_category.name }}</strong>:
+                        {% else %}
+                            Browse by Product Type:
+                        {% endif %}
+                    </span>
+                    
+                    {% if active_category %}
+                    <span class="subcat-meta-tag"><i class="fa fa-check"></i> Filtered by {{ active_category.name }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="subcat-chips-rail">
+                    {% if active_category %}
+                        <a href="/?category={{ active_category.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
+                           class="subcat-chip {% if not active_sub_category %}active{% endif %}">
+                            <i class="fa fa-th-list"></i> All in {{ active_category.name }}
+                        </a>
+                        {% for sub in active_category.sub_category_set.all %}
+                        <a href="/?category={{ active_category.id }}&sub_category={{ sub.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
+                           class="subcat-chip {% if active_sub_category.id == sub.id %}active{% endif %}">
+                            {{ sub.name }}
+                            <span class="subcat-pill-count">{{ sub.num_products }}</span>
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <!-- When on All Departments, clean categorized chips with counts -->
+                        {% for cat in category %}
+                            {% for sub in cat.sub_category_set.all %}
+                            <a href="/?category={{ cat.id }}&sub_category={{ sub.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
+                               class="subcat-chip {% if active_sub_category.id == sub.id %}active{% endif %}"
+                               title="Under {{ cat.name }}">
+                                <span>{{ sub.name }}</span>
+                                <span class="subcat-pill-count">{{ sub.num_products }}</span>
+                            </a>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tier 3: Bottom Control Bar (Brand Filter + Sorting Dropdown) -->
+            <div class="hub-footer-controls">
+                <!-- Brand Filter Group -->
+                <div class="hub-brands-wrap">
+                    <span class="hub-ctrl-label"><i class="fa fa-shield"></i> Brand:</span>
+                    <div class="hub-brand-pills">
+                        <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}{% if current_sort and current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" 
+                           class="brand-chip {% if not active_brand %}active{% endif %}">
+                            All Brands
+                        </a>
+                        {% for b in brand %}
+                        <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}&{% endif %}brand={{ b.id }}{% if current_sort and current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" 
+                           class="brand-chip {% if active_brand.id == b.id %}active{% endif %}">
+                            {{ b.name }}
+                            <span class="brand-chip-count">{{ b.num_products }}</span>
                         </a>
                         {% endfor %}
                     </div>
                 </div>
 
-                <!-- Tier 2: Sub-Categories -->
-                <div class="col-sm-12" style="margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--slate-200);">
-                    <div class="filter-header-title" style="margin-bottom: 8px;">
-                        <i class="fa fa-tags" style="color: var(--brand-secondary);"></i> 
-                        {% if active_category %}
-                            Sub-categories in <strong>{{ active_category.name }}</strong>:
-                        {% else %}
-                            Browse by Specific Product Type:
-                        {% endif %}
-                    </div>
-                    <div class="chips-row">
-                        {% if active_category %}
-                            <a href="/?category={{ active_category.id }}" class="filter-chip {% if not request.GET.sub_category %}active{% endif %}">
-                                All in {{ active_category.name }}
-                            </a>
-                            {% for sub in active_category.sub_category_set.all %}
-                            <a href="/?category={{ active_category.id }}&sub_category={{ sub.id }}" class="filter-chip {% if request.GET.sub_category == sub.id|stringformat:'s' %}active{% endif %}">
-                                {{ sub.name }}
-                            </a>
-                            {% endfor %}
-                        {% else %}
-                            {% for cat in category %}
-                                {% for sub in cat.sub_category_set.all %}
-                                <a href="/?category={{ cat.id }}&sub_category={{ sub.id }}" class="filter-chip {% if request.GET.sub_category == sub.id|stringformat:'s' %}active{% endif %}">
-                                    {{ sub.name }}
-                                </a>
-                                {% endfor %}
-                            {% endfor %}
-                        {% endif %}
-                    </div>
+                <!-- Sorting Dropdown -->
+                <div class="hub-sort-wrap">
+                    <label for="catalogSortSelect" class="hub-ctrl-label"><i class="fa fa-sort-amount-desc"></i> Sort By:</label>
+                    <select id="catalogSortSelect" class="hub-sort-select" onchange="applySorting(this.value)">
+                        <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
+                        <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Product Name: A to Z</option>
+                    </select>
                 </div>
-
-                <!-- Brand Filter & Active Filter Reset -->
-                {% if brand or request.GET.category or request.GET.sub_category or request.GET.brand %}
-                <div class="col-sm-12" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--slate-200);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                        <div class="chips-row">
-                            <span style="font-size: 13px; font-weight: 600; color: var(--slate-600); margin-right: 6px;">Filter by Brand:</span>
-                            {% for b in brand %}
-                            <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sub_category %}sub_category={{ request.GET.sub_category }}&{% endif %}brand={{ b.id }}" class="filter-chip {% if request.GET.brand == b.id|stringformat:'s' %}active{% endif %}" style="padding: 4px 10px; font-size: 12px;">
-                                {{ b.name }}
-                            </a>
-                            {% endfor %}
-                        </div>
-                        {% if request.GET.category or request.GET.sub_category or request.GET.brand %}
-                        <div>
-                            <a href="/" class="filter-chip" style="background: #fee2e2; border-color: #fca5a5; color: #dc2626; font-weight: 600;">
-                                <i class="fa fa-times"></i> Reset All Filters
-                            </a>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
             </div>
+
+            <!-- Active Applied Filters Ribbon (Only shows when a filter is applied) -->
+            {% if active_category or active_sub_category or active_brand %}
+            <div class="active-filters-ribbon">
+                <span class="ribbon-label"><i class="fa fa-check-circle"></i> Active Filters:</span>
+                
+                {% if active_category %}
+                <span class="active-filter-badge">
+                    Dept: <strong>{{ active_category.name }}</strong>
+                    <a href="/{% if active_brand %}?brand={{ active_brand.id }}{% endif %}" title="Remove department filter">&times;</a>
+                </span>
+                {% endif %}
+
+                {% if active_sub_category %}
+                <span class="active-filter-badge">
+                    Category: <strong>{{ active_sub_category.name }}</strong>
+                    <a href="/?category={{ active_category.id }}{% if active_brand %}&brand={{ active_brand.id }}{% endif %}" title="Remove category filter">&times;</a>
+                </span>
+                {% endif %}
+
+                {% if active_brand %}
+                <span class="active-filter-badge">
+                    Brand: <strong>{{ active_brand.name }}</strong>
+                    <a href="/?{% if active_category %}category={{ active_category.id }}&{% endif %}{% if active_sub_category %}sub_category={{ active_sub_category.id }}{% endif %}" title="Remove brand filter">&times;</a>
+                </span>
+                {% endif %}
+
+                <a href="/" class="ribbon-clear-link">Clear All</a>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Product Grid Header -->
@@ -492,4 +585,11 @@
     </div>
 </section>
 
+<script>
+function applySorting(sortVal) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('sort', sortVal);
+    window.location.href = url.toString();
+}
+</script>
 {% endblock %}

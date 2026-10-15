@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
+from django.db.models import Count, Prefetch
 from app.models import Category, Product, Sub_category, Contact_us, Order, Brand, SupportTicket
 from django.contrib.auth import authenticate, login
 from app.models import UserCreateForm
@@ -22,14 +23,19 @@ def Master(request):
     return render(request, 'master.html')
 
 def Index(request):
-    category = Category.objects.prefetch_related('sub_category_set').all()
-    brand = Brand.objects.all()
+    sub_prefetch = Prefetch(
+        'sub_category_set',
+        queryset=Sub_category.objects.annotate(num_products=Count('product'))
+    )
+    category = Category.objects.annotate(num_products=Count('product')).prefetch_related(sub_prefetch).all()
+    brand = Brand.objects.filter(product__isnull=False).distinct().annotate(num_products=Count('product')).order_by('name')
     
     brandID = request.GET.get('brand')
     categoryID = request.GET.get('category')
     subCategoryID = request.GET.get('sub_category')
+    sort = request.GET.get('sort', 'newest')
 
-    products = Product.objects.all().select_related('category', 'sub_category', 'brand').order_by('-id')
+    products = Product.objects.all().select_related('category', 'sub_category', 'brand')
 
     active_category = None
     active_sub_category = None
@@ -48,6 +54,17 @@ def Index(request):
         products = products.filter(brand_id=brandID)
         active_brand = Brand.objects.filter(id=brandID).first()
 
+    if sort == 'price_low':
+        products = products.order_by('price')
+    elif sort == 'price_high':
+        products = products.order_by('-price')
+    elif sort == 'name':
+        products = products.order_by('name')
+    else:
+        products = products.order_by('-id')
+
+    total_products_count = Product.objects.count()
+
     # Pre-filtered products for the curated trending section on homepage
     trending_tshirts = Product.objects.filter(sub_category__name__iexact='T-shirt').order_by('-id')[:4]
     if not trending_tshirts.exists():
@@ -63,6 +80,8 @@ def Index(request):
         'active_category': active_category,
         'active_sub_category': active_sub_category,
         'active_brand': active_brand,
+        'current_sort': sort,
+        'total_products_count': total_products_count,
         'trending_tshirts': trending_tshirts,
         'trending_women': trending_women,
         'trending_tech': trending_tech,
@@ -207,13 +226,21 @@ def Your_Order(request):
     return render(request , 'order.html' , context)
 
 def Product_page(request):
-    category = Category.objects.prefetch_related('sub_category_set').all()
-    brand = Brand.objects.all()
+    sub_prefetch = Prefetch(
+        'sub_category_set',
+        queryset=Sub_category.objects.annotate(num_products=Count('product'))
+    )
+    category = Category.objects.annotate(num_products=Count('product')).prefetch_related(sub_prefetch).all()
+    
+    # Only show brands that have products in the store
+    brand = Brand.objects.filter(product__isnull=False).distinct().annotate(num_products=Count('product')).order_by('name')
+    
     brandID = request.GET.get('brand')
     categoryID = request.GET.get('category')
     subCategoryID = request.GET.get('sub_category')
+    sort = request.GET.get('sort', 'newest')
 
-    products = Product.objects.all().select_related('category', 'sub_category', 'brand').order_by('-id')
+    products = Product.objects.all().select_related('category', 'sub_category', 'brand')
 
     active_category = None
     active_sub_category = None
@@ -232,6 +259,18 @@ def Product_page(request):
         products = products.filter(brand_id=brandID)
         active_brand = Brand.objects.filter(id=brandID).first()
 
+    # Dynamic sorting
+    if sort == 'price_low':
+        products = products.order_by('price')
+    elif sort == 'price_high':
+        products = products.order_by('-price')
+    elif sort == 'name':
+        products = products.order_by('name')
+    else:
+        products = products.order_by('-id')
+
+    total_products_count = Product.objects.count()
+
     context = {
         'category': category,
         'brand': brand,
@@ -239,6 +278,8 @@ def Product_page(request):
         'active_category': active_category,
         'active_sub_category': active_sub_category,
         'active_brand': active_brand,
+        'current_sort': sort,
+        'total_products_count': total_products_count,
     }
     return render(request, 'product.html', context)
 
