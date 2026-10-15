@@ -45,5 +45,6 @@ Thumbs.db
 *.log
 
 # Vercel and Static Build
+staticfiles/
 staticfiles_build/
 .vercel/
