@@ -5,25 +5,27 @@ set -e
 echo "==> Preparing build directories..."
 mkdir -p staticfiles_build/static
 
-echo "==> Installing Python dependencies..."
+echo "==> Setting up Python 3.11 environment..."
 if command -v uv &> /dev/null; then
-    echo "Detected uv, installing dependencies..."
-    uv pip install --system -r requirements.txt
-elif python3 -m pip install -r requirements.txt --break-system-packages; then
-    echo "Installed dependencies with pip (--break-system-packages)..."
+    echo "Using uv to provision Python 3.11 virtual environment..."
+    uv venv --python 3.11 .build_venv
+    source .build_venv/bin/activate
+    echo "Installing requirements into Python 3.11 environment..."
+    uv pip install -r requirements.txt
+elif command -v python3.11 &> /dev/null; then
+    echo "Using python3.11 venv..."
+    python3.11 -m venv .build_venv
+    source .build_venv/bin/activate
+    pip install -r requirements.txt
 else
-    echo "Creating virtual environment fallback..."
+    echo "Using system python venv fallback..."
     python3 -m venv .build_venv
     source .build_venv/bin/activate
     pip install -r requirements.txt
 fi
 
-echo "==> Collecting static assets..."
-if [ -d ".build_venv" ]; then
-    python manage.py collectstatic --noinput --clear
-else
-    python3 manage.py collectstatic --noinput --clear
-fi
+echo "==> Collecting static assets with Django..."
+python manage.py collectstatic --noinput --clear
 
 echo "==> Ensuring static output directory exists..."
 mkdir -p staticfiles_build/static
